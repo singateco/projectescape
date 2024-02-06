@@ -10,6 +10,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "Public/MoveComponent.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -18,6 +19,9 @@ DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
 AProjectEscapeCharacter::AProjectEscapeCharacter()
 {
+
+	PrimaryActorTick.bCanEverTick = true;
+	
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 		
@@ -52,6 +56,8 @@ AProjectEscapeCharacter::AProjectEscapeCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+
+	MoveComponent = CreateDefaultSubobject<UMoveComponent>(TEXT("Move Component"));
 }
 
 void AProjectEscapeCharacter::BeginPlay()
@@ -69,6 +75,48 @@ void AProjectEscapeCharacter::BeginPlay()
 	}
 }
 
+void AProjectEscapeCharacter::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	CheckForGroundWhileFlying();
+	FallDownWhileFlying();
+}
+
+void AProjectEscapeCharacter::CheckForGroundWhileFlying()
+{
+	if (GetCharacterMovement()->MovementMode != MOVE_Flying)
+	{
+		return;
+	}
+
+	FVector End = GetActorLocation() + GetActorUpVector() * GroundCheckDistance;
+
+	// Debug line
+	DrawDebugLine(GetWorld(), GetActorLocation(), End, FColor::Red);
+
+	FHitResult Result;
+	bool bHit = GetWorld()->LineTraceSingleByChannel(
+		Result,
+		GetActorLocation(),
+		End,
+		ECC_Visibility);
+
+	if (bHit)
+	{
+		GetCharacterMovement()->SetMovementMode(MOVE_Falling);
+	}
+}
+
+void AProjectEscapeCharacter::FallDownWhileFlying()
+{
+	if (GetCharacterMovement()->MovementMode != MOVE_Flying)
+	{
+		return;
+	}
+
+	GetCharacterMovement()->AddForce(FVector(0, 0, -1) * DownwardForce);
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Input
 
@@ -78,7 +126,7 @@ void AProjectEscapeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
 		
 		// Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AProjectEscapeCharacter::HandleJump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
 		// Moving
@@ -126,5 +174,27 @@ void AProjectEscapeCharacter::Look(const FInputActionValue& Value)
 		// add yaw and pitch input to controller
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
+	}
+}
+
+void AProjectEscapeCharacter::HandleJump(const FInputActionInstance& InputActionInstance)
+{
+
+	Jump();
+	
+	if (GetCharacterMovement()->IsMovingOnGround())
+	{
+		return;
+	}
+	
+	if (GetCharacterMovement()->MovementMode != MOVE_Flying)
+	{
+		FVector NowVelocity = GetVelocity();
+		GetCharacterMovement()->Velocity = FVector(NowVelocity.X, NowVelocity.Y, 0);
+		GetCharacterMovement()->SetMovementMode(MOVE_Flying);
+	}
+	else
+	{
+		GetCharacterMovement()->SetMovementMode(MOVE_Falling);
 	}
 }
