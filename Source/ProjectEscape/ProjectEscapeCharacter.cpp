@@ -9,7 +9,6 @@
 #include "GameFramework/Controller.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "InputActionValue.h"
 #include "Public/MoveComponent.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
@@ -78,43 +77,6 @@ void AProjectEscapeCharacter::BeginPlay()
 void AProjectEscapeCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	CheckForGroundWhileFlying();
-	FallDownWhileFlying();
-}
-
-void AProjectEscapeCharacter::CheckForGroundWhileFlying()
-{
-	if (GetCharacterMovement()->MovementMode != MOVE_Flying)
-	{
-		return;
-	}
-
-	FVector End = GetActorLocation() + GetActorUpVector() * GroundCheckDistance;
-
-	// Debug line
-	DrawDebugLine(GetWorld(), GetActorLocation(), End, FColor::Red);
-
-	FHitResult Result;
-	bool bHit = GetWorld()->LineTraceSingleByChannel(
-		Result,
-		GetActorLocation(),
-		End,
-		ECC_Visibility);
-
-	if (bHit)
-	{
-		GetCharacterMovement()->SetMovementMode(MOVE_Falling);
-	}
-}
-
-void AProjectEscapeCharacter::FallDownWhileFlying()
-{
-	if (GetCharacterMovement()->MovementMode != MOVE_Flying)
-	{
-		return;
-	}
-
-	GetCharacterMovement()->AddForce(FVector(0, 0, -1) * DownwardForce);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -123,17 +85,9 @@ void AProjectEscapeCharacter::FallDownWhileFlying()
 void AProjectEscapeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	// Set up action bindings
-	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
-		
-		// Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AProjectEscapeCharacter::HandleJump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
-
-		// Moving
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AProjectEscapeCharacter::Move);
-
-		// Looking
-		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AProjectEscapeCharacter::Look);
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		MoveComponent->SetupPlayerInputComponent(EnhancedInputComponent);	
 	}
 	else
 	{
@@ -141,60 +95,3 @@ void AProjectEscapeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
 	}
 }
 
-void AProjectEscapeCharacter::Move(const FInputActionValue& Value)
-{
-	// input is a Vector2D
-	FVector2D MovementVector = Value.Get<FVector2D>();
-
-	if (Controller != nullptr)
-	{
-		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
-
-		// get forward vector
-		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-	
-		// get right vector 
-		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-
-		// add movement 
-		AddMovementInput(ForwardDirection, MovementVector.Y);
-		AddMovementInput(RightDirection, MovementVector.X);
-	}
-}
-
-void AProjectEscapeCharacter::Look(const FInputActionValue& Value)
-{
-	// input is a Vector2D
-	FVector2D LookAxisVector = Value.Get<FVector2D>();
-
-	if (Controller != nullptr)
-	{
-		// add yaw and pitch input to controller
-		AddControllerYawInput(LookAxisVector.X);
-		AddControllerPitchInput(LookAxisVector.Y);
-	}
-}
-
-void AProjectEscapeCharacter::HandleJump(const FInputActionInstance& InputActionInstance)
-{
-
-	Jump();
-	
-	if (GetCharacterMovement()->IsMovingOnGround())
-	{
-		return;
-	}
-	
-	if (GetCharacterMovement()->MovementMode != MOVE_Flying)
-	{
-		FVector NowVelocity = GetVelocity();
-		GetCharacterMovement()->Velocity = FVector(NowVelocity.X, NowVelocity.Y, 0);
-		GetCharacterMovement()->SetMovementMode(MOVE_Flying);
-	}
-	else
-	{
-		GetCharacterMovement()->SetMovementMode(MOVE_Falling);
-	}
-}
