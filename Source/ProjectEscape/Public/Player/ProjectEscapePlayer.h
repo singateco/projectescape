@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Logging/LogMacros.h"
-#include "Public/CharacterBase.h"
-#include "ProjectEscapeCharacter.generated.h"
+#include "CharacterBase.h"
+#include "ProjectEscapePlayer.generated.h"
 
 class UMoveComponent;
 class USpringArmComponent;
@@ -17,7 +17,7 @@ struct FInputActionValue;
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
 UCLASS(config=Game)
-class AProjectEscapeCharacter : public ACharacterBase
+class AProjectEscapePlayer : public ACharacterBase
 {
 	GENERATED_BODY()
 
@@ -37,7 +37,7 @@ public:
 	// ########### FUNCTIONS ###########
 	// #################################
 	
-	AProjectEscapeCharacter();
+	AProjectEscapePlayer();
 
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }

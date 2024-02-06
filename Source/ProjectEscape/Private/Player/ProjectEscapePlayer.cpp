@@ -1,6 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "ProjectEscapeCharacter.h"
+#include "Player/ProjectEscapePlayer.h"
 #include "Engine/LocalPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -9,16 +9,15 @@
 #include "GameFramework/Controller.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "Public/MoveComponent.h"
+#include "Player/MoveComponent.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
 //////////////////////////////////////////////////////////////////////////
-// AProjectEscapeCharacter
+// AProjectEscapePlayer
 
-AProjectEscapeCharacter::AProjectEscapeCharacter()
+AProjectEscapePlayer::AProjectEscapePlayer()
 {
-
 	PrimaryActorTick.bCanEverTick = true;
 	
 	// Set size for collision capsule
@@ -59,7 +58,7 @@ AProjectEscapeCharacter::AProjectEscapeCharacter()
 	MoveComponent = CreateDefaultSubobject<UMoveComponent>(TEXT("Move Component"));
 }
 
-void AProjectEscapeCharacter::BeginPlay()
+void AProjectEscapePlayer::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
@@ -74,7 +73,7 @@ void AProjectEscapeCharacter::BeginPlay()
 	}
 }
 
-void AProjectEscapeCharacter::Tick(float DeltaSeconds)
+void AProjectEscapePlayer::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 }
@@ -82,7 +81,7 @@ void AProjectEscapeCharacter::Tick(float DeltaSeconds)
 //////////////////////////////////////////////////////////////////////////
 // Input
 
-void AProjectEscapeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void AProjectEscapePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))

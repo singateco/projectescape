@@ -1,12 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "ProjectEscape/Public/MoveComponent.h"
-
+#include "ProjectEscape/Public/Player/MoveComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "ProjectEscape/ProjectEscapeCharacter.h"
+#include "ProjectEscape/Public/Player/ProjectEscapePlayer.h"
 
 
 // Sets default values for this component's properties
@@ -23,7 +22,7 @@ void UMoveComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
 
-	Player = GetOwner<AProjectEscapeCharacter>();
+	Player = GetOwner<AProjectEscapePlayer>();
 	check(Player);
 }
 

@@ -1,7 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "ProjectEscapeGameMode.h"
-#include "ProjectEscapeCharacter.h"
+#include "System/ProjectEscapeGameMode.h"
 #include "UObject/ConstructorHelpers.h"
 
 AProjectEscapeGameMode::AProjectEscapeGameMode()

@@ -9,7 +9,7 @@
 
 struct FInputActionInstance;
 struct FInputActionValue;
-class AProjectEscapeCharacter;
+class AProjectEscapePlayer;
 class UInputAction;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -49,7 +49,7 @@ public:
 	// #################################
 
 	UPROPERTY()
-	AProjectEscapeCharacter* Player;
+	AProjectEscapePlayer* Player;
 	
 	// 떠다닐 시 떠다니는 모드 해제를 위해 지면을 체크하는 거리
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
