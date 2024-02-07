@@ -21,9 +21,12 @@ public:
 	AProjectEscapePlayer* Player;
 
 	UPROPERTY(EditAnywhere)
-	class UStaticMeshComponent* NormalGun;
+	class UStaticMeshComponent* NormalGunMesh;
 
 
+	/* Normal Gun */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
+	class USceneComponent* GunComp;
 
 
 protected:

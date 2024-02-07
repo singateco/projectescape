@@ -10,18 +10,21 @@ ANormalGun::ANormalGun()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	//Create SceneComponent
+	GunComp = CreateDefaultSubobject<USceneComponent>(TEXT("GunComp"));
+	GunComp->SetupAttachment(RootComponent); // Socket Name
 
 	// Create Normal Gun
-	NormalGun = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("NormalGun"));
-	NormalGun->SetupAttachment(RootComponent);
-	NormalGun->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	NormalGunMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("NormalGunMesh"));
+	NormalGunMesh->SetupAttachment(GunComp);
+	NormalGunMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	auto NormalGunMesh = ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/Models/SniperGun/sniper1.sniper1'"));
-	if (NormalGunMesh.Succeeded()) {
-		NormalGun->SetStaticMesh(NormalGunMesh.Object);
+	auto NormalGunFinder = ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/Models/SniperGun/sniper1.sniper1'"));
+	if (NormalGunFinder.Succeeded()) {
+		NormalGunMesh->SetStaticMesh(NormalGunFinder.Object);
 		//SniperGun->SetRelativeLocation(FVector(0, 80, 130));
-		NormalGun->SetRelativeScale3D(FVector(0.15f));
-		NormalGun->SetRelativeLocationAndRotation(FVector(-38.f, -7.f, 3.f), FRotator(-2.f, 100.f, 0));
+		NormalGunMesh->SetRelativeScale3D(FVector(0.15f));
+		NormalGunMesh->SetRelativeLocationAndRotation(FVector(-38.f, -7.f, 3.f), FRotator(-2.f, 100.f, 0));
 	}
 
 }
