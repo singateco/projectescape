@@ -56,13 +56,6 @@ AProjectEscapePlayer::AProjectEscapePlayer()
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 
-	// Create a Weapon(Normal Gun)
-	GunComp = CreateDefaultSubobject<USceneComponent>(TEXT("GunComp"));
-	GunComp->SetupAttachment(GetMesh(), TEXT("GunPosition")); // Socket Name
-	//GunComp->SetRelativeLocation(FVector((-7.617589f, 0.958795f, 4.504652f)));
-	GunComp->SetRelativeLocation(FVector((-26.126053f, -8.437555f, 84.668604f)));
-	GunComp->SetRelativeRotation(FRotator((10.0f, 90.0f, 10.0f)));
-
 
 	// Add Custom Components
 	MoveComponent = CreateDefaultSubobject<UMoveComponent>(TEXT("Move Component"));
@@ -97,7 +90,8 @@ void AProjectEscapePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		MoveComponent->SetupPlayerInputComponent(EnhancedInputComponent);	
+		MoveComponent->SetupPlayerInputComponent(EnhancedInputComponent);
+		FireComponent->SetupPlayerInputComponent(EnhancedInputComponent);
 	}
 	else
 	{

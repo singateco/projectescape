@@ -27,7 +27,7 @@ public:
 	UPROPERTY()
 	AProjectEscapePlayer* Player;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	UPROPERTY(VisibleAnywhere, Category = "Weapon")
 	ANormalGun* NormalGun;
 
 
@@ -41,8 +41,11 @@ public:
 	UInputAction* ActionFire;
 
 
-	//UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-	//TSubclassOf<class ANormalGun> NormalGun;
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	TSubclassOf<class ANormalGun> NormalGunClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Pistol")
+	class UParticleSystem* GunEffect;
 
 	virtual void InitializeComponent() override;
 
@@ -56,6 +59,8 @@ public:
 	void NormalGunFire();
 
 	void AttachPistol();
+
+	void DetachPistol();
 
 protected:
 	// Called when the game starts
