@@ -9,6 +9,7 @@
 
 class UMoveComponent;
 class UFireComponent;
+class UGrabComponent;
 class USpringArmComponent;
 class UCameraComponent;
 class UInputMappingContext;
@@ -33,6 +34,10 @@ public:
 	// Fire Component
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UFireComponent* FireComponent;
+
+	// Grab Component
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UGrabComponent* GrabComponent;
 
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
