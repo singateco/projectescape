@@ -46,6 +46,8 @@ void UEnemyBaseFSM::BeginPlay()
 
 	Ai = Cast<AAIController>(Enemy->GetController());
 
+	HP = 0;
+	UpdateHP(MaxHP);
 	
 }
 
@@ -105,6 +107,8 @@ void UEnemyBaseFSM::TickMove()
 
 void UEnemyBaseFSM::TickAttack()
 {
+
+
 	//float dist = FVector::Dist(Player->GetActorLocation(), Enemy->GetActorLocation());
 	//// 그 거리가 AttackDistance를 초과한다면
 	//if (dist > AttackDistance) {
@@ -122,6 +126,22 @@ void UEnemyBaseFSM::TickDamage()
 void UEnemyBaseFSM::TickDie()
 {
 
+}
+
+void UEnemyBaseFSM::OnTakeDamage(int32 Damage)
+{
+	Ai->StopMovement();
+	UpdateHP(-Damage);
+	if(HP>0)
+	{
+		SetState(EEnemyState::Damage);
+		//PlayMontageDamage();
+	}
+}
+
+void UEnemyBaseFSM::UpdateHP(int32 NewHP)
+{
+	HP = FMath::Max(0, HP + NewHP);
 }
 
 //void UEnemyBaseFSM::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
