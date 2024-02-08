@@ -18,6 +18,9 @@ class PROJECTESCAPE_API AEnemyBase : public ACharacterBase
 public:
 	AEnemyBase();
 
+	virtual void BeginPlay() override;
+
+	virtual void Tick(float DeltaSeconds) override;
 
 	// --------------------- Variable ---------------------------
 	UPROPERTY(EditDefaultsOnly)
@@ -26,7 +29,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class UEnemyBaseFSM* EnemyBaseFSM;
 
-	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	class UWidgetComponent* EnemyHPComponent;
 
 	// --------------------- Function ---------------------------
 
