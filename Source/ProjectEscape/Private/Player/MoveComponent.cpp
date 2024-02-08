@@ -118,6 +118,7 @@ void UMoveComponent::CheckForGroundWhileFlying()
 	if (bHit)
 	{
 		Player->GetCharacterMovement()->SetMovementMode(MOVE_Falling);
+		bCanRecoverStamina = true;
 	}
 }
 
@@ -241,6 +242,7 @@ void UMoveComponent::ManageFlying(const float DeltaTime)
 	if (Stamina <= 0.f)
 	{
 		Player->GetCharacterMovement()->SetMovementMode(MOVE_Falling);
+		bCanRecoverStamina = true;
 		return;
 	}
 		

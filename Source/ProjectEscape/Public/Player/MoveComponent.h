@@ -71,36 +71,36 @@ public:
 	// =============== 비행 ===============
 	
 	// 떠다닐 시 떠다니는 모드 해제를 위해 지면을 체크하는 거리
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings|Flying")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|Flying")
 	float GroundCheckDistance {-145.f};
 
 	// 떠다닐시 밑으로 떨어지는 힘
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings|Flying")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|Flying")
 	float DownwardForce {5000.f};
 
 	// 비행시 1초당 사용하는 스태미나.
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings|Flying")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|Flying")
 	float FlyingStaminaPerSecond {10.f};
 
 	// =============== 대시 ===============
 	
 	// 대시시 가하는 힘
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings|Dashing")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|Dashing")
 	float DashForce {1000.f};
 
 	// 대시 사용시 사용하는 스태미나.
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings|Dashing")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|Dashing")
 	float DashStamina {25.f};
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Stamina")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
 	float MaxStamina {100.f};
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Stamina")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
 	float Stamina;
 
 	// 1초에 회복하는 스태미나의 양.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Stamina")
-	float StaminaRecoveryPerSecond {15.f};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
+	float StaminaRecoveryPerSecond {20.f};
 
 	UPROPERTY(VisibleAnywhere, Category = "Stamina")
 	bool bCanRecoverStamina {true};
