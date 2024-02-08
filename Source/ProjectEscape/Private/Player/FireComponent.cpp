@@ -61,7 +61,7 @@ void UFireComponent::SetupPlayerInputComponent(UEnhancedInputComponent* PlayerIn
 void UFireComponent::NormalGunFire()
 {
 
-	// ¿¹¿ÜÃ³¸® : ÃÑÀÌ¾øÀ»¶§ , ¿°·Â, ÃÑ ²¨³»´Â ¸ð¼Ç, ½ºÅÂ¹Ì³ª ºÎÁ· µî  
+	// ï¿½ï¿½ï¿½ï¿½Ã³ï¿½ï¿½ : ï¿½ï¿½ï¿½Ì¾ï¿½ï¿½ï¿½ï¿½ï¿½ , ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½Â¹Ì³ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½  
 	if (bHasPistol == false ) {
 		return;
 	}
@@ -69,18 +69,18 @@ void UFireComponent::NormalGunFire()
 	//FRotator GazeRotation = UKismetMathLibrary::FindLookAtRotation(Player->GetActorLocation(), Player->GetCameraBoom()->GetForwardVector() * MaxDistanceToGun);
 	//Player->SetActorRotation(GazeRotation);
 
-	// ÃÑ½î±â
+	// ï¿½Ñ½ï¿½ï¿½
 	FHitResult HitInfo;
 	FVector StartPos = NormalGun->NormalGunMesh->GetSocketLocation(TEXT("Muzzle"));
-	FVector EndPos = StartPos + Player->GetFollowCamera()->GetForwardVector()*MaxDistanceToGun;
+	FVector EndPos = Player->GetFollowCamera()->GetComponentLocation() + Player->GetFollowCamera()->GetForwardVector()*MaxDistanceToGun;
 
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(Player);
 
 	bool bHit = GetWorld()->LineTraceSingleByChannel(HitInfo, StartPos, EndPos,ECC_Visibility, Params);
 
-	if (bHit) { // Ãæµ¹ÇÏ¸é
-		//¸ÂÀº ÀÚ¸®¿¡ ÆÄÆ¼Å¬ È¿°ú Àç»ý
+	if (bHit) { // ï¿½æµ¹ï¿½Ï¸ï¿½
+		//ï¿½ï¿½ï¿½ï¿½ ï¿½Ú¸ï¿½ï¿½ï¿½ ï¿½ï¿½Æ¼Å¬ È¿ï¿½ï¿½ ï¿½ï¿½ï¿½
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), GunEffect, HitInfo.Location,FRotator());
 
 		//if (Enemy) {
@@ -88,9 +88,9 @@ void UFireComponent::NormalGunFire()
 		//}
 	}
 
-	// ½ºÅ×¹Ì³ª ¼Ò¸ð
+	// ï¿½ï¿½ï¿½×¹Ì³ï¿½ ï¿½Ò¸ï¿½
 
-	//ÃÑ½î´Â ¾Ö´Ï¸ÞÀÌ¼Ç Àç»ý
+	//ï¿½Ñ½ï¿½ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½ï¿½ï¿½
 	//auto Anim = Cast<UProjectEscapeAnimInstance>(GetMesh()->GetAnimInstance());
 	//Anim->PlayerFireAnimation();
 }
