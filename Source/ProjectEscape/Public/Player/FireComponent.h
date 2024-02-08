@@ -32,7 +32,7 @@ public:
 
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-	float MaxDistanceToGun = 1000.0f;
+	float MaxDistanceToGun = 50000.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	bool bHasPistol = false;
