@@ -56,6 +56,8 @@ void UMoveComponent::InitializeComponent()
 
 	Player = GetOwner<AProjectEscapePlayer>();
 	check(Player);
+
+	Player->LandedDelegate.AddDynamic(this, &UMoveComponent::HandleLanding);
 }
 
 void UMoveComponent::DebugShowStamina()
@@ -118,7 +120,6 @@ void UMoveComponent::CheckForGroundWhileFlying()
 	if (bHit)
 	{
 		Player->GetCharacterMovement()->SetMovementMode(MOVE_Falling);
-		bCanRecoverStamina = true;
 	}
 }
 
@@ -217,6 +218,11 @@ void UMoveComponent::HandleJump(const FInputActionInstance& InputActionInstance)
 	}
 }
 
+void UMoveComponent::HandleLanding(const FHitResult& Hit)
+{
+	bCanRecoverStamina = true;
+}
+
 void UMoveComponent::Dash(const FInputActionInstance& InputActionInstance)
 {
 	if (Stamina < DashStamina)
@@ -232,7 +238,6 @@ void UMoveComponent::ManageFlying(const float DeltaTime)
 {
 	if (Player->GetCharacterMovement()->MovementMode != MOVE_Flying)
 	{
-		bCanRecoverStamina = true;
 		return;
 	}
 
@@ -242,7 +247,6 @@ void UMoveComponent::ManageFlying(const float DeltaTime)
 	if (Stamina <= 0.f)
 	{
 		Player->GetCharacterMovement()->SetMovementMode(MOVE_Falling);
-		bCanRecoverStamina = true;
 		return;
 	}
 		

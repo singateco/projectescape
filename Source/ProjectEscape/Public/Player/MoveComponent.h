@@ -43,6 +43,9 @@ public:
 	// Handles jumping.
 	void HandleJump(const FInputActionInstance& InputActionInstance);
 
+	UFUNCTION()
+	void HandleLanding(const FHitResult& Hit);
+
 	// 대시
 	void Dash(const FInputActionInstance& InputActionInstance);
 
