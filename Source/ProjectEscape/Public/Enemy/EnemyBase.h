@@ -23,14 +23,15 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 
 	// --------------------- Variable ---------------------------
-	UPROPERTY(EditDefaultsOnly)
-	USkeletalMeshComponent* EnemySkeletalMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class UEnemyBaseFSM* EnemyBaseFSM;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class UWidgetComponent* EnemyHPComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UArrowComponent* BulletREF;
 
 	// --------------------- Function ---------------------------
 

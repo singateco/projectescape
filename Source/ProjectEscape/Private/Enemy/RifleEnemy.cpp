@@ -10,8 +10,6 @@ ARifleEnemy::ARifleEnemy()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	EnemySkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("EnemySkeletalMesh"));
-
 	ConstructorHelpers::FObjectFinder<USkeletalMesh>TempEnemyMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/Resources/KDE/Mesh/SWATGuy.SWATGuy'"));
 
 	if (TempEnemyMesh.Succeeded())
@@ -19,8 +17,6 @@ ARifleEnemy::ARifleEnemy()
 		GetMesh()->SetSkeletalMesh(TempEnemyMesh.Object);
 		GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -90), FRotator(0, -90, 0));
 	}
-
-	//RifleEnemyFSM = CreateDefaultSubobject<URifleEnemyFSM>(TEXT("RifleEnemyFSM"));
 
 
 

@@ -3,12 +3,10 @@
 
 #include "Enemy/EnemyBase.h"
 
+#include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
-#include "Enemy/EnemyAIPerception.h"
 #include "Enemy/EnemyBaseFSM.h"
-#include "Perception/AISenseConfig.h"
-#include "Perception/AISenseConfig_Sight.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -18,9 +16,9 @@ AEnemyBase::AEnemyBase()
 	PrimaryActorTick.bCanEverTick = true;
 
 	EnemyBaseFSM = CreateDefaultSubobject<UEnemyBaseFSM>(TEXT("EnemyBaseFSM"));
-
-	GetCharacterMovement()->bOrientRotationToMovement = true;
-
+	BulletREF = CreateDefaultSubobject<UArrowComponent>(TEXT("BulletREF"));
+	BulletREF->SetRelativeLocation(FVector(20, 0, 50));
+	BulletREF->SetupAttachment(RootComponent);
 	EnemyHPComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("EnemyHPComponent"));
 	EnemyHPComponent->SetupAttachment(RootComponent);
 	//WBP(블루프린트 클래스)를 로드해서 HPComp의 위젯으로 설정, FClassFinder 주소 마지막에 _C해야함 블루프린트라서
@@ -30,9 +28,11 @@ AEnemyBase::AEnemyBase()
 	{
 		EnemyHPComponent->SetWidgetClass(tempHP.Class);
 		EnemyHPComponent->SetDrawSize(FVector2D(100, 20));
-		EnemyHPComponent->SetRelativeLocation(FVector(0, 0, 90));
+		EnemyHPComponent->SetRelativeLocation(FVector(0, 0, 110));
 		EnemyHPComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
+
+	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	UCapsuleComponent* cap = GetCapsuleComponent();
 	auto mesh = GetMesh();
@@ -56,7 +56,7 @@ void AEnemyBase::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 	
 	FVector start = EnemyHPComponent->GetComponentLocation();
-	FVector end = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetActorLocation();
+	FVector end = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->GetCameraLocation();
 	FRotator newRoatation = UKismetMathLibrary::FindLookAtRotation(start, end);
 
 	EnemyHPComponent->SetWorldRotation(newRoatation);

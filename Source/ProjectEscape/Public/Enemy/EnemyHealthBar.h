@@ -15,5 +15,16 @@ class PROJECTESCAPE_API UEnemyHealthBar : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
+
+	UPROPERTY(EditInstanceOnly, meta = (BindWidget))
+		class UProgressBar* HPBar;
+
+	UPROPERTY(EditInstanceOnly, meta = (BindWidget))
+		class UProgressBar* HPBarGuide;
+
+	float TargetPercent = 1;
+
+	void UpdateHP(int HP, int MaxHP);
 };

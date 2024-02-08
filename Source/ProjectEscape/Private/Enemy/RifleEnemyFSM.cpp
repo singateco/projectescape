@@ -5,7 +5,9 @@
 
 #include "AIController.h"
 #include "NavigationSystem.h"
+#include "Components/ArrowComponent.h"
 #include "Enemy/EnemyAnimInstance.h"
+#include "Enemy/EnemyBullet.h"
 #include "Enemy/RifleEnemy.h"
 #include "Player/ProjectEscapePlayer.h"
 
@@ -39,7 +41,15 @@ void URifleEnemyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 void URifleEnemyFSM::TickAttack()
 {
-	Super::TickAttack();
+	CurrentTime += GetWorld()->GetDeltaSeconds();
+
+	if(CurrentTime > AttackTime)
+	{
+		CurrentTime = 0;
+		//EnemyAnim->IsAttack = true;
+
+		GetWorld()->SpawnActor<AEnemyBullet>(AEnemyBullet::StaticClass(), Enemy->BulletREF->GetComponentTransform());
+	}
 
 	float dist = FVector::Dist(Player->GetActorLocation(), Enemy->GetActorLocation());
 	// 그 거리가 AttackDistance를 초과한다면

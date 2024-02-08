@@ -41,10 +41,9 @@ void UEnemyBaseFSM::BeginPlay()
 	Super::BeginPlay();
 
 	Enemy = Cast<AEnemyBase>(GetOwner());
-
 	EnemyAnim = Cast<UEnemyAnimInstance>(Enemy->GetMesh()->GetAnimInstance());
-
 	Ai = Cast<AAIController>(Enemy->GetController());
+	Player = Cast<AProjectEscapePlayer>(GetWorld()->GetFirstPlayerController()->GetPawn());
 
 	HP = 0;
 	UpdateHP(MaxHP);
@@ -84,7 +83,6 @@ void UEnemyBaseFSM::SetState(EEnemyState Next)
 
 void UEnemyBaseFSM::TickIdle()
 {
-	Player = Cast<AProjectEscapePlayer>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	if (Player)
 	{
 		SetState(EEnemyState::Move);
@@ -98,6 +96,8 @@ void UEnemyBaseFSM::TickMove()
 	FVector dir = destination - Enemy->GetActorLocation();
 
 	Enemy->AddMovementInput(dir.GetSafeNormal());
+
+	Ai->SetFocus(Player);
 
 	if(dir.Size() <= AttackDistance)
 	{
