@@ -41,6 +41,9 @@ public:
 	// Handles jumping.
 	void HandleJump(const FInputActionInstance& InputActionInstance);
 
+	// 대시
+	void Dash(const FInputActionInstance& InputActionInstance);
+	
 	void CheckForGroundWhileFlying();
 	void FallDownWhileFlying();
 
@@ -48,6 +51,9 @@ public:
 	// ########### PROPERTIES ##########
 	// #################################
 
+	UPROPERTY(BlueprintReadWrite)
+	FVector MoveVector;
+	
 	UPROPERTY()
 	AProjectEscapePlayer* Player;
 	
@@ -58,6 +64,14 @@ public:
 	// 떠다닐시 밑으로 떨어지는 힘
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float DownwardForce {5000.f};
+
+	// 대시시 가하는 힘
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float DashForce {1000.f};	
+
+
+private:
+	// Input Actions
 	
 	/** Jump Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -70,6 +84,10 @@ public:
 	/** Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
+	
+	/** 대시 Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* DashAction;
 
 protected:
 	// Called when the game starts
