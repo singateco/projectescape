@@ -58,6 +58,20 @@ void UMoveComponent::InitializeComponent()
 	check(Player);
 }
 
+void UMoveComponent::DebugShowStamina()
+{
+	const FString StaminaString = FString::Printf(TEXT("Stamina: %.f/%.f"), Stamina, MaxStamina);
+
+	DrawDebugString(GetWorld(),
+		Player->GetActorLocation(),
+		StaminaString,
+		nullptr,
+		FColor::White,
+		0.f,
+		true,
+		1);
+}
+
 
 // Called when the game starts
 void UMoveComponent::BeginPlay()
@@ -71,6 +85,9 @@ void UMoveComponent::BeginPlay()
 			Subsystem->AddMappingContext(Player->DefaultMappingContext, 0);
 		}
 	}
+
+	// 스태미나 적용
+	Stamina = MaxStamina;
 }
 
 
@@ -79,17 +96,13 @@ void UMoveComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	CheckForGroundWhileFlying();
-	FallDownWhileFlying();
+	ManageFlying(DeltaTime);
+	RecoverStamina(DeltaTime);
+	DebugShowStamina();
 }
 
 void UMoveComponent::CheckForGroundWhileFlying()
 {
-	if (Player->GetCharacterMovement()->MovementMode != MOVE_Flying)
-	{
-		return;
-	}
-
 	FVector End = Player->GetActorLocation() + Player->GetActorUpVector() * GroundCheckDistance;
 
 	// Debug line
@@ -110,12 +123,17 @@ void UMoveComponent::CheckForGroundWhileFlying()
 
 void UMoveComponent::FallDownWhileFlying()
 {
-	if (Player->GetCharacterMovement()->MovementMode != MOVE_Flying)
+	Player->GetCharacterMovement()->AddForce(FVector(0, 0, -1) * DownwardForce);
+}
+
+void UMoveComponent::RecoverStamina(const float DeltaTime)
+{
+	if (!bCanRecoverStamina)
 	{
 		return;
 	}
 
-	Player->GetCharacterMovement()->AddForce(FVector(0, 0, -1) * DownwardForce);
+	Stamina = FMath::Clamp(Stamina + (StaminaRecoveryPerSecond * DeltaTime), 0, MaxStamina);
 }
 
 void UMoveComponent::SetupPlayerInputComponent(UEnhancedInputComponent* PlayerInputComponent)
@@ -200,5 +218,32 @@ void UMoveComponent::HandleJump(const FInputActionInstance& InputActionInstance)
 
 void UMoveComponent::Dash(const FInputActionInstance& InputActionInstance)
 {
+	if (Stamina < DashStamina)
+	{
+		return;
+	}
+
+	Stamina -= DashStamina;
 	Player->GetCharacterMovement()->AddImpulse(MoveVector * DashForce, true);
+}
+
+void UMoveComponent::ManageFlying(const float DeltaTime)
+{
+	if (Player->GetCharacterMovement()->MovementMode != MOVE_Flying)
+	{
+		bCanRecoverStamina = true;
+		return;
+	}
+
+	bCanRecoverStamina = false;
+	Stamina -= StaminaRecoveryPerSecond * DeltaTime;
+
+	if (Stamina <= 0.f)
+	{
+		Player->GetCharacterMovement()->SetMovementMode(MOVE_Falling);
+		return;
+	}
+		
+	CheckForGroundWhileFlying();
+	FallDownWhileFlying();
 }
