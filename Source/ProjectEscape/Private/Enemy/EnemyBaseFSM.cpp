@@ -5,9 +5,11 @@
 
 #include "AIController.h"
 #include "NavigationSystem.h"
+#include "Enemy/EnemyAIPerception.h"
 #include "Enemy/EnemyAnimInstance.h"
 #include "Enemy/EnemyBase.h"
 #include "Navigation/PathFollowingComponent.h"
+#include "Perception/AISenseConfig_Sight.h"
 #include "Player/ProjectEscapePlayer.h"
 
 // Sets default values for this component's properties
@@ -17,7 +19,19 @@ UEnemyBaseFSM::UEnemyBaseFSM()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
+	EnemyAIPerception = CreateDefaultSubobject<UEnemyAIPerception>(TEXT("EnemyAIperception"));
+
+	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("SightConfig"));
+
+	SightConfig->SightRadius = 3000.0f;
+	SightConfig->LoseSightRadius = 3200.0f;
+	SightConfig->PeripheralVisionAngleDegrees = 180.0f;
+
+	EnemyAIPerception->ConfigureSense(*SightConfig);
+
+
+
+
 }
 
 
@@ -71,7 +85,7 @@ void UEnemyBaseFSM::TickIdle()
 	Player = Cast<AProjectEscapePlayer>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	if (Player)
 	{
-		SetState(EEnemyState::Move); // 전이
+		SetState(EEnemyState::Move);
 	}
 }
 
@@ -87,12 +101,17 @@ void UEnemyBaseFSM::TickMove()
 	{
 		SetState(EEnemyState::Attack);
 	}
-
 }
 
 void UEnemyBaseFSM::TickAttack()
 {
-
+	//float dist = FVector::Dist(Player->GetActorLocation(), Enemy->GetActorLocation());
+	//// 그 거리가 AttackDistance를 초과한다면
+	//if (dist > AttackDistance) {
+	//	// 이동상태로 전이하고싶다.
+	//	SetState(EEnemyState::Move);
+	//	//EnemyAnim->IsAttack = false;
+	//}
 }
 
 void UEnemyBaseFSM::TickDamage()
@@ -105,6 +124,20 @@ void UEnemyBaseFSM::TickDie()
 
 }
 
+//void UEnemyBaseFSM::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
+//{
+//	for (AActor* Actor : UpdatedActors)
+//	{
+//		// 플레이어가 감지되었을 때
+//		if (Actor->IsA<AProjectEscapePlayer>())
+//		{
+//			SetState(EEnemyState::Move); // 이동 상태로 전이
+//			return;
+//		}
+//	}
+//	// 감지된 플레이어가 없을 때
+//	SetState(EEnemyState::Idle); // 대기 상태로 전이
+//}
 //bool UEnemyBaseFSM::UpdateRandomLocation(FVector origin, float radius, FVector& outLocation)
 //{
 //	auto ns = UNavigationSystemV1::GetNavigationSystem(GetWorld());

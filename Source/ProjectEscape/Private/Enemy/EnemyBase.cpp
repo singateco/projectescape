@@ -3,7 +3,10 @@
 
 #include "Enemy/EnemyBase.h"
 
+#include "Enemy/EnemyAIPerception.h"
 #include "Enemy/EnemyBaseFSM.h"
+#include "Perception/AISenseConfig.h"
+#include "Perception/AISenseConfig_Sight.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 AEnemyBase::AEnemyBase()

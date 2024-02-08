@@ -27,12 +27,12 @@ public:
 	UPROPERTY()
 	AProjectEscapePlayer* Player;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	UPROPERTY(VisibleAnywhere, Category = "Weapon")
 	ANormalGun* NormalGun;
 
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-	float MaxDistanceToGun = 1000.0f;
+	float MaxDistanceToGun = 50000.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	bool bHasPistol = false;
@@ -41,8 +41,11 @@ public:
 	UInputAction* ActionFire;
 
 
-	//UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-	//TSubclassOf<class ANormalGun> NormalGun;
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	TSubclassOf<class ANormalGun> NormalGunClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Pistol")
+	class UParticleSystem* GunEffect;
 
 	virtual void InitializeComponent() override;
 
@@ -56,6 +59,8 @@ public:
 	void NormalGunFire();
 
 	void AttachPistol();
+
+	void DetachPistol();
 
 protected:
 	// Called when the game starts

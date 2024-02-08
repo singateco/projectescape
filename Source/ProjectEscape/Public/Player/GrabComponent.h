@@ -3,18 +3,27 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "EnemyBaseFSM.h"
 #include "Components/ActorComponent.h"
-#include "RifleEnemyFSM.generated.h"
+#include "GrabComponent.generated.h"
+
+
+struct FInputActionInstance;
+struct FInputActionValue;
+class UInputAction;
+class AProjectEscapePlayer;
+
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PROJECTESCAPE_API URifleEnemyFSM : public UEnemyBaseFSM
+class PROJECTESCAPE_API UGrabComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	URifleEnemyFSM();
+	UGrabComponent();
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* ActionGrab;
 
 protected:
 	// Called when the game starts
@@ -25,7 +34,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 
-	void TickAttack() override;
+	void SetupPlayerInputComponent(UEnhancedInputComponent* PlayerInputComponent);
 
-
+	void GrabObject();
 };

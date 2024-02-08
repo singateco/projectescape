@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "CharacterBase.h"
+#include "Perception/AIPerceptionTypes.h"
 #include "EnemyBase.generated.h"
 
 /**
@@ -25,12 +26,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class UEnemyBaseFSM* EnemyBaseFSM;
 
-
-
-
+	
 
 	// --------------------- Function ---------------------------
 
+	
 	
 
 };

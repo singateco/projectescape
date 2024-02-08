@@ -49,8 +49,14 @@ public:
 	UPROPERTY()
 		class AAIController* Ai;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UEnemyAIPerception* EnemyAIPerception;
 
-	float AttackDistance = 300;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UAISenseConfig_Sight* SightConfig;
+
+
+	float AttackDistance;
 	FVector RandomLocation;
 
 	// --------------------- Function ---------------------------
@@ -63,5 +69,6 @@ public:
 	void TickDamage();
 	void TickDie();
 
+	//void OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors);
 	//bool UpdateRandomLocation(FVector origin, float radius, FVector& outLocation);
 };
