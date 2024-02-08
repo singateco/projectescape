@@ -11,10 +11,42 @@
 // Sets default values for this component's properties
 UMoveComponent::UMoveComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
 
+	// Input Action 설정.
+	
+	const static ConstructorHelpers::FObjectFinder<UInputAction> JumpActionObjectFinder
+	{TEXT("/Script/EnhancedInput.InputAction'/Game/ThirdPerson/Input/Actions/IA_Jump.IA_Jump'")};
+
+	if (JumpActionObjectFinder.Succeeded())
+	{
+		JumpAction = JumpActionObjectFinder.Object;
+	}
+	
+	const static ConstructorHelpers::FObjectFinder<UInputAction> LookActionObjectFinder
+	{TEXT("/Script/EnhancedInput.InputAction'/Game/ThirdPerson/Input/Actions/IA_Look.IA_Look'")};
+
+	if (LookActionObjectFinder.Succeeded())
+	{
+		LookAction = LookActionObjectFinder.Object;
+	}
+
+	const static ConstructorHelpers::FObjectFinder<UInputAction> MoveActionObjectFinder
+	{TEXT("/Script/EnhancedInput.InputAction'/Game/ThirdPerson/Input/Actions/IA_Move.IA_Move'")};
+
+	if (MoveActionObjectFinder.Succeeded())
+	{
+		MoveAction = MoveActionObjectFinder.Object;
+	}
+
+	const static ConstructorHelpers::FObjectFinder<UInputAction> DashActionObjectFinder
+	{TEXT("/Script/EnhancedInput.InputAction'/Game/ThirdPerson/Input/Actions/IA_Dash.IA_Dash'")};
+
+	if (DashActionObjectFinder.Succeeded())
+	{
+		DashAction = DashActionObjectFinder.Object;
+	}
+	
+	PrimaryComponentTick.bCanEverTick = true;
 	bWantsInitializeComponent = true;
 }
 
@@ -95,9 +127,12 @@ void UMoveComponent::SetupPlayerInputComponent(UEnhancedInputComponent* PlayerIn
 
 	// Moving
 	PlayerInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &UMoveComponent::Move);
-
+	
 	// Looking
 	PlayerInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &UMoveComponent::Look);
+
+	// 대시
+	PlayerInputComponent->BindAction(DashAction, ETriggerEvent::Started, this, &UMoveComponent::Dash);
 }
 
 
@@ -105,6 +140,7 @@ void UMoveComponent::Move(const FInputActionValue& Value)
 {
 	// input is a Vector2D
 	FVector2D MovementVector = Value.Get<FVector2D>();
+	
 
 	if (Player->Controller != nullptr)
 	{
@@ -121,6 +157,9 @@ void UMoveComponent::Move(const FInputActionValue& Value)
 		// add movement 
 		Player->AddMovementInput(ForwardDirection, MovementVector.Y);
 		Player->AddMovementInput(RightDirection, MovementVector.X);
+
+		MoveVector = ForwardDirection * MovementVector.Y + RightDirection * MovementVector.X;
+		MoveVector.Normalize();
 	}
 }
 
@@ -157,4 +196,9 @@ void UMoveComponent::HandleJump(const FInputActionInstance& InputActionInstance)
 	{
 		Player->GetCharacterMovement()->SetMovementMode(MOVE_Falling);
 	}
+}
+
+void UMoveComponent::Dash(const FInputActionInstance& InputActionInstance)
+{
+	Player->GetCharacterMovement()->AddImpulse(MoveVector * DashForce, true);
 }
