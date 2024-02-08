@@ -11,6 +11,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Player/MoveComponent.h"
 #include "Player/FireComponent.h"
+#include "Player/GrabComponent.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -60,6 +61,7 @@ AProjectEscapePlayer::AProjectEscapePlayer()
 	// Add Custom Components
 	MoveComponent = CreateDefaultSubobject<UMoveComponent>(TEXT("Move Component"));
 	FireComponent = CreateDefaultSubobject<UFireComponent>(TEXT("Fire Component"));
+	GrabComponent = CreateDefaultSubobject<UGrabComponent>(TEXT("Grab Component"));
 }
 
 void AProjectEscapePlayer::BeginPlay()
@@ -92,6 +94,7 @@ void AProjectEscapePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	{
 		MoveComponent->SetupPlayerInputComponent(EnhancedInputComponent);
 		FireComponent->SetupPlayerInputComponent(EnhancedInputComponent);
+		GrabComponent->SetupPlayerInputComponent(EnhancedInputComponent);
 	}
 	else
 	{
