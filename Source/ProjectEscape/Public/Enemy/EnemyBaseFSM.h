@@ -55,9 +55,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UAISenseConfig_Sight* SightConfig;
 
-
 	float AttackDistance;
 	FVector RandomLocation;
+
+	int32 HP;
+	int32 MaxHP;
 
 	// --------------------- Function ---------------------------
 
@@ -68,6 +70,10 @@ public:
 	virtual void TickAttack();
 	void TickDamage();
 	void TickDie();
+
+
+	void OnTakeDamage(int32 Damage);
+	void UpdateHP(int32 NewHP);
 
 	//void OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors);
 	//bool UpdateRandomLocation(FVector origin, float radius, FVector& outLocation);
