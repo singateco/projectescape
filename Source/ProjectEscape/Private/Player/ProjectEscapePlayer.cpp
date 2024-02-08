@@ -10,6 +10,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Player/MoveComponent.h"
+#include "Player/FireComponent.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -55,7 +56,10 @@ AProjectEscapePlayer::AProjectEscapePlayer()
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 
+
+	// Add Custom Components
 	MoveComponent = CreateDefaultSubobject<UMoveComponent>(TEXT("Move Component"));
+	FireComponent = CreateDefaultSubobject<UFireComponent>(TEXT("Fire Component"));
 }
 
 void AProjectEscapePlayer::BeginPlay()
@@ -86,7 +90,8 @@ void AProjectEscapePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		MoveComponent->SetupPlayerInputComponent(EnhancedInputComponent);	
+		MoveComponent->SetupPlayerInputComponent(EnhancedInputComponent);
+		FireComponent->SetupPlayerInputComponent(EnhancedInputComponent);
 	}
 	else
 	{

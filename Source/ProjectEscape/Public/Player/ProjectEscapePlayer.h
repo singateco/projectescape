@@ -8,6 +8,7 @@
 #include "ProjectEscapePlayer.generated.h"
 
 class UMoveComponent;
+class UFireComponent;
 class USpringArmComponent;
 class UCameraComponent;
 class UInputMappingContext;
@@ -28,6 +29,10 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UMoveComponent* MoveComponent;
+
+	// Fire Component
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UFireComponent* FireComponent;
 
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
@@ -69,5 +74,6 @@ private:
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
+
 };
 
