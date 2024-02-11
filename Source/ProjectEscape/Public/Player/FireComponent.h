@@ -47,6 +47,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Pistol")
 	class UParticleSystem* GunEffect;
 
+	
+
 	virtual void InitializeComponent() override;
 
 	// Called every frame
@@ -61,6 +63,20 @@ public:
 	void AttachPistol();
 
 	void DetachPistol();
+
+
+	// ############# Animations ##############
+
+	// 전 프레임에 총 발사했는지 여부
+	UPROPERTY(BlueprintReadWrite)
+	bool bHasFired {false};
+
+	// 총 발사시 플레이되는 몽타주
+	UPROPERTY(EditAnywhere)
+	UAnimMontage* FireMontage;
+
+	UFUNCTION()
+	void HandleFireAnimation();
 
 protected:
 	// Called when the game starts
