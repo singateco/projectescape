@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+﻿// Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "Player/ProjectEscapePlayer.h"
 #include "Engine/LocalPlayer.h"
@@ -12,6 +12,7 @@
 #include "Player/MoveComponent.h"
 #include "Player/FireComponent.h"
 #include "Player/GrabComponent.h"
+#include "Player/PhysicsHandleComp.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -62,6 +63,7 @@ AProjectEscapePlayer::AProjectEscapePlayer()
 	MoveComponent = CreateDefaultSubobject<UMoveComponent>(TEXT("Move Component"));
 	FireComponent = CreateDefaultSubobject<UFireComponent>(TEXT("Fire Component"));
 	GrabComponent = CreateDefaultSubobject<UGrabComponent>(TEXT("Grab Component"));
+	PhysicsHandleComponent = CreateDefaultSubobject<UPhysicsHandleComp>( TEXT( "PysicsHandleComponent" ) );
 }
 
 void AProjectEscapePlayer::BeginPlay()

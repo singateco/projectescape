@@ -60,8 +60,6 @@ void UFireComponent::SetupPlayerInputComponent(UEnhancedInputComponent* PlayerIn
 
 void UFireComponent::NormalGunFire()
 {
-
-	// ����ó�� : ���̾����� , ����, �� ������ ���, ���¹̳� ���� ��  
 	if (bHasPistol == false ) {
 		return;
 	}
@@ -85,7 +83,7 @@ void UFireComponent::NormalGunFire()
 
 
 	//DrawDebugLine( GetWorld(), StartPos1, EndPos1, FColor::Blue, true );
-	if (bHit1) { // �浹�ϸ�
+	if (bHit1) { 
 
 		// 2. Collision Check - LineTrace 2nd
 		// 1) From Muzzle
@@ -103,7 +101,6 @@ void UFireComponent::NormalGunFire()
 		{
 			//DrawDebugLine( GetWorld(), StartPos2, EndPos2, FColor::Red, true );
 			//DrawDebugBox(GetWorld(), HitInfo2.Location, FVector(5), FColor::Red, false, 5.f, 0, 3);
-			//���� �ڸ��� ��ƼŬ ȿ�� ���
 			UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), GunEffect, HitInfo2.Location, FRotator() );
 			
 		}
@@ -118,10 +115,6 @@ void UFireComponent::NormalGunFire()
 		//	Enemy->DamageProcess();
 		//}
 	}
-
-	// ���׹̳� �Ҹ�
-
-	//�ѽ�� �ִϸ��̼� ���
 	//auto Anim = Cast<UProjectEscapeAnimInstance>(GetMesh()->GetAnimInstance());
 	//Anim->PlayerFireAnimation();
 }

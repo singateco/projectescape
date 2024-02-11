@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+﻿// Copyright Epic Games, Inc. All Rights Reserved.
 
 #pragma once
 
@@ -14,6 +14,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class UInputMappingContext;
 class UInputAction;
+class UPhysicsHandleComp;
 struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
@@ -38,6 +39,10 @@ public:
 	// Grab Component
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UGrabComponent* GrabComponent;
+
+	// Grab Component
+	UPROPERTY( EditAnywhere, BlueprintReadWrite )
+	UPhysicsHandleComp* PhysicsHandleComponent;
 
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
