@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -32,7 +32,7 @@ public:
 
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-	float MaxDistanceToGun = 50000.0f;
+	float MaxDistanceToGun = 100000.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	bool bHasPistol = false;

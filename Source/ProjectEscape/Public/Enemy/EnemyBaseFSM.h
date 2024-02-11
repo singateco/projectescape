@@ -55,6 +55,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UAISenseConfig_Sight* SightConfig;
 
+	float CurrentTime;
+
+	UPROPERTY(EditAnywhere)
+	float AttackTime = 1;
+
 	float AttackDistance;
 	FVector RandomLocation;
 
