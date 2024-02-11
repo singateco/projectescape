@@ -75,6 +75,45 @@ void UMoveComponent::DebugShowStamina()
 }
 
 
+void UMoveComponent::PlayDashAnim()
+{
+	// Calculate which animations to play.
+
+	float DotForward = FVector::DotProduct(MoveVector, Player->GetActorForwardVector());
+	float DotRight = FVector::DotProduct(MoveVector, Player->GetActorRightVector());
+	
+	UAnimMontage* AnimMontageToPlay;
+	
+	if (DotForward >= 0.5)
+	{
+		// Forward
+		AnimMontageToPlay = DashForwardAnimMontage;
+	}
+	else if (DotForward <= -0.5)
+	{
+		// Backwards
+		AnimMontageToPlay = DashBackwardsAnimMontage;
+	}
+	else if (DotRight >= 0.5)
+	{
+		// Right
+		AnimMontageToPlay = DashRightAnimMontage;
+	}
+	else if (DotRight <= -0.5)
+	{
+		//Left
+		AnimMontageToPlay = DashLeftAnimMontage;
+	}
+	else
+	{
+		// Forward
+		AnimMontageToPlay = DashForwardAnimMontage;
+	}
+
+	UAnimInstance* AnimInstance = Player->GetMesh()->GetAnimInstance();
+	AnimInstance->Montage_Play(AnimMontageToPlay);
+}
+
 // Called when the game starts
 void UMoveComponent::BeginPlay()
 {
@@ -232,6 +271,7 @@ void UMoveComponent::Dash(const FInputActionInstance& InputActionInstance)
 
 	Stamina -= DashStamina;
 	Player->GetCharacterMovement()->AddImpulse(MoveVector * DashForce, true);
+	PlayDashAnim();
 }
 
 void UMoveComponent::ManageFlying(const float DeltaTime)

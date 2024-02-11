@@ -95,6 +95,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|Dashing")
 	float DashStamina {25.f};
 
+	// ============= 스태미나 ===============
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
 	float MaxStamina {100.f};
 	
@@ -107,6 +109,22 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = "Stamina")
 	bool bCanRecoverStamina {true};
+
+	// ############### 애니메이션 ################
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
+	UAnimMontage* DashForwardAnimMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
+	UAnimMontage* DashBackwardsAnimMontage;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
+	UAnimMontage* DashLeftAnimMontage;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
+	UAnimMontage* DashRightAnimMontage;
+
+	UFUNCTION()
+	void PlayDashAnim();
 
 private:
 	// Input Actions
