@@ -4,11 +4,9 @@
 #include "Player/FireComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "Animations/ProjectEscapeAnimInstance.h"
 #include "Camera/CameraComponent.h"
-#include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetMathLibrary.h"
+#include "Particles/ParticleSystem.h"
 #include "ProjectEscape/Public/Player/ProjectEscapePlayer.h"
 #include "Weapon/NormalGun.h"
 
@@ -20,8 +18,39 @@ UFireComponent::UFireComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 	bWantsInitializeComponent = true;
 	// ...
+	
+	static ConstructorHelpers::FClassFinder<ANormalGun> NormalGunClassFinder {TEXT("Blueprint'/Game/Blueprints/BP_NormalGun.BP_NormalGun_C'")};
+	if (NormalGunClassFinder.Succeeded())
+	{
+		NormalGunClass = NormalGunClassFinder.Class;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UInputAction> ActionFireFinder {TEXT("/Script/EnhancedInput.InputAction'/Game/ThirdPerson/Input/Actions/IA_Fire.IA_Fire'")};
+	if (ActionFireFinder.Succeeded())
+	{
+		ActionFire = ActionFireFinder.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> FireEffectFinder {TEXT("/Script/Engine.ParticleSystem'/Game/StarterContent/Particles/P_Explosion.P_Explosion'")};
+	if (FireEffectFinder.Succeeded())
+	{
+		GunEffect = FireEffectFinder.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> FireMontageFinder {TEXT("/Script/Engine.AnimMontage'/Game/Animations/Actions/AM_MM_Pistol_Fire.AM_MM_Pistol_Fire'")};
+	if (FireMontageFinder.Succeeded())
+	{
+		FireMontage = FireMontageFinder.Object;
+	}
 }
 
+
+void  UFireComponent::HandleFireAnimation()
+{
+	bHasFired = true;
+	UAnimInstance* AnimInstance = Cast<ACharacter>(GetOwner())->GetMesh()->GetAnimInstance();
+	AnimInstance->Montage_Play(FireMontage);
+}
 
 // Called when the game starts
 void UFireComponent::BeginPlay()
@@ -40,8 +69,6 @@ void UFireComponent::InitializeComponent()
 
 	Player = GetOwner<AProjectEscapePlayer>();
 	check(Player);
-
-	
 }
 
 
@@ -51,6 +78,7 @@ void UFireComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+	bHasFired = false;
 }
 
 void UFireComponent::SetupPlayerInputComponent(UEnhancedInputComponent* PlayerInputComponent)
@@ -105,15 +133,14 @@ void UFireComponent::NormalGunFire()
 			//DrawDebugBox(GetWorld(), HitInfo2.Location, FVector(5), FColor::Red, false, 5.f, 0, 3);
 			//���� �ڸ��� ��ƼŬ ȿ�� ���
 			UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), GunEffect, HitInfo2.Location, FRotator() );
-			
 		}
 		else
 		{
 			UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), GunEffect, EndPos2, FRotator() );
-
 		}
-
-
+		
+		HandleFireAnimation();
+			
 		//if (Enemy) {
 		//	Enemy->DamageProcess();
 		//}
