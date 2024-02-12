@@ -58,6 +58,7 @@ void UMoveComponent::InitializeComponent()
 	check(Player);
 
 	Player->LandedDelegate.AddDynamic(this, &UMoveComponent::HandleLanding);
+	Player->GetMesh()->GetAnimInstance()->OnMontageEnded.AddUniqueDynamic(this, &UMoveComponent::HandleOnMontageEnded);
 }
 
 void UMoveComponent::DebugShowStamina()
@@ -75,10 +76,20 @@ void UMoveComponent::DebugShowStamina()
 }
 
 
+void UMoveComponent::HandleOnMontageEnded(UAnimMontage* Montage, bool Interrupted)
+{
+	if (Montage == DashBackwardsAnimMontage ||
+		Montage == DashForwardAnimMontage ||
+		Montage == DashLeftAnimMontage ||
+		Montage == DashRightAnimMontage)
+	{
+		bIsDashing = false;
+	}
+}
+
 void UMoveComponent::PlayDashAnim()
 {
 	// Calculate which animations to play.
-
 	float DotForward = FVector::DotProduct(MoveVector, Player->GetActorForwardVector());
 	float DotRight = FVector::DotProduct(MoveVector, Player->GetActorRightVector());
 	
@@ -136,7 +147,7 @@ void UMoveComponent::BeginPlay()
 void UMoveComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
+	
 	ManageFlying(DeltaTime);
 	RecoverStamina(DeltaTime);
 	DebugShowStamina();
@@ -270,6 +281,31 @@ void UMoveComponent::Dash(const FInputActionInstance& InputActionInstance)
 	}
 
 	Stamina -= DashStamina;
+	bIsDashing = true;
+
+	if (Player->GetCharacterMovement()->MovementMode == MOVE_Falling)
+	{
+		FVector NewVelocity = Player->GetCharacterMovement()->GetLastUpdateVelocity();
+		NewVelocity.Z = 0;
+		Player->GetCharacterMovement()->Velocity = NewVelocity;
+		Player->GetCharacterMovement()->UpdateComponentVelocity();
+		Player->GetCharacterMovement()->GravityScale = 0.05f;
+
+		if (!DashGravityHandle.IsValid())
+		{
+			GetWorld()->GetTimerManager().SetTimer(
+			DashGravityHandle,
+			FTimerDelegate::CreateLambda(
+				[&]
+				{
+					Player->GetCharacterMovement()->GravityScale = 1.f;
+					DashGravityHandle.Invalidate();
+				}),
+			0.4f,
+			false);
+		}
+	}
+	
 	Player->GetCharacterMovement()->AddImpulse(MoveVector * DashForce, true);
 	PlayDashAnim();
 }
