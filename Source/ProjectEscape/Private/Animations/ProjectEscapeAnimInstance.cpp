@@ -7,6 +7,7 @@
 #include "PECharacterMovementComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Player/FireComponent.h"
+#include "Player/MoveComponent.h"
 #include "Player/ProjectEscapePlayer.h"
 
 void UProjectEscapeAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -29,4 +30,5 @@ void UProjectEscapeAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		return;
 	}
 	bHasFiring = Player->FireComponent->bHasFired;
+	bIsDashing = Player->MoveComponent->bIsDashing;
 }
