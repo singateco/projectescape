@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -11,6 +11,7 @@ struct FInputActionInstance;
 struct FInputActionValue;
 class UInputAction;
 class AProjectEscapePlayer;
+class UPhysicsHandleComp;
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -25,11 +26,24 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* ActionGrab;
 
+	UPROPERTY()
+	AProjectEscapePlayer* Player;
+
+
+	UPROPERTY( EditDefaultsOnly, Category="Weapon" )
+	float MaxDistanceToGrab=100000.0f;
+
+	UPROPERTY( EditDefaultsOnly, Category="Grab" )
+	UPhysicsHandleComp* HandleObject;
+
+	bool bIsGrabbing = false;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:	
+public:
+	virtual void InitializeComponent() override;
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
@@ -37,4 +51,6 @@ public:
 	void SetupPlayerInputComponent(UEnhancedInputComponent* PlayerInputComponent);
 
 	void GrabObject();
+
+	void ReleaseObject();
 };

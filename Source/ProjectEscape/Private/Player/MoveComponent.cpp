@@ -58,6 +58,7 @@ void UMoveComponent::InitializeComponent()
 	check(Player);
 
 	Player->LandedDelegate.AddDynamic(this, &UMoveComponent::HandleLanding);
+	Player->GetMesh()->GetAnimInstance()->OnMontageEnded.AddUniqueDynamic(this, &UMoveComponent::HandleOnMontageEnded);
 }
 
 void UMoveComponent::DebugShowStamina()
@@ -74,6 +75,55 @@ void UMoveComponent::DebugShowStamina()
 		1);
 }
 
+
+void UMoveComponent::HandleOnMontageEnded(UAnimMontage* Montage, bool Interrupted)
+{
+	if (Montage == DashBackwardsAnimMontage ||
+		Montage == DashForwardAnimMontage ||
+		Montage == DashLeftAnimMontage ||
+		Montage == DashRightAnimMontage)
+	{
+		bIsDashing = false;
+	}
+}
+
+void UMoveComponent::PlayDashAnim()
+{
+	// Calculate which animations to play.
+	float DotForward = FVector::DotProduct(MoveVector, Player->GetActorForwardVector());
+	float DotRight = FVector::DotProduct(MoveVector, Player->GetActorRightVector());
+	
+	UAnimMontage* AnimMontageToPlay;
+	
+	if (DotForward >= 0.5)
+	{
+		// Forward
+		AnimMontageToPlay = DashForwardAnimMontage;
+	}
+	else if (DotForward <= -0.5)
+	{
+		// Backwards
+		AnimMontageToPlay = DashBackwardsAnimMontage;
+	}
+	else if (DotRight >= 0.5)
+	{
+		// Right
+		AnimMontageToPlay = DashRightAnimMontage;
+	}
+	else if (DotRight <= -0.5)
+	{
+		//Left
+		AnimMontageToPlay = DashLeftAnimMontage;
+	}
+	else
+	{
+		// Forward
+		AnimMontageToPlay = DashForwardAnimMontage;
+	}
+
+	UAnimInstance* AnimInstance = Player->GetMesh()->GetAnimInstance();
+	AnimInstance->Montage_Play(AnimMontageToPlay);
+}
 
 // Called when the game starts
 void UMoveComponent::BeginPlay()
@@ -97,7 +147,7 @@ void UMoveComponent::BeginPlay()
 void UMoveComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
+	
 	ManageFlying(DeltaTime);
 	RecoverStamina(DeltaTime);
 	DebugShowStamina();
@@ -231,7 +281,33 @@ void UMoveComponent::Dash(const FInputActionInstance& InputActionInstance)
 	}
 
 	Stamina -= DashStamina;
+	bIsDashing = true;
+
+	if (Player->GetCharacterMovement()->MovementMode == MOVE_Falling)
+	{
+		FVector NewVelocity = Player->GetCharacterMovement()->GetLastUpdateVelocity();
+		NewVelocity.Z = 0;
+		Player->GetCharacterMovement()->Velocity = NewVelocity;
+		Player->GetCharacterMovement()->UpdateComponentVelocity();
+		Player->GetCharacterMovement()->GravityScale = 0.05f;
+
+		if (!DashGravityHandle.IsValid())
+		{
+			GetWorld()->GetTimerManager().SetTimer(
+			DashGravityHandle,
+			FTimerDelegate::CreateLambda(
+				[&]
+				{
+					Player->GetCharacterMovement()->GravityScale = 1.f;
+					DashGravityHandle.Invalidate();
+				}),
+			0.4f,
+			false);
+		}
+	}
+	
 	Player->GetCharacterMovement()->AddImpulse(MoveVector * DashForce, true);
+	PlayDashAnim();
 }
 
 void UMoveComponent::ManageFlying(const float DeltaTime)

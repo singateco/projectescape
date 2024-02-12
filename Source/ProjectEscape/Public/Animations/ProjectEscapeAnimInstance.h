@@ -20,4 +20,10 @@ public:
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Character State Data")
 	float GroundDistance = -1.0f;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Character State Data")
+	bool bHasFiring {false};
+
+	UPROPERTY(BlueprintReadOnly, Category = "Character State Data")
+	bool bIsDashing {false};
 };

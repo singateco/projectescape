@@ -6,6 +6,9 @@
 #include "CharacterBase.h"
 #include "PECharacterMovementComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Player/FireComponent.h"
+#include "Player/MoveComponent.h"
+#include "Player/ProjectEscapePlayer.h"
 
 void UProjectEscapeAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
@@ -20,4 +23,12 @@ void UProjectEscapeAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	UPECharacterMovementComponent* CharMoveComp = CastChecked<UPECharacterMovementComponent>(Character->GetMovementComponent());
 	const FPECharacterGroundInfo& GroundInfo = CharMoveComp->GetGroundInfo();
 	GroundDistance = GroundInfo.GroundDistance;
+
+	const AProjectEscapePlayer* Player = Cast<AProjectEscapePlayer>(GetOwningActor());
+	if (!Player)
+	{
+		return;
+	}
+	bHasFiring = Player->FireComponent->bHasFired;
+	bIsDashing = Player->MoveComponent->bIsDashing;
 }
