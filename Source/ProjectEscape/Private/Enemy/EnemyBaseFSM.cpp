@@ -1,15 +1,11 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Enemy/EnemyBaseFSM.h"
 
 #include "AIController.h"
-#include "NavigationSystem.h"
-#include "Enemy/EnemyAIPerception.h"
 #include "Enemy/EnemyAnimInstance.h"
 #include "Enemy/EnemyBase.h"
-#include "Navigation/PathFollowingComponent.h"
-#include "Perception/AISenseConfig_Sight.h"
 #include "Player/ProjectEscapePlayer.h"
 
 // Sets default values for this component's properties
@@ -18,19 +14,6 @@ UEnemyBaseFSM::UEnemyBaseFSM()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
-	EnemyAIPerception = CreateDefaultSubobject<UEnemyAIPerception>(TEXT("EnemyAIperception"));
-
-	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("SightConfig"));
-
-	SightConfig->SightRadius = 3000.0f;
-	SightConfig->LoseSightRadius = 3200.0f;
-	SightConfig->PeripheralVisionAngleDegrees = 180.0f;
-
-	EnemyAIPerception->ConfigureSense(*SightConfig);
-
-
-
 
 }
 
@@ -69,10 +52,10 @@ void UEnemyBaseFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 void UEnemyBaseFSM::SetState(EEnemyState Next)
 {
 	//check(EnemyAnim);
-	// ÀÌµ¿»óÅÂ·Î ÀüÀÌÇÑ´Ù¸é
+	// ì´ë™ìƒíƒœë¡œ ì „ì´í•œë‹¤ë©´
 	//if (Next == EEnemyState::Move)
 	//{
-	//	// ·£´ýÀ§Ä¡¸¦ °»½ÅÇÏ°í½Í´Ù.
+	//	// ëžœë¤ìœ„ì¹˜ë¥¼ ê°±ì‹ í•˜ê³ ì‹¶ë‹¤.
 	//	UpdateRandomLocation(Me->GetActorLocation(), 500, RandomLocation);
 	//}
 
@@ -92,14 +75,14 @@ void UEnemyBaseFSM::TickIdle()
 void UEnemyBaseFSM::TickMove()
 {
 	FVector destination = Player->GetActorLocation();
-	// ¸ñÀûÁö¸¦ ÇâÇØ¼­ ÀÌµ¿ÇÏ°í½Í´Ù.
+	// ëª©ì ì§€ë¥¼ í–¥í•´ì„œ ì´ë™í•˜ê³ ì‹¶ë‹¤.
 	FVector dir = destination - Enemy->GetActorLocation();
 
 	Enemy->AddMovementInput(dir.GetSafeNormal());
 
 	Ai->SetFocus(Player);
 
-	if(dir.Size() <= AttackDistance)
+	if(dir.Size() <= AttackDistance && Enemy->bCanSeePlayer == true)
 	{
 		SetState(EEnemyState::Attack);
 	}
@@ -107,12 +90,10 @@ void UEnemyBaseFSM::TickMove()
 
 void UEnemyBaseFSM::TickAttack()
 {
-
-
 	//float dist = FVector::Dist(Player->GetActorLocation(), Enemy->GetActorLocation());
-	//// ±× °Å¸®°¡ AttackDistance¸¦ ÃÊ°úÇÑ´Ù¸é
+	//// ê·¸ ê±°ë¦¬ê°€ AttackDistanceë¥¼ ì´ˆê³¼í•œë‹¤ë©´
 	//if (dist > AttackDistance) {
-	//	// ÀÌµ¿»óÅÂ·Î ÀüÀÌÇÏ°í½Í´Ù.
+	//	// ì´ë™ìƒíƒœë¡œ ì „ì´í•˜ê³ ì‹¶ë‹¤.
 	//	SetState(EEnemyState::Move);
 	//	//EnemyAnim->IsAttack = false;
 	//}
@@ -132,7 +113,7 @@ void UEnemyBaseFSM::OnTakeDamage(int32 Damage)
 {
 	Ai->StopMovement();
 	UpdateHP(-Damage);
-	if(HP>0)
+	if(HP > 0)
 	{
 		SetState(EEnemyState::Damage);
 		//PlayMontageDamage();
@@ -144,20 +125,6 @@ void UEnemyBaseFSM::UpdateHP(int32 NewHP)
 	HP = FMath::Max(0, HP + NewHP);
 }
 
-//void UEnemyBaseFSM::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
-//{
-//	for (AActor* Actor : UpdatedActors)
-//	{
-//		// ÇÃ·¹ÀÌ¾î°¡ °¨ÁöµÇ¾úÀ» ¶§
-//		if (Actor->IsA<AProjectEscapePlayer>())
-//		{
-//			SetState(EEnemyState::Move); // ÀÌµ¿ »óÅÂ·Î ÀüÀÌ
-//			return;
-//		}
-//	}
-//	// °¨ÁöµÈ ÇÃ·¹ÀÌ¾î°¡ ¾øÀ» ¶§
-//	SetState(EEnemyState::Idle); // ´ë±â »óÅÂ·Î ÀüÀÌ
-//}
 //bool UEnemyBaseFSM::UpdateRandomLocation(FVector origin, float radius, FVector& outLocation)
 //{
 //	auto ns = UNavigationSystemV1::GetNavigationSystem(GetWorld());

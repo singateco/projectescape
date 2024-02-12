@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -49,12 +49,6 @@ public:
 	UPROPERTY()
 		class AAIController* Ai;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UEnemyAIPerception* EnemyAIPerception;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UAISenseConfig_Sight* SightConfig;
-
 	float CurrentTime;
 
 	UPROPERTY(EditAnywhere)
@@ -80,6 +74,5 @@ public:
 	void OnTakeDamage(int32 Damage);
 	void UpdateHP(int32 NewHP);
 
-	//void OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors);
 	//bool UpdateRandomLocation(FVector origin, float radius, FVector& outLocation);
 };

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -16,6 +16,7 @@ class PROJECTESCAPE_API AEnemyBase : public ACharacterBase
 	GENERATED_BODY()
 
 public:
+	
 	AEnemyBase();
 
 	virtual void BeginPlay() override;
@@ -33,9 +34,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	UArrowComponent* BulletREF;
 
-	// --------------------- Function ---------------------------
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	class UPawnSensingComponent* EnemyPawnSensing;
 
-	
-	
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+	bool bCanSeePlayer;
+
+	// --------------------- Function ---------------------------
+	UFUNCTION()
+	void OnSeePawn(APawn* Pawn);
 
 };
