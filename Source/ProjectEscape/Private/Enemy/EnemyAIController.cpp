@@ -3,38 +3,64 @@
 
 #include "Enemy/EnemyAIController.h"
 
-#include "BehaviorTree/BehaviorTree.h"
-#include "BehaviorTree/BlackboardComponent.h"
-
-const FName AEnemyAIController::HomePosKey( TEXT( "HomePos" ) );
-const FName AEnemyAIController::PatrolPosKey( TEXT( "PatrolPos" ) );
+#include "Enemy/EnemyAIPerception.h"
+#include "Enemy/EnemyBase.h"
+#include "Enemy/EnemyBaseFSM.h"
+#include "Perception/AISenseConfig_Sight.h"
+#include "Player/ProjectEscapePlayer.h"
 
 AEnemyAIController::AEnemyAIController()
 {
-	static ConstructorHelpers::FObjectFinder<UBlackboardData> BBObject( TEXT( "/Script/AIModule.BlackboardData'/Game/AI/BB_Enemy.BB_Enemy'" ) );
+	EnemyAIPerception=CreateDefaultSubobject<UEnemyAIPerception>( TEXT( "EnemyAIPerception" ) );
 
-	if(BBObject.Succeeded())
-	{
-		BBAsset= BBObject.Object;
-	}
+	SightConfig=CreateDefaultSubobject<UAISenseConfig_Sight>( TEXT( "SightConfig" ) );
+	SightConfig->SightRadius=3000.0f; // 시야 반경 설정
+	SightConfig->LoseSightRadius=3200.0f; // 시야를 잃는 반경 설정
+	SightConfig->PeripheralVisionAngleDegrees=90.0f; // 시야 각도 설정
+	SightConfig->DetectionByAffiliation.bDetectEnemies=true; // 적 감지 설정
+	SightConfig->DetectionByAffiliation.bDetectFriendlies=true; // 적 감지 설정
+	SightConfig->DetectionByAffiliation.bDetectNeutrals=true; // 적 감지 설정
 
-	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTObject( TEXT( "/Script/AIModule.BehaviorTree'/Game/AI/BT_Enemy.BT_Enemy'" ) );
-
-	if(BTObject.Succeeded())
-	{
-		BTAsset= BTObject.Object;
-	}
+	// SightConfig를 EnemyAIPerception에 추가
+	EnemyAIPerception->ConfigureSense( *SightConfig );
+	SetPerceptionComponent( *EnemyAIPerception );
 
 	
+
+}
+
+void AEnemyAIController::BeginPlay()
+{
+	Super::BeginPlay();
+
+}
+
+void AEnemyAIController::OnSeePlayer(AActor* Actor, FAIStimulus Stimulus)
+{
+    auto SeeActor = Cast<AProjectEscapePlayer>(Actor);
+    if (SeeActor)
+    {
+        FSM->bCanSeePlayer = Stimulus.WasSuccessfullySensed();
+    }
 }
 
 void AEnemyAIController::OnPossess(APawn* InPawn)
 {
-	Super::OnPossess( InPawn );
-	UBlackboardComponent* BlackboardComponent= Blackboard;
+	Super::OnPossess(InPawn);
 
-	if(UseBlackboard(BBAsset, BlackboardComponent))
+	AEnemyBase* EnemyPawn = Cast<AEnemyBase>( InPawn );
+	check( EnemyPawn );
+	FSM = EnemyPawn->EnemyBaseFSM;
+
+	if ( EnemyAIPerception )
 	{
-		Blackboard->SetValueAsVector( HomePosKey, InPawn->GetActorLocation());
+		EnemyAIPerception->OnTargetPerceptionUpdated.AddDynamic( this, &AEnemyAIController::OnSeePlayer );
 	}
 }
+
+void AEnemyAIController::OnUnPossess()
+{
+	Super::OnUnPossess();
+}
+
+

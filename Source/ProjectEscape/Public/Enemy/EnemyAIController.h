@@ -6,6 +6,8 @@
 #include "AIController.h"
 #include "EnemyAIController.generated.h"
 
+
+
 /**
  * 
  */
@@ -14,20 +16,25 @@ class PROJECTESCAPE_API AEnemyAIController : public AAIController
 {
 	GENERATED_BODY()
 
+
 public:
 	AEnemyAIController();
 
-	virtual void OnPossess(APawn* InPawn) override;
+	virtual void BeginPlay() override;
 
-	static const FName HomePosKey;
-	static const FName PatrolPosKey;
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category="AI Perception" )
+		class UEnemyAIPerception* EnemyAIPerception;
 
-private:
-	UPROPERTY()
-	class UBehaviorTree* BTAsset;
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category="AI Perception" )
+		class UAISenseConfig_Sight* SightConfig;
 
-	UPROPERTY()
-	class UBlackboardData* BBAsset;
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
+		class UEnemyBaseFSM* FSM;
 
+	UFUNCTION()
+		void OnSeePlayer( AActor* Actor, FAIStimulus Stimulus );
+
+	virtual void OnPossess( APawn* InPawn ) override;
+	virtual void OnUnPossess() override;
 
 };

@@ -19,9 +19,9 @@ AEnemyBullet::AEnemyBullet()
 
 	EnemyBulletMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("EnemyBulletMesh"));
 	EnemyBulletMesh->SetupAttachment(SphereCollision);
-	EnemyBulletMesh->SetRelativeScale3D(FVector(0.1f));
+	EnemyBulletMesh->SetRelativeScale3D(FVector(3.0f, 0.1f, 0.1f));
 
-	ConstructorHelpers::FObjectFinder<UStaticMesh>BulletMesh(TEXT("/Script/Engine.StaticMesh'/Engine/VREditor/BasicMeshes/SM_Ball_01.SM_Ball_01'"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh>BulletMesh(TEXT("/Script/Engine.StaticMesh'/Game/Material/TracerRound.TracerRound'"));
 
 	if (BulletMesh.Succeeded())
 	{
@@ -30,14 +30,13 @@ AEnemyBullet::AEnemyBullet()
 
 	MovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("MovementComponent"));
 
-	MovementComponent->InitialSpeed = 3000;
-	MovementComponent->MaxSpeed = 3000;
+	MovementComponent->InitialSpeed = 10000;
+	MovementComponent->MaxSpeed = 10000;
 	MovementComponent->Bounciness = 0;
 	MovementComponent->bShouldBounce = false;
 	MovementComponent->Friction = 0;
 	MovementComponent->InterpLocationTime = 0.05f;
 	MovementComponent->ProjectileGravityScale = 0;
-
 
 }
 
@@ -56,7 +55,7 @@ void AEnemyBullet::BeginPlay()
 void AEnemyBullet::OnSphereComponentBeginHit( UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult )
 {
-	Destroy();
+	//Destroy();
 }
 
 // Called every frame

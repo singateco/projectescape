@@ -21,7 +21,7 @@ URifleEnemyFSM::URifleEnemyFSM()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	AttackDistance = 1000;
+	AttackDistance = 1500;
 }
 
 
@@ -53,7 +53,7 @@ void URifleEnemyFSM::TickAttack()
 
 	float dist = FVector::Dist(Player->GetActorLocation(), Enemy->GetActorLocation());
 	// 그 거리가 AttackDistance를 초과한다면
-	if (dist > AttackDistance) {
+	if (dist > AttackDistance || bCanSeePlayer == false) {
 		// 이동상태로 전이하고싶다.
 		SetState(EEnemyState::Move);
 		//EnemyAnim->IsAttack = false;
