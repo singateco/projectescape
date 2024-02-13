@@ -1,10 +1,7 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Enemy/RifleEnemy.h"
-
-#include "Enemy/RifleEnemyFSM.h"
-#include "GameFramework/CharacterMovementComponent.h"
 
 ARifleEnemy::ARifleEnemy()
 {
@@ -18,7 +15,6 @@ ARifleEnemy::ARifleEnemy()
 		GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -90), FRotator(0, -90, 0));
 	}
 
-
-
+	this->MaxHP = 3;
 }
 

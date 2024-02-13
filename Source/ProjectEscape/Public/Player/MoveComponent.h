@@ -87,6 +87,8 @@ public:
 
 	// =============== 대시 ===============
 	
+	FTimerHandle DashGravityHandle;
+	
 	// 대시시 가하는 힘
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|Dashing")
 	float DashForce {1000.f};
@@ -95,6 +97,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|Dashing")
 	float DashStamina {25.f};
 
+	// ============= 스태미나 ===============
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
 	float MaxStamina {100.f};
 	
@@ -107,6 +111,30 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = "Stamina")
 	bool bCanRecoverStamina {true};
+
+	// ############### 애니메이션 ################
+
+	UPROPERTY(VisibleAnywhere)
+	bool bIsDashing {false};
+
+
+	UFUNCTION()
+	void HandleOnMontageEnded(UAnimMontage* Montage, bool Interrupted);
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
+	UAnimMontage* DashForwardAnimMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
+	UAnimMontage* DashBackwardsAnimMontage;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
+	UAnimMontage* DashLeftAnimMontage;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
+	UAnimMontage* DashRightAnimMontage;
+
+	UFUNCTION()
+	void PlayDashAnim();
 
 private:
 	// Input Actions

@@ -23,4 +23,7 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Character State Data")
 	bool bHasFiring {false};
+
+	UPROPERTY(BlueprintReadOnly, Category = "Character State Data")
+	bool bIsDashing {false};
 };

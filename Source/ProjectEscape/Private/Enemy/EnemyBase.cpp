@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Enemy/EnemyBase.h"
@@ -7,9 +7,12 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Enemy/EnemyBaseFSM.h"
+#include "Enemy/EnemyHealthBar.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Player/ProjectEscapePlayer.h"
+#include "Perception/PawnSensingComponent.h"
 
 AEnemyBase::AEnemyBase()
 {
@@ -21,13 +24,14 @@ AEnemyBase::AEnemyBase()
 	BulletREF->SetupAttachment(RootComponent);
 	EnemyHPComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("EnemyHPComponent"));
 	EnemyHPComponent->SetupAttachment(RootComponent);
-	//WBP(ºí·çÇÁ¸°Æ® Å¬·¡½º)¸¦ ·ÎµåÇØ¼­ HPCompÀÇ À§Á¬À¸·Î ¼³Á¤, FClassFinder ÁÖ¼Ò ¸¶Áö¸·¿¡ _CÇØ¾ßÇÔ ºí·çÇÁ¸°Æ®¶ó¼­
+	//WBP(ë¸”ë£¨í”„ë¦°íŠ¸ í´ë˜ìŠ¤)ë¥¼ ë¡œë“œí•´ì„œ HPCompì˜ ìœ„ì ¯ìœ¼ë¡œ ì„¤ì •, FClassFinder ì£¼ì†Œ ë§ˆì§€ë§‰ì— _Cí•´ì•¼í•¨ ë¸”ë£¨í”„ë¦°íŠ¸ë¼ì„œ
 	ConstructorHelpers::FClassFinder<UUserWidget> tempHP(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/UI/WBP_EnemyHealthBar.WBP_EnemyHealthBar_C'"));
 
 	if (tempHP.Succeeded())
 	{
 		EnemyHPComponent->SetWidgetClass(tempHP.Class);
-		EnemyHPComponent->SetDrawSize(FVector2D(100, 20));
+		EnemyHPComponent->SetWidgetSpace(EWidgetSpace::Screen);
+		EnemyHPComponent->SetDrawSize(FVector2D(80, 20));
 		EnemyHPComponent->SetRelativeLocation(FVector(0, 0, 110));
 		EnemyHPComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
@@ -43,11 +47,17 @@ AEnemyBase::AEnemyBase()
 	mesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 	mesh->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 
+
+
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
 }
 
 void AEnemyBase::BeginPlay()
 {
 	Super::BeginPlay();
+	// ì´ë²¤íŠ¸ í•¸ë“¤ëŸ¬
+	HP = MaxHP;
 
 }
 
@@ -62,6 +72,21 @@ void AEnemyBase::Tick(float DeltaSeconds)
 	EnemyHPComponent->SetWorldRotation(newRoatation);
 }
 
+void AEnemyBase::DamageProcess(float DamageValue)
+{
+	HP -= DamageValue;
 
-
+	if (HP <= 0)
+	{
+		Destroy();
+	}
+	else
+	{
+		if (EnemyHPComponent && EnemyHPComponent->GetWidget())
+		{
+			UEnemyHealthBar* Widget = Cast<UEnemyHealthBar>(EnemyHPComponent->GetWidget());
+			Widget->UpdateHP(HP, MaxHP);
+		}
+	}
+}
 

@@ -20,7 +20,7 @@ public:
 	// --------------------- Variable ---------------------------
 	/*UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class URifleEnemyFSM* RifleEnemyFSM;*/
-
+	
 	// --------------------- Function ---------------------------
 
 	
