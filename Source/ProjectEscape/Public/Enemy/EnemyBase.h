@@ -34,14 +34,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	UArrowComponent* BulletREF;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	class UPawnSensingComponent* EnemyPawnSensing;
-
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 	bool bCanSeePlayer;
 
 	// --------------------- Function ---------------------------
-	UFUNCTION()
-	void OnSeePawn(APawn* Pawn);
-
-};
+	

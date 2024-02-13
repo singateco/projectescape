@@ -46,15 +46,14 @@ AEnemyBase::AEnemyBase()
 	mesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 	mesh->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 
-	EnemyPawnSensing = CreateDefaultSubobject<UPawnSensingComponent>( TEXT( "EnemyPawnSensing" ) );
+
 
 }
 
 void AEnemyBase::BeginPlay()
 {
 	Super::BeginPlay();
-	// 이벤트 핸들러
-	EnemyPawnSensing->OnSeePawn.AddDynamic( this, &AEnemyBase::OnSeePawn );
+	
 }
 
 void AEnemyBase::Tick(float DeltaSeconds)
