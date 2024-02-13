@@ -158,7 +158,7 @@ void UMoveComponent::CheckForGroundWhileFlying()
 	FVector End = Player->GetActorLocation() + Player->GetActorUpVector() * GroundCheckDistance;
 
 	// Debug line
-	DrawDebugLine(GetWorld(), Player->GetActorLocation(), End, FColor::Red);
+	// DrawDebugLine(GetWorld(), Player->GetActorLocation(), End, FColor::Red);
 
 	FHitResult Result;
 	bool bHit = GetWorld()->LineTraceSingleByChannel(
@@ -275,7 +275,7 @@ void UMoveComponent::HandleLanding(const FHitResult& Hit)
 
 void UMoveComponent::Dash(const FInputActionInstance& InputActionInstance)
 {
-	if (Stamina < DashStamina)
+	if (Stamina < DashStamina || bIsDashing)
 	{
 		return;
 	}

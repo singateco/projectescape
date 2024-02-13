@@ -40,6 +40,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* ActionFire;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* ActionAimDownSight;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	TSubclassOf<class ANormalGun> NormalGunClass;
@@ -54,6 +56,7 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	
 	void SetupPlayerInputComponent(UEnhancedInputComponent* PlayerInputComponent) ;
 
 	//void Fire();
@@ -63,7 +66,10 @@ public:
 	void AttachPistol();
 
 	void DetachPistol();
+	
+	void StartAimDown(const FInputActionInstance& InputActionInstance);
 
+	void EndAimDown(const FInputActionInstance& InputActionInstance);
 
 	// ############# Animations ##############
 
