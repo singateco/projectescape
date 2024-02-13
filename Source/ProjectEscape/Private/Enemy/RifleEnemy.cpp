@@ -15,7 +15,6 @@ ARifleEnemy::ARifleEnemy()
 		GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -90), FRotator(0, -90, 0));
 	}
 
-
-
+	this->MaxHP = 3;
 }
 

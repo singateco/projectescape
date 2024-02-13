@@ -34,6 +34,23 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	UArrowComponent* BulletREF;
 
+<<<<<<< HEAD
+=======
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float MaxHP {1};
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float HP {1};
+	
+	// --------------------- Function ---------------------------
+
+	UFUNCTION(BlueprintCallable)
+	void DamageProcess(float DamageValue);
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	class UPawnSensingComponent* EnemyPawnSensing;
+
+>>>>>>> 25fbadcc94eb14001b217fa52ec2b646801607d5
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 	bool bCanSeePlayer;
 

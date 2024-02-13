@@ -7,6 +7,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Enemy/EnemyBaseFSM.h"
+#include "Enemy/EnemyHealthBar.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -48,12 +49,20 @@ AEnemyBase::AEnemyBase()
 
 
 
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
 }
 
 void AEnemyBase::BeginPlay()
 {
 	Super::BeginPlay();
+<<<<<<< HEAD
 	
+=======
+	// 이벤트 핸들러
+	EnemyPawnSensing->OnSeePawn.AddDynamic( this, &AEnemyBase::OnSeePawn );
+	HP = MaxHP;
+>>>>>>> 25fbadcc94eb14001b217fa52ec2b646801607d5
 }
 
 void AEnemyBase::Tick(float DeltaSeconds)
@@ -67,6 +76,26 @@ void AEnemyBase::Tick(float DeltaSeconds)
 	EnemyHPComponent->SetWorldRotation(newRoatation);
 }
 
+void AEnemyBase::DamageProcess(float DamageValue)
+{
+	HP -= DamageValue;
+
+	if (HP <= 0)
+	{
+		Destroy();
+	}
+	else
+	{
+		if (EnemyHPComponent && EnemyHPComponent->GetWidget())
+		{
+			UEnemyHealthBar* Widget = Cast<UEnemyHealthBar>(EnemyHPComponent->GetWidget());
+			Widget->UpdateHP(HP, MaxHP);
+		}
+	}
+}
+
+
+
 void AEnemyBase::OnSeePawn(APawn* Pawn)
 {
 	AProjectEscapePlayer* Player = Cast<AProjectEscapePlayer>(Pawn);
@@ -79,4 +108,3 @@ void AEnemyBase::OnSeePawn(APawn* Pawn)
 		bCanSeePlayer = false;
 	}
 }
-

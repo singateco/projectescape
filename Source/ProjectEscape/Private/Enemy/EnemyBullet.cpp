@@ -15,6 +15,7 @@ AEnemyBullet::AEnemyBullet()
 	SphereCollision = CreateDefaultSubobject<USphereComponent>(TEXT("SphereCollision"));
 	SetRootComponent(SphereCollision);
 	SphereCollision->SetSphereRadius(4.0f);
+	SphereCollision->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 
 	EnemyBulletMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("EnemyBulletMesh"));
 	EnemyBulletMesh->SetupAttachment(SphereCollision);

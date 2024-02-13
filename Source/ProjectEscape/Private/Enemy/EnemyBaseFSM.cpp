@@ -80,6 +80,7 @@ void UEnemyBaseFSM::TickMove()
 
 	Enemy->AddMovementInput(dir.GetSafeNormal());
 
+	if (Player)
 	Ai->SetFocus(Player);
 
 	if(dir.Size() <= AttackDistance && Enemy->bCanSeePlayer == true)
@@ -125,6 +126,20 @@ void UEnemyBaseFSM::UpdateHP(int32 NewHP)
 	HP = FMath::Max(0, HP + NewHP);
 }
 
+//void UEnemyBaseFSM::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
+//{
+//	for (AActor* Actor : UpdatedActors)
+//	{
+//		// �÷��̾ �����Ǿ��� ��
+//		if (Actor->IsA<AProjectEscapePlayer>())
+//		{
+//			SetState(EEnemyState::Move); // �̵� ���·� ����
+//			return;
+//		}
+//	}
+//	// ������ �÷��̾ ���� ��
+//	SetState(EEnemyState::Idle); // ��� ���·� ����
+//}
 //bool UEnemyBaseFSM::UpdateRandomLocation(FVector origin, float radius, FVector& outLocation)
 //{
 //	auto ns = UNavigationSystemV1::GetNavigationSystem(GetWorld());
