@@ -31,7 +31,7 @@ public:
 
 
 	UPROPERTY( EditDefaultsOnly, Category="Weapon" )
-	float MaxDistanceToGrab=100000.0f;
+	float MaxDistanceToGrab=10000000.0f;
 
 	UPROPERTY( EditDefaultsOnly, Category="Grab" )
 	UPhysicsHandleComp* HandleObject;
@@ -41,7 +41,14 @@ public:
 
 	bool bIsGrabbing = false;
 
+	UPROPERTY( EditDefaultsOnly, Category="Grab" )
 	float NewAngle = 1.0f;
+
+	UPROPERTY( EditDefaultsOnly, Category="Grab" )
+	float RadiusDetection = 330.f;
+
+	UPROPERTY( EditDefaultsOnly, Category="Grab" )
+	float RotSpeed = 10000.0f;
 
 protected:
 	// Called when the game starts
@@ -58,4 +65,6 @@ public:
 	void GrabObject();
 
 	void ReleaseObject();
+
+	void SphereGrabObject();
 };
