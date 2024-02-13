@@ -12,6 +12,7 @@ struct FInputActionValue;
 class UInputAction;
 class AProjectEscapePlayer;
 class UPhysicsHandleComp;
+class APickableActor;
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -50,6 +51,16 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category="Grab" )
 	float RotSpeed = 10000.0f;
 
+	UPROPERTY( EditDefaultsOnly, Category="Grab" )
+	APickableActor* ObjectInHand;
+
+
+	//UPROPERTY( EditDefaultsOnly, Category="Throw" )
+	//FVector EnemyLoc;
+
+
+	UPROPERTY( EditDefaultsOnly, Category="Throw" )
+	FVector ThrowingLoc;
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

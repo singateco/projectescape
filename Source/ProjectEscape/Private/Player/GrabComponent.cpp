@@ -5,11 +5,13 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"
+#include "Enemy/RifleEnemy.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "ProjectEscape/Public/Player/ProjectEscapePlayer.h"
 #include "Player/PhysicsHandleComp.h"
 #include "Math/UnrealMathUtility.h"
 #include "Objects/PickableActor.h"
+#include "Components/PrimitiveComponent.h"
 
 // Sets default values for this component's properties
 UGrabComponent::UGrabComponent()
@@ -120,12 +122,69 @@ void UGrabComponent::GrabObject()
 
 void UGrabComponent::ReleaseObject()
 {
+	if ( bIsGrabbing == false ) return;
+
 	if(bIsGrabbing == true )
 	{
+
+
+
+
+
+
+
+		/********************************** Sphere Trace SingleByChannel **********************************/
+		/**************************************************************************************************/
+
+		TArray<FHitResult> HitInfoArray;
+		FVector Start=Player->GetFollowCamera()->GetComponentLocation();
+		FVector End=Player->GetFollowCamera()->GetComponentLocation() + Player->GetFollowCamera()->GetForwardVector() * MaxDistanceToGrab;
+
+
+		ETraceTypeQuery TraceTypeQuery=UEngineTypes::ConvertToTraceType( ECC_GameTraceChannel2 );
+
+		TArray<AActor*> SphereTraceIgnoreActorsArray;
+		// 체크하기전에 한 번 비워주기
+		SphereTraceIgnoreActorsArray.Empty();
+		// 자기 자신 캐릭터 무시
+		SphereTraceIgnoreActorsArray.Add( Player );
+
+		bool bTraceResult=UKismetSystemLibrary::SphereTraceMulti( GetWorld(), Start, End, RadiusDetection, TraceTypeQuery,
+			false, SphereTraceIgnoreActorsArray, EDrawDebugTrace::ForDuration, HitInfoArray, true );
+
+
+		/**************************************************************************************************/
+		/**************************************************************************************************/
+
+		if ( bTraceResult )
+		{
+			for ( FHitResult& HitInfo : HitInfoArray )
+			{
+				auto Enemy =Cast<ARifleEnemy>( HitInfo.GetActor() );
+
+				//UE_LOG( LogTemp, Warning, TEXT( "%s" ), *Enemies->GetActorNameOrLabel() )
+
+					if ( Enemy )
+					{
+						FVector EnemyLoc = Enemy->GetActorLocation();
+						ThrowingLoc = EnemyLoc;
+
+					}else
+					{
+						ThrowingLoc = Player->GetFollowCamera()->GetForwardVector() * MaxDistanceToGrab;
+					}
+			}
+		}
+
+		FVector DirectionPower = HandleObject->GetGrabbedComponent()->GetComponentLocation() - ThrowingLoc;
+		HandleObject->GetGrabbedComponent()->AddImpulse( DirectionPower);
+
 		HandleObject->ReleaseComponent();
 
 		bIsGrabbing=false;
-		
+
+
+
 	}
 }
 
@@ -157,6 +216,8 @@ void UGrabComponent::SphereGrabObject()
 		false, SphereTraceIgnoreActorsArray, EDrawDebugTrace::ForDuration, HitInfoArray, true );
 
 
+	/**************************************************************************************************/
+	/**************************************************************************************************/
 	//TArray<TEnumAsByte<EObjectTypeQuery>> objectType;
 	//objectType.Emplace( UEngineTypes::ConvertToObjectType( ECC_GameTraceChannel1 ) );
 
