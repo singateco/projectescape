@@ -7,6 +7,7 @@
 #include "Camera/CameraComponent.h"
 #include "ProjectEscape/Public/Player/ProjectEscapePlayer.h"
 #include "Player/PhysicsHandleComp.h"
+#include "Math/UnrealMathUtility.h"
 
 // Sets default values for this component's properties
 UGrabComponent::UGrabComponent()
@@ -35,7 +36,6 @@ void UGrabComponent::InitializeComponent()
 
 	Player=GetOwner<AProjectEscapePlayer>();
 	check( Player );
-
 	HandleObject = Player->PhysicsHandleComponent;
 }
 
@@ -46,9 +46,23 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 	// ...
 
+	float TargetSpeed = 50.0f;
+	NewInterpolSpeed = FMath::FInterpTo( NewInterpolSpeed, TargetSpeed, DeltaTime, 0.5 );
+
+	HandleObject->SetInterpolationSpeed( NewInterpolSpeed );
+
 	if(bIsGrabbing == true)
 	{
 		HandleObject->SetTargetLocation( Player->GetFollowCamera()->GetComponentLocation() + Player->GetFollowCamera()->GetForwardVector()*500 );
+		NewAngle+= 12000 * DeltaTime;
+		FRotator NewRotation = FRotator( 0, NewAngle, 0 );
+		HandleObject->SetTargetRotation( NewRotation );
+		//HandleObject->SetAngularDamping(10*DeltaTime);
+
+
+		//FVector NewLocation =Player->GetFollowCamera()->GetComponentLocation() + Player->GetFollowCamera()->GetForwardVector() * 500;
+		//FRotator NewRotation = FRotator( 10 * DeltaTime, 10 * DeltaTime, 10 * DeltaTime );
+		//HandleObject->SetTargetLocationAndRotation( NewLocation, NewRotation );
 	}
 }
 
@@ -80,9 +94,15 @@ void UGrabComponent::GrabObject()
 	DrawDebugLine( GetWorld(), StartPos, EndPos, FColor::Red, true );
 	if( bHit )
 	{
+		NewInterpolSpeed = 0.0f;
 
 		//HandleObject->GrabComponentAtLocationWithRotation( HitInfo.GetComponent(), TEXT("GrabObject"),HitInfo.GetComponent()->GetComponentLocation(), HitInfo.GetComponent()->GetComponentRotation());
 		HandleObject->GrabComponentAtLocation( HitInfo.GetComponent(), TEXT("GrabObject"),HitInfo.GetComponent()->GetComponentLocation());
+
+		//HandleObject->SetAngularDamping( 0 );
+
+
+		//HandleObject->SetInterpolationSpeed(NewInterpolSpeed);
 
 		if(HandleObject->GetGrabbedComponent() != nullptr )
 		{
