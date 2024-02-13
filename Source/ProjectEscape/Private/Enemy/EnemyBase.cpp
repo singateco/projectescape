@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Enemy/EnemyBase.h"
@@ -10,6 +10,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Player/ProjectEscapePlayer.h"
+#include "Perception/PawnSensingComponent.h"
 
 AEnemyBase::AEnemyBase()
 {
@@ -21,13 +23,14 @@ AEnemyBase::AEnemyBase()
 	BulletREF->SetupAttachment(RootComponent);
 	EnemyHPComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("EnemyHPComponent"));
 	EnemyHPComponent->SetupAttachment(RootComponent);
-	//WBP(��������Ʈ Ŭ����)�� �ε��ؼ� HPComp�� �������� ����, FClassFinder �ּ� �������� _C�ؾ��� ��������Ʈ��
+	//WBP(블루프린트 클래스)를 로드해서 HPComp의 위젯으로 설정, FClassFinder 주소 마지막에 _C해야함 블루프린트라서
 	ConstructorHelpers::FClassFinder<UUserWidget> tempHP(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/UI/WBP_EnemyHealthBar.WBP_EnemyHealthBar_C'"));
 
 	if (tempHP.Succeeded())
 	{
 		EnemyHPComponent->SetWidgetClass(tempHP.Class);
-		EnemyHPComponent->SetDrawSize(FVector2D(100, 20));
+		EnemyHPComponent->SetWidgetSpace(EWidgetSpace::Screen);
+		EnemyHPComponent->SetDrawSize(FVector2D(80, 20));
 		EnemyHPComponent->SetRelativeLocation(FVector(0, 0, 110));
 		EnemyHPComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
@@ -43,12 +46,17 @@ AEnemyBase::AEnemyBase()
 	mesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 	mesh->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 
-}	
+	EnemyPawnSensing = CreateDefaultSubobject<UPawnSensingComponent>( TEXT( "EnemyPawnSensing" ) );
+
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
+}
 
 void AEnemyBase::BeginPlay()
 {
 	Super::BeginPlay();
-
+	// 이벤트 핸들러
+	EnemyPawnSensing->OnSeePawn.AddDynamic( this, &AEnemyBase::OnSeePawn );
 }
 
 void AEnemyBase::Tick(float DeltaSeconds)
@@ -74,4 +82,15 @@ void AEnemyBase::DamageProcess(float DamageValue)
 
 
 
-
+void AEnemyBase::OnSeePawn(APawn* Pawn)
+{
+	AProjectEscapePlayer* Player = Cast<AProjectEscapePlayer>(Pawn);
+	if (Player)
+	{
+		bCanSeePlayer = true;
+	}
+	else
+	{
+		bCanSeePlayer = false;
+	}
+}

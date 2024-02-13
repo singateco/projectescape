@@ -1,15 +1,11 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Enemy/EnemyBaseFSM.h"
 
 #include "AIController.h"
-#include "NavigationSystem.h"
-#include "Enemy/EnemyAIPerception.h"
 #include "Enemy/EnemyAnimInstance.h"
 #include "Enemy/EnemyBase.h"
-#include "Navigation/PathFollowingComponent.h"
-#include "Perception/AISenseConfig_Sight.h"
 #include "Player/ProjectEscapePlayer.h"
 
 // Sets default values for this component's properties
@@ -18,19 +14,6 @@ UEnemyBaseFSM::UEnemyBaseFSM()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
-	EnemyAIPerception = CreateDefaultSubobject<UEnemyAIPerception>(TEXT("EnemyAIperception"));
-
-	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("SightConfig"));
-
-	SightConfig->SightRadius = 3000.0f;
-	SightConfig->LoseSightRadius = 3200.0f;
-	SightConfig->PeripheralVisionAngleDegrees = 180.0f;
-
-	EnemyAIPerception->ConfigureSense(*SightConfig);
-
-
-
 
 }
 
@@ -69,10 +52,10 @@ void UEnemyBaseFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 void UEnemyBaseFSM::SetState(EEnemyState Next)
 {
 	//check(EnemyAnim);
-	// �̵����·� �����Ѵٸ�
+	// 이동상태로 전이한다면
 	//if (Next == EEnemyState::Move)
 	//{
-	//	// ������ġ�� �����ϰ�ʹ�.
+	//	// 랜덤위치를 갱신하고싶다.
 	//	UpdateRandomLocation(Me->GetActorLocation(), 500, RandomLocation);
 	//}
 
@@ -92,7 +75,7 @@ void UEnemyBaseFSM::TickIdle()
 void UEnemyBaseFSM::TickMove()
 {
 	FVector destination = Player->GetActorLocation();
-	// �������� ���ؼ� �̵��ϰ�ʹ�.
+	// 목적지를 향해서 이동하고싶다.
 	FVector dir = destination - Enemy->GetActorLocation();
 
 	Enemy->AddMovementInput(dir.GetSafeNormal());
@@ -100,7 +83,7 @@ void UEnemyBaseFSM::TickMove()
 	if (Player)
 	Ai->SetFocus(Player);
 
-	if(dir.Size() <= AttackDistance)
+	if(dir.Size() <= AttackDistance && Enemy->bCanSeePlayer == true)
 	{
 		SetState(EEnemyState::Attack);
 	}
@@ -108,12 +91,10 @@ void UEnemyBaseFSM::TickMove()
 
 void UEnemyBaseFSM::TickAttack()
 {
-
-
 	//float dist = FVector::Dist(Player->GetActorLocation(), Enemy->GetActorLocation());
-	//// �� �Ÿ��� AttackDistance�� �ʰ��Ѵٸ�
+	//// 그 거리가 AttackDistance를 초과한다면
 	//if (dist > AttackDistance) {
-	//	// �̵����·� �����ϰ�ʹ�.
+	//	// 이동상태로 전이하고싶다.
 	//	SetState(EEnemyState::Move);
 	//	//EnemyAnim->IsAttack = false;
 	//}
@@ -133,7 +114,7 @@ void UEnemyBaseFSM::OnTakeDamage(int32 Damage)
 {
 	Ai->StopMovement();
 	UpdateHP(-Damage);
-	if(HP>0)
+	if(HP > 0)
 	{
 		SetState(EEnemyState::Damage);
 		//PlayMontageDamage();
