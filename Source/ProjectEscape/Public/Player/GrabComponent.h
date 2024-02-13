@@ -36,7 +36,12 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category="Grab" )
 	UPhysicsHandleComp* HandleObject;
 
+	UPROPERTY( EditDefaultsOnly, Category="Grab" )
+	float NewInterpolSpeed= 0.0f;
+
 	bool bIsGrabbing = false;
+
+	float NewAngle = 1.0f;
 
 protected:
 	// Called when the game starts

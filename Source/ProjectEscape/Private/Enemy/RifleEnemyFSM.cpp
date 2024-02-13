@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Enemy/RifleEnemyFSM.h"
@@ -52,9 +52,9 @@ void URifleEnemyFSM::TickAttack()
 	}
 
 	float dist = FVector::Dist(Player->GetActorLocation(), Enemy->GetActorLocation());
-	// ±× °Å¸®°¡ AttackDistance¸¦ ÃÊ°úÇÑ´Ù¸é
+	// ê·¸ ê±°ë¦¬ê°€ AttackDistanceë¥¼ ì´ˆê³¼í•œë‹¤ë©´
 	if (dist > AttackDistance) {
-		// ÀÌµ¿»óÅÂ·Î ÀüÀÌÇÏ°í½Í´Ù.
+		// ì´ë™ìƒíƒœë¡œ ì „ì´í•˜ê³ ì‹¶ë‹¤.
 		SetState(EEnemyState::Move);
 		//EnemyAnim->IsAttack = false;
 	}
