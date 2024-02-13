@@ -7,6 +7,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Enemy/EnemyBaseFSM.h"
+#include "Enemy/EnemyHealthBar.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -57,6 +58,7 @@ void AEnemyBase::BeginPlay()
 	Super::BeginPlay();
 	// 이벤트 핸들러
 	EnemyPawnSensing->OnSeePawn.AddDynamic( this, &AEnemyBase::OnSeePawn );
+	HP = MaxHP;
 }
 
 void AEnemyBase::Tick(float DeltaSeconds)
@@ -77,6 +79,14 @@ void AEnemyBase::DamageProcess(float DamageValue)
 	if (HP <= 0)
 	{
 		Destroy();
+	}
+	else
+	{
+		if (EnemyHPComponent && EnemyHPComponent->GetWidget())
+		{
+			UEnemyHealthBar* Widget = Cast<UEnemyHealthBar>(EnemyHPComponent->GetWidget());
+			Widget->UpdateHP(HP, MaxHP);
+		}
 	}
 }
 
