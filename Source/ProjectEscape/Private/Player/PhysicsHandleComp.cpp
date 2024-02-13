@@ -6,7 +6,8 @@
 
  void UPhysicsHandleComp::TickComponent( float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction )
  {
-	 Super::TickComponent( DeltaTime, TickType, ThisTickFunction );
-	//SetTargetRotation()
+
+ 	Super::TickComponent( DeltaTime, TickType, ThisTickFunction );
+ 	//SetTargetRotation(FRotator(10*DeltaTime, 10 * DeltaTime , 10 * DeltaTime ));
 	 
  }

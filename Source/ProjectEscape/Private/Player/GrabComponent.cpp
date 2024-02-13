@@ -5,8 +5,11 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "ProjectEscape/Public/Player/ProjectEscapePlayer.h"
 #include "Player/PhysicsHandleComp.h"
+#include "Math/UnrealMathUtility.h"
+#include "Objects/PickableActor.h"
 
 // Sets default values for this component's properties
 UGrabComponent::UGrabComponent()
@@ -35,7 +38,6 @@ void UGrabComponent::InitializeComponent()
 
 	Player=GetOwner<AProjectEscapePlayer>();
 	check( Player );
-
 	HandleObject = Player->PhysicsHandleComponent;
 }
 
@@ -46,16 +48,33 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 	// ...
 
+	float TargetSpeed = 50.0f;
+	NewInterpolSpeed = FMath::FInterpTo( NewInterpolSpeed, TargetSpeed, DeltaTime, 0.5 );
+
+	HandleObject->SetInterpolationSpeed( NewInterpolSpeed );
+
 	if(bIsGrabbing == true)
 	{
 		HandleObject->SetTargetLocation( Player->GetFollowCamera()->GetComponentLocation() + Player->GetFollowCamera()->GetForwardVector()*500 );
+		//HandleObject->SetTargetLocation( Player->GetMesh()->GetSocketLocation("GrabPosition") );
+		NewAngle+= RotSpeed * DeltaTime;
+		//FRotator NewRotation = FRotator( 0, NewAngle, 0 );
+		FRotator NewRotation = FRotator( NewAngle, NewAngle, NewAngle );
+		HandleObject->SetTargetRotation( NewRotation );
+		//HandleObject->SetAngularDamping(10*DeltaTime);
+
+
+		//FVector NewLocation =Player->GetFollowCamera()->GetComponentLocation() + Player->GetFollowCamera()->GetForwardVector() * 500;
+		//FRotator NewRotation = FRotator( 10 * DeltaTime, 10 * DeltaTime, 10 * DeltaTime );
+		//HandleObject->SetTargetLocationAndRotation( NewLocation, NewRotation );
 	}
 }
 
 
 void UGrabComponent::SetupPlayerInputComponent(UEnhancedInputComponent* PlayerInputComponent)
 {
-	PlayerInputComponent->BindAction(ActionGrab, ETriggerEvent::Started, this, &UGrabComponent::GrabObject);
+	//PlayerInputComponent->BindAction(ActionGrab, ETriggerEvent::Started, this, &UGrabComponent::GrabObject);
+	PlayerInputComponent->BindAction(ActionGrab, ETriggerEvent::Started, this, &UGrabComponent::SphereGrabObject);
 	PlayerInputComponent->BindAction( ActionGrab, ETriggerEvent::Completed, this, &UGrabComponent::ReleaseObject );
 }
 
@@ -80,9 +99,15 @@ void UGrabComponent::GrabObject()
 	DrawDebugLine( GetWorld(), StartPos, EndPos, FColor::Red, true );
 	if( bHit )
 	{
+		NewInterpolSpeed = 0.0f;
 
 		//HandleObject->GrabComponentAtLocationWithRotation( HitInfo.GetComponent(), TEXT("GrabObject"),HitInfo.GetComponent()->GetComponentLocation(), HitInfo.GetComponent()->GetComponentRotation());
 		HandleObject->GrabComponentAtLocation( HitInfo.GetComponent(), TEXT("GrabObject"),HitInfo.GetComponent()->GetComponentLocation());
+
+		//HandleObject->SetAngularDamping( 0 );
+
+
+		//HandleObject->SetInterpolationSpeed(NewInterpolSpeed);
 
 		if(HandleObject->GetGrabbedComponent() != nullptr )
 		{
@@ -101,5 +126,62 @@ void UGrabComponent::ReleaseObject()
 
 		bIsGrabbing=false;
 		
+	}
+}
+
+void UGrabComponent::SphereGrabObject()
+{
+
+	if ( bIsGrabbing == true )
+	{
+		return;
+	}
+
+	/********************************** Sphere Trace SingleByChannel **********************************/
+	/**************************************************************************************************/
+
+	TArray<FHitResult> HitInfoArray;
+	FVector Start=Player->GetFollowCamera()->GetComponentLocation();
+	FVector End=Player->GetFollowCamera()->GetComponentLocation() + Player->GetFollowCamera()->GetForwardVector() * MaxDistanceToGrab;
+	
+
+	ETraceTypeQuery TraceTypeQuery=UEngineTypes::ConvertToTraceType( ECC_GameTraceChannel1 );
+
+	TArray<AActor*> SphereTraceIgnoreActorsArray;
+	// 체크하기전에 한 번 비워주기
+	SphereTraceIgnoreActorsArray.Empty();
+	// 자기 자신 캐릭터 무시
+	SphereTraceIgnoreActorsArray.Add( Player );
+
+	bool bTraceResult = UKismetSystemLibrary::SphereTraceMulti( GetWorld(), Start, End, RadiusDetection, TraceTypeQuery,
+		false, SphereTraceIgnoreActorsArray, EDrawDebugTrace::ForDuration, HitInfoArray, true );
+
+
+	//TArray<TEnumAsByte<EObjectTypeQuery>> objectType;
+	//objectType.Emplace( UEngineTypes::ConvertToObjectType( ECC_GameTraceChannel1 ) );
+
+	//bool bTraceResult2 = UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(), Start, End, RadiusDetection, objectType,  false, SphereTraceIgnoreActorsArray , EDrawDebugTrace::ForDuration, HitInfoArray, true );
+	if( bTraceResult )
+	{
+
+		for ( FHitResult& HitInfo : HitInfoArray )
+		{
+			auto PickUpActor=Cast<APickableActor>( HitInfo.GetActor() );
+			UE_LOG(LogTemp, Warning, TEXT("%s"), *PickUpActor->GetActorNameOrLabel())
+
+
+			if ( PickUpActor )
+			{
+				HandleObject->GrabComponentAtLocation( HitInfo.GetComponent(), TEXT( "GrabObject" ), HitInfo.GetComponent()->GetComponentLocation() );
+
+				if ( HandleObject->GetGrabbedComponent() != nullptr )
+				{
+					bIsGrabbing=true;
+				}
+			}
+
+		}
+
+
 	}
 }

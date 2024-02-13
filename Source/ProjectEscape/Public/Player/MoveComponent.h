@@ -117,7 +117,6 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	bool bIsDashing {false};
 
-
 	UFUNCTION()
 	void HandleOnMontageEnded(UAnimMontage* Montage, bool Interrupted);
 	
