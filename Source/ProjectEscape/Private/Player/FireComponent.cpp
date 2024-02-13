@@ -6,6 +6,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"
 #include "Enemy/EnemyBase.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystem.h"
 #include "ProjectEscape/Public/Player/ProjectEscapePlayer.h"
@@ -38,7 +39,7 @@ UFireComponent::UFireComponent()
 		GunEffect = FireEffectFinder.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> FireMontageFinder {TEXT("/Script/Engine.AnimMontage'/Game/Animations/Actions/AM_MM_Pistol_Fire.AM_MM_Pistol_Fire'")};
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> FireMontageFinder {TEXT("/Script/Engine.AnimMontage'/Game/Animations/Actions/AM_MM_Pistol_DryFire.AM_MM_Pistol_DryFire'")};
 	if (FireMontageFinder.Succeeded())
 	{
 		FireMontage = FireMontageFinder.Object;
@@ -57,8 +58,7 @@ void  UFireComponent::HandleFireAnimation()
 void UFireComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// ...
+	
 	check(NormalGunClass);
 	NormalGun = GetWorld()->SpawnActor<ANormalGun>(NormalGunClass);
 	AttachPistol();
@@ -85,6 +85,8 @@ void UFireComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 void UFireComponent::SetupPlayerInputComponent(UEnhancedInputComponent* PlayerInputComponent)
 {
 	PlayerInputComponent->BindAction(ActionFire, ETriggerEvent::Started, this, &UFireComponent::NormalGunFire);
+	PlayerInputComponent->BindAction(ActionAimDownSight, ETriggerEvent::Started, this, &UFireComponent::StartAimDown);
+	PlayerInputComponent->BindAction(ActionAimDownSight, ETriggerEvent::Completed, this, &UFireComponent::EndAimDown);
 }
 
 void UFireComponent::NormalGunFire()
@@ -111,8 +113,7 @@ void UFireComponent::NormalGunFire()
 	Params1.AddIgnoredActor(Player);
 
 	bool bHit1 = GetWorld()->LineTraceSingleByChannel(HitInfo1, StartPos1, EndPos1,ECC_Visibility, Params1);
-
-
+	
 	//DrawDebugLine( GetWorld(), StartPos1, EndPos1, FColor::Blue, true );
 	if (bHit1) { 
 
@@ -135,7 +136,7 @@ void UFireComponent::NormalGunFire()
 			//DrawDebugBox(GetWorld(), HitInfo2.Location, FVector(5), FColor::Red, false, 5.f, 0, 3);
 			UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), GunEffect, HitInfo2.Location, FRotator() );
 			Enemy = Cast<AEnemyBase>(HitInfo2.GetActor());
-			UE_LOG(LogTemp, Warning, TEXT("hit actor: %s"), *HitInfo2.GetActor()->GetActorNameOrLabel())
+			//UE_LOG(LogTemp, Warning, TEXT("hit actor: %s"), *HitInfo2.GetActor()->GetActorNameOrLabel())
 		}
 		else
 		{
@@ -158,7 +159,10 @@ void UFireComponent::AttachPistol()
 	//Bullet ReLoad Animation
 	bHasPistol = true;
 	NormalGun->SetActorHiddenInGame(false);
-	NormalGun->AttachToComponent(Player->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("GunPosition"));
+
+	TArray<UActorComponent*> Comp = Player->GetComponentsByTag(USkeletalMeshComponent::StaticClass(), TEXT("Body"));
+	USceneComponent* BodyComp = Cast<USceneComponent>(Comp[0]);
+	NormalGun->AttachToComponent(BodyComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("GunPosition"));
 }
 
 
@@ -168,4 +172,14 @@ void UFireComponent::DetachPistol()
 	NormalGun->SetActorHiddenInGame(true);
 	//NormalGun->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
 	//NormalGun->DetachFromComponent(FDetachmentTransformRules::KeepRelativeTransform);
+}
+
+void UFireComponent::StartAimDown(const FInputActionInstance& InputActionInstance)
+{
+	//Player->GetCameraBoom()->TargetArmLength = 100;
+}
+
+void UFireComponent::EndAimDown(const FInputActionInstance& InputActionInstance)
+{
+	//Player->GetCameraBoom()->TargetArmLength = 300;
 }

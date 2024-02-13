@@ -12,7 +12,7 @@ ANormalGun::ANormalGun()
 
 	//Create SceneComponent
 	GunComp = CreateDefaultSubobject<USceneComponent>(TEXT("GunComp"));
-	GunComp->SetupAttachment(RootComponent); // Socket Name
+	SetRootComponent(GunComp); // Socket Name
 
 	// Create Normal Gun
 	NormalGunMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("NormalGunMesh"));
