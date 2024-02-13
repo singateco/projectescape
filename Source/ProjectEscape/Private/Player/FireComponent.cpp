@@ -93,6 +93,8 @@ void UFireComponent::NormalGunFire()
 		return;
 	}
 
+	HandleFireAnimation();
+
 	//FRotator GazeRotation = UKismetMathLibrary::FindLookAtRotation(Player->GetActorLocation(), Player->GetCameraBoom()->GetForwardVector() * MaxDistanceToGun);
 	//Player->SetActorRotation(GazeRotation);
 
@@ -118,7 +120,7 @@ void UFireComponent::NormalGunFire()
 		// 1) From Muzzle
 		FVector StartPos2=NormalGun->NormalGunMesh->GetSocketLocation( TEXT( "Muzzle" ) );
 		// 2) To Collision Position 
-		FVector EndPos2= HitInfo1.Location;
+		FVector EndPos2= HitInfo1.Location + Player->GetFollowCamera()->GetForwardVector() * 1;
 
 
 		FHitResult HitInfo2;
@@ -133,13 +135,14 @@ void UFireComponent::NormalGunFire()
 			//DrawDebugBox(GetWorld(), HitInfo2.Location, FVector(5), FColor::Red, false, 5.f, 0, 3);
 			UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), GunEffect, HitInfo2.Location, FRotator() );
 			Enemy = Cast<AEnemyBase>(HitInfo2.GetActor());
+			UE_LOG(LogTemp, Warning, TEXT("hit actor: %s"), *HitInfo2.GetActor()->GetActorNameOrLabel())
 		}
 		else
 		{
 			UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), GunEffect, EndPos2, FRotator() );
 		}
 		
-		HandleFireAnimation();
+		
 		
 		if (Enemy)
 		{

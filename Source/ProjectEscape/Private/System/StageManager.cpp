@@ -2,7 +2,12 @@
 
 
 #include "System/StageManager.h"
+
+#include "Components/BoxComponent.h"
 #include "Enemy/EnemyBase.h"
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "System/EnemySpawnableArea.h"
 
 void AStageManager::HandleEnemyDestroyed(AActor* DestroyedActor)
 {
@@ -37,8 +42,29 @@ void AStageManager::SpawnWave(const FWaveData& WaveData)
 		{
 			FActorSpawnParameters Params;
 			Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-			AEnemyBase* SpawnedEnemy = GetWorld()->SpawnActor<AEnemyBase>(itr.Key().Get(), GetActorLocation()
-				+ FVector(FMath::FRandRange(-100.f, 100.f), FMath::FRandRange(-100.f, 100.f), 0), FRotator::ZeroRotator,
+
+			// Get a random location from spawnable areas.
+			TArray<AActor*> SpawnableFinder;
+			UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemySpawnableArea::StaticClass(),SpawnableFinder);
+
+			// If there are no spawnable areas, use the manager location.
+			FVector RandomLocation = GetActorLocation();
+			
+			if (!SpawnableFinder.IsEmpty())
+			{
+				UBoxComponent* SpawnBox = Cast<AEnemySpawnableArea>(
+					SpawnableFinder[FMath::RandRange(0, SpawnableFinder.Num() - 1)])->SpawnBoxExtent;
+
+				FVector Origin = SpawnBox->Bounds.Origin;
+				FVector Extent = SpawnBox->Bounds.BoxExtent;
+
+				RandomLocation = UKismetMathLibrary::RandomPointInBoundingBox(Origin, Extent);
+			}
+			
+			AEnemyBase* SpawnedEnemy = GetWorld()->SpawnActor<AEnemyBase>(
+				itr.Key().Get(),
+				RandomLocation,
+				FRotator::ZeroRotator,
 				Params);
 			ThisWaveEnemy.Add(SpawnedEnemy);
 			SpawnedEnemy->OnDestroyed.AddDynamic(this, &AStageManager::HandleEnemyDestroyed);
