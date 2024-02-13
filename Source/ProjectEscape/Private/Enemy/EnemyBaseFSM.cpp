@@ -83,7 +83,7 @@ void UEnemyBaseFSM::TickMove()
 	if (Player)
 	Ai->SetFocus(Player);
 
-	if(dir.Size() <= AttackDistance && Enemy->bCanSeePlayer == true)
+	if(dir.Size() <= AttackDistance)
 	{
 		SetState(EEnemyState::Attack);
 	}
@@ -126,31 +126,4 @@ void UEnemyBaseFSM::UpdateHP(int32 NewHP)
 	HP = FMath::Max(0, HP + NewHP);
 }
 
-//void UEnemyBaseFSM::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
-//{
-//	for (AActor* Actor : UpdatedActors)
-//	{
-//		// �÷��̾ �����Ǿ��� ��
-//		if (Actor->IsA<AProjectEscapePlayer>())
-//		{
-//			SetState(EEnemyState::Move); // �̵� ���·� ����
-//			return;
-//		}
-//	}
-//	// ������ �÷��̾ ���� ��
-//	SetState(EEnemyState::Idle); // ��� ���·� ����
-//}
-//bool UEnemyBaseFSM::UpdateRandomLocation(FVector origin, float radius, FVector& outLocation)
-//{
-//	auto ns = UNavigationSystemV1::GetNavigationSystem(GetWorld());
-//	FNavLocation loc;
-//	bool result = ns->GetRandomReachablePointInRadius(origin, radius, loc);
-//	if (result)
-//	{
-//		outLocation = loc.Location;
-//		return true;
-//	}
-//
-//	return false;
-//}
 

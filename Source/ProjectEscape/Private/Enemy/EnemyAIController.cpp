@@ -3,6 +3,7 @@
 
 #include "Enemy/EnemyAIController.h"
 
+#include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
 const FName AEnemyAIController::HomePosKey( TEXT( "HomePos" ) );

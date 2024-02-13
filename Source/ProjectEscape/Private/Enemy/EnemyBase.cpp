@@ -56,13 +56,9 @@ AEnemyBase::AEnemyBase()
 void AEnemyBase::BeginPlay()
 {
 	Super::BeginPlay();
-<<<<<<< HEAD
-	
-=======
 	// 이벤트 핸들러
-	EnemyPawnSensing->OnSeePawn.AddDynamic( this, &AEnemyBase::OnSeePawn );
 	HP = MaxHP;
->>>>>>> 25fbadcc94eb14001b217fa52ec2b646801607d5
+
 }
 
 void AEnemyBase::Tick(float DeltaSeconds)
@@ -94,17 +90,3 @@ void AEnemyBase::DamageProcess(float DamageValue)
 	}
 }
 
-
-
-void AEnemyBase::OnSeePawn(APawn* Pawn)
-{
-	AProjectEscapePlayer* Player = Cast<AProjectEscapePlayer>(Pawn);
-	if (Player)
-	{
-		bCanSeePlayer = true;
-	}
-	else
-	{
-		bCanSeePlayer = false;
-	}
-}
