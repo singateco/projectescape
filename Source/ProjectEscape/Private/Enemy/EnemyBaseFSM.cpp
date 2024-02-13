@@ -69,10 +69,10 @@ void UEnemyBaseFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 void UEnemyBaseFSM::SetState(EEnemyState Next)
 {
 	//check(EnemyAnim);
-	// ÀÌµ¿»óÅÂ·Î ÀüÀÌÇÑ´Ù¸é
+	// ï¿½Ìµï¿½ï¿½ï¿½ï¿½Â·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´Ù¸ï¿½
 	//if (Next == EEnemyState::Move)
 	//{
-	//	// ·£´ýÀ§Ä¡¸¦ °»½ÅÇÏ°í½Í´Ù.
+	//	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½Í´ï¿½.
 	//	UpdateRandomLocation(Me->GetActorLocation(), 500, RandomLocation);
 	//}
 
@@ -92,11 +92,12 @@ void UEnemyBaseFSM::TickIdle()
 void UEnemyBaseFSM::TickMove()
 {
 	FVector destination = Player->GetActorLocation();
-	// ¸ñÀûÁö¸¦ ÇâÇØ¼­ ÀÌµ¿ÇÏ°í½Í´Ù.
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ø¼ï¿½ ï¿½Ìµï¿½ï¿½Ï°ï¿½Í´ï¿½.
 	FVector dir = destination - Enemy->GetActorLocation();
 
 	Enemy->AddMovementInput(dir.GetSafeNormal());
 
+	if (Player)
 	Ai->SetFocus(Player);
 
 	if(dir.Size() <= AttackDistance)
@@ -110,9 +111,9 @@ void UEnemyBaseFSM::TickAttack()
 
 
 	//float dist = FVector::Dist(Player->GetActorLocation(), Enemy->GetActorLocation());
-	//// ±× °Å¸®°¡ AttackDistance¸¦ ÃÊ°úÇÑ´Ù¸é
+	//// ï¿½ï¿½ ï¿½Å¸ï¿½ï¿½ï¿½ AttackDistanceï¿½ï¿½ ï¿½Ê°ï¿½ï¿½Ñ´Ù¸ï¿½
 	//if (dist > AttackDistance) {
-	//	// ÀÌµ¿»óÅÂ·Î ÀüÀÌÇÏ°í½Í´Ù.
+	//	// ï¿½Ìµï¿½ï¿½ï¿½ï¿½Â·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½Í´ï¿½.
 	//	SetState(EEnemyState::Move);
 	//	//EnemyAnim->IsAttack = false;
 	//}
@@ -148,15 +149,15 @@ void UEnemyBaseFSM::UpdateHP(int32 NewHP)
 //{
 //	for (AActor* Actor : UpdatedActors)
 //	{
-//		// ÇÃ·¹ÀÌ¾î°¡ °¨ÁöµÇ¾úÀ» ¶§
+//		// ï¿½Ã·ï¿½ï¿½Ì¾î°¡ ï¿½ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ï¿½ï¿½ ï¿½ï¿½
 //		if (Actor->IsA<AProjectEscapePlayer>())
 //		{
-//			SetState(EEnemyState::Move); // ÀÌµ¿ »óÅÂ·Î ÀüÀÌ
+//			SetState(EEnemyState::Move); // ï¿½Ìµï¿½ ï¿½ï¿½ï¿½Â·ï¿½ ï¿½ï¿½ï¿½ï¿½
 //			return;
 //		}
 //	}
-//	// °¨ÁöµÈ ÇÃ·¹ÀÌ¾î°¡ ¾øÀ» ¶§
-//	SetState(EEnemyState::Idle); // ´ë±â »óÅÂ·Î ÀüÀÌ
+//	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾î°¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+//	SetState(EEnemyState::Idle); // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â·ï¿½ ï¿½ï¿½ï¿½ï¿½
 //}
 //bool UEnemyBaseFSM::UpdateRandomLocation(FVector origin, float radius, FVector& outLocation)
 //{

@@ -5,6 +5,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"
+#include "Enemy/EnemyBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystem.h"
 #include "ProjectEscape/Public/Player/ProjectEscapePlayer.h"
@@ -124,12 +125,14 @@ void UFireComponent::NormalGunFire()
 		FCollisionQueryParams Params2;
 		Params2.AddIgnoredActor( Player );
 		bool bHit2 = GetWorld()->LineTraceSingleByChannel( HitInfo2, StartPos2, EndPos2, ECC_Visibility, Params2 );
-
+		AEnemyBase* Enemy = nullptr;
+		
 		if( bHit2 )
 		{
 			//DrawDebugLine( GetWorld(), StartPos2, EndPos2, FColor::Red, true );
 			//DrawDebugBox(GetWorld(), HitInfo2.Location, FVector(5), FColor::Red, false, 5.f, 0, 3);
 			UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), GunEffect, HitInfo2.Location, FRotator() );
+			Enemy = Cast<AEnemyBase>(HitInfo2.GetActor());
 		}
 		else
 		{
@@ -137,10 +140,11 @@ void UFireComponent::NormalGunFire()
 		}
 		
 		HandleFireAnimation();
-			
-		//if (Enemy) {
-		//	Enemy->DamageProcess();
-		//}
+		
+		if (Enemy)
+		{
+			Enemy->DamageProcess(1);
+		}
 	}
 	//auto Anim = Cast<UProjectEscapeAnimInstance>(GetMesh()->GetAnimInstance());
 	//Anim->PlayerFireAnimation();

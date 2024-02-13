@@ -21,7 +21,7 @@ AEnemyBase::AEnemyBase()
 	BulletREF->SetupAttachment(RootComponent);
 	EnemyHPComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("EnemyHPComponent"));
 	EnemyHPComponent->SetupAttachment(RootComponent);
-	//WBP(ºí·çÇÁ¸°Æ® Å¬·¡½º)¸¦ ·ÎµåÇØ¼­ HPCompÀÇ À§Á¬À¸·Î ¼³Á¤, FClassFinder ÁÖ¼Ò ¸¶Áö¸·¿¡ _CÇØ¾ßÇÔ ºí·çÇÁ¸°Æ®¶ó¼­
+	//WBP(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® Å¬ï¿½ï¿½ï¿½ï¿½)ï¿½ï¿½ ï¿½Îµï¿½ï¿½Ø¼ï¿½ HPCompï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, FClassFinder ï¿½Ö¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ _Cï¿½Ø¾ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½
 	ConstructorHelpers::FClassFinder<UUserWidget> tempHP(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/UI/WBP_EnemyHealthBar.WBP_EnemyHealthBar_C'"));
 
 	if (tempHP.Succeeded())
@@ -43,7 +43,7 @@ AEnemyBase::AEnemyBase()
 	mesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 	mesh->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 
-}
+}	
 
 void AEnemyBase::BeginPlay()
 {
@@ -60,6 +60,16 @@ void AEnemyBase::Tick(float DeltaSeconds)
 	FRotator newRoatation = UKismetMathLibrary::FindLookAtRotation(start, end);
 
 	EnemyHPComponent->SetWorldRotation(newRoatation);
+}
+
+void AEnemyBase::DamageProcess(float DamageValue)
+{
+	HP -= DamageValue;
+
+	if (HP <= 0)
+	{
+		Destroy();
+	}
 }
 
 

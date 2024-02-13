@@ -33,9 +33,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	UArrowComponent* BulletREF;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float HP {1};
+	
 	// --------------------- Function ---------------------------
 
-	
+	UFUNCTION(BlueprintCallable)
+	void DamageProcess(float DamageValue);
 	
 
 };
