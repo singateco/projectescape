@@ -6,13 +6,17 @@
 #include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Enemy/EnemyAIController.h"
+#include "Enemy/EnemyAIPerception.h"
 #include "Enemy/EnemyBaseFSM.h"
+
 #include "Enemy/EnemyHealthBar.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Perception/AISenseConfig_Sight.h"
 #include "Player/ProjectEscapePlayer.h"
-#include "Perception/PawnSensingComponent.h"
+
 
 AEnemyBase::AEnemyBase()
 {
@@ -47,8 +51,7 @@ AEnemyBase::AEnemyBase()
 	mesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 	mesh->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 
-
-
+	AIControllerClass = AEnemyAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 }
@@ -56,9 +59,7 @@ AEnemyBase::AEnemyBase()
 void AEnemyBase::BeginPlay()
 {
 	Super::BeginPlay();
-	// 이벤트 핸들러
 	HP = MaxHP;
-
 }
 
 void AEnemyBase::Tick(float DeltaSeconds)

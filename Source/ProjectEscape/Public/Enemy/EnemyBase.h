@@ -25,14 +25,17 @@ public:
 
 	// --------------------- Variable ---------------------------
 
-	UPROPERTY( EditAnywhere, BlueprintReadOnly )
-		class UEnemyBaseFSM* EnemyBaseFSM;
+	//UPROPERTY( EditAnywhere, BlueprintReadOnly )
+		//class UEnemyBaseFSM* EnemyBaseFSM;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly )
 		class UWidgetComponent* EnemyHPComponent;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly )
 		UArrowComponent* BulletREF;
+
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly)
+		class UEnemyBaseFSM* EnemyBaseFSM;
 
 	UPROPERTY( EditAnywhere, BlueprintReadWrite )
 		float MaxHP{ 1 };

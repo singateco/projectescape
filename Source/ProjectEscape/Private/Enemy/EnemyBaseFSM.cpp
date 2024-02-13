@@ -83,7 +83,7 @@ void UEnemyBaseFSM::TickMove()
 	if (Player)
 	Ai->SetFocus(Player);
 
-	if(dir.Size() <= AttackDistance)
+	if(dir.Size() <= AttackDistance && bCanSeePlayer )
 	{
 		SetState(EEnemyState::Attack);
 	}

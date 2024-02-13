@@ -50,15 +50,17 @@ public:
 		class AAIController* Ai;
 
 	float CurrentTime;
-
 	UPROPERTY(EditAnywhere)
-	float AttackTime = 1;
+	float AttackTime = 0.3;
 
 	float AttackDistance;
 	FVector RandomLocation;
 
 	int32 HP;
 	int32 MaxHP;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bCanSeePlayer = false;
 
 	// --------------------- Function ---------------------------
 
