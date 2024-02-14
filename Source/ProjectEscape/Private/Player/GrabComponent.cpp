@@ -176,8 +176,9 @@ void UGrabComponent::ReleaseObject()
 			}
 		}
 
-		FVector DirectionPower = HandleObject->GetGrabbedComponent()->GetComponentLocation() - ThrowingLoc;
-		HandleObject->GetGrabbedComponent()->AddImpulse( DirectionPower);
+		//FVector ThrowingDirection = HandleObject->GetGrabbedComponent()->GetComponentLocation() - ThrowingLoc;
+		FVector ThrowingDirection =ThrowingLoc - HandleObject->GetGrabbedComponent()->GetComponentLocation();
+		HandleObject->GetGrabbedComponent()->AddImpulse( ThrowingDirection * ThrowingPower);
 
 		HandleObject->ReleaseComponent();
 

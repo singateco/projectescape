@@ -26,7 +26,7 @@ public:
 
 	virtual void InitializeComponent() override;
 
-	void DebugShowStamina();
+	void ShowDebugStat();
 	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
@@ -69,6 +69,9 @@ public:
 	// 플레이어.
 	UPROPERTY()
 	AProjectEscapePlayer* Player;
+
+	UPROPERTY()
+	class UPECharacterMovementComponent* CharacterMovementComponent;
 
 
 	// =============== 비행 ===============
@@ -135,6 +138,20 @@ public:
 	UFUNCTION()
 	void PlayDashAnim();
 
+	// ############### 이펙트 ################
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effect")
+	class UNiagaraComponent* DashLine;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|Effect")
+	float DashLineShowVelocity {800};
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effect")
+	UNiagaraComponent* FallSmoke;
+
+	void SetEffectState();
+	
+	
 private:
 	// Input Actions
 	

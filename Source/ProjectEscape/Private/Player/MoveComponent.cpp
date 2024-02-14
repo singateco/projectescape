@@ -4,26 +4,30 @@
 #include "ProjectEscape/Public/Player/MoveComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "NiagaraComponent.h"
+#include "PECharacterMovementComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "ProjectEscape/Public/Player/ProjectEscapePlayer.h"
 
 
 // Sets default values for this component's properties
 UMoveComponent::UMoveComponent()
+	:
+	DashLine(CreateDefaultSubobject<UNiagaraComponent>(TEXT("Dash Line Effect"))),
+	FallSmoke(CreateDefaultSubobject<UNiagaraComponent>(TEXT("Fall Smoke Effect")))
 {
-
 	// Input Action 설정.
-	
+
 	const static ConstructorHelpers::FObjectFinder<UInputAction> JumpActionObjectFinder
-	{TEXT("/Script/EnhancedInput.InputAction'/Game/ThirdPerson/Input/Actions/IA_Jump.IA_Jump'")};
+		{TEXT("/Script/EnhancedInput.InputAction'/Game/ThirdPerson/Input/Actions/IA_Jump.IA_Jump'")};
 
 	if (JumpActionObjectFinder.Succeeded())
 	{
 		JumpAction = JumpActionObjectFinder.Object;
 	}
-	
+
 	const static ConstructorHelpers::FObjectFinder<UInputAction> LookActionObjectFinder
-	{TEXT("/Script/EnhancedInput.InputAction'/Game/ThirdPerson/Input/Actions/IA_Look.IA_Look'")};
+		{TEXT("/Script/EnhancedInput.InputAction'/Game/ThirdPerson/Input/Actions/IA_Look.IA_Look'")};
 
 	if (LookActionObjectFinder.Succeeded())
 	{
@@ -31,7 +35,7 @@ UMoveComponent::UMoveComponent()
 	}
 
 	const static ConstructorHelpers::FObjectFinder<UInputAction> MoveActionObjectFinder
-	{TEXT("/Script/EnhancedInput.InputAction'/Game/ThirdPerson/Input/Actions/IA_Move.IA_Move'")};
+		{TEXT("/Script/EnhancedInput.InputAction'/Game/ThirdPerson/Input/Actions/IA_Move.IA_Move'")};
 
 	if (MoveActionObjectFinder.Succeeded())
 	{
@@ -39,7 +43,7 @@ UMoveComponent::UMoveComponent()
 	}
 
 	const static ConstructorHelpers::FObjectFinder<UInputAction> DashActionObjectFinder
-	{TEXT("/Script/EnhancedInput.InputAction'/Game/ThirdPerson/Input/Actions/IA_Dash.IA_Dash'")};
+		{TEXT("/Script/EnhancedInput.InputAction'/Game/ThirdPerson/Input/Actions/IA_Dash.IA_Dash'")};
 
 	if (DashActionObjectFinder.Succeeded())
 	{
@@ -56,14 +60,24 @@ void UMoveComponent::InitializeComponent()
 
 	Player = GetOwner<AProjectEscapePlayer>();
 	check(Player);
+	
+	CharacterMovementComponent = Cast<UPECharacterMovementComponent>(Player->GetCharacterMovement());
 
 	Player->LandedDelegate.AddDynamic(this, &UMoveComponent::HandleLanding);
 	Player->GetMesh()->GetAnimInstance()->OnMontageEnded.AddUniqueDynamic(this, &UMoveComponent::HandleOnMontageEnded);
+
+	// 이펙트 설정
+	DashLine->AttachToComponent(Player->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	DashLine->SetRelativeLocation(FVector(0, 0, 20));
+	DashLine->SetRelativeRotation(FRotator(0, 90, 0));
+	FallSmoke->AttachToComponent(Player->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 }
 
-void UMoveComponent::DebugShowStamina()
+void UMoveComponent::ShowDebugStat()
 {
-	const FString StaminaString = FString::Printf(TEXT("Stamina: %.f/%.f"), Stamina, MaxStamina);
+	FString StaminaString = FString::Printf(TEXT("Stamina: %.f/%.f"), Stamina, MaxStamina);
+	StaminaString += FString::Printf(TEXT("\nVelocity: %.f"), CharacterMovementComponent->GetLastUpdateVelocity().Length());
+	StaminaString += FString::Printf(TEXT("\nMovement Mode: %s"), *CharacterMovementComponent->GetMovementName());
 
 	DrawDebugString(GetWorld(),
 		Player->GetActorLocation(),
@@ -125,6 +139,30 @@ void UMoveComponent::PlayDashAnim()
 	AnimInstance->Montage_Play(AnimMontageToPlay);
 }
 
+void UMoveComponent::SetEffectState()
+{
+	// Set Dash Line state.
+	if (CharacterMovementComponent->GetLastUpdateVelocity().Length() > DashLineShowVelocity ||
+		CharacterMovementComponent->IsFlying() && CharacterMovementComponent->GetLastUpdateVelocity().Length() > DashLineShowVelocity / 2.f)
+	{
+		DashLine->Activate();
+	}
+	else
+	{
+		DashLine->Deactivate();
+	}
+
+	if (CharacterMovementComponent->IsFlying() ||
+		CharacterMovementComponent->IsFalling())
+	{
+		FallSmoke->SetVisibility(true);
+	}
+	else
+	{
+		FallSmoke->SetVisibility(false);
+	}
+}
+
 // Called when the game starts
 void UMoveComponent::BeginPlay()
 {
@@ -150,7 +188,8 @@ void UMoveComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	
 	ManageFlying(DeltaTime);
 	RecoverStamina(DeltaTime);
-	DebugShowStamina();
+	SetEffectState();
+	ShowDebugStat();
 }
 
 void UMoveComponent::CheckForGroundWhileFlying()
@@ -169,13 +208,13 @@ void UMoveComponent::CheckForGroundWhileFlying()
 
 	if (bHit)
 	{
-		Player->GetCharacterMovement()->SetMovementMode(MOVE_Falling);
+		CharacterMovementComponent->SetMovementMode(MOVE_Falling);
 	}
 }
 
 void UMoveComponent::FallDownWhileFlying()
 {
-	Player->GetCharacterMovement()->AddForce(FVector(0, 0, -1) * DownwardForce);
+	CharacterMovementComponent->AddForce(FVector(0, 0, -1) * DownwardForce);
 }
 
 void UMoveComponent::RecoverStamina(const float DeltaTime)
@@ -251,20 +290,20 @@ void UMoveComponent::HandleJump(const FInputActionInstance& InputActionInstance)
 
 	Player->Jump();
 	
-	if (Player->GetCharacterMovement()->IsMovingOnGround())
+	if (CharacterMovementComponent->IsMovingOnGround())
 	{
 		return;
 	}
 	
-	if (Player->GetCharacterMovement()->MovementMode != MOVE_Flying)
+	if (CharacterMovementComponent->MovementMode != MOVE_Flying)
 	{
 		FVector NowVelocity = Player->GetVelocity();
-		Player->GetCharacterMovement()->Velocity = FVector(NowVelocity.X, NowVelocity.Y, 0);
-		Player->GetCharacterMovement()->SetMovementMode(MOVE_Flying);
+		CharacterMovementComponent->Velocity = FVector(NowVelocity.X, NowVelocity.Y, 0);
+		CharacterMovementComponent->SetMovementMode(MOVE_Flying);
 	}
 	else
 	{
-		Player->GetCharacterMovement()->SetMovementMode(MOVE_Falling);
+		CharacterMovementComponent->SetMovementMode(MOVE_Falling);
 	}
 }
 
@@ -283,13 +322,13 @@ void UMoveComponent::Dash(const FInputActionInstance& InputActionInstance)
 	Stamina -= DashStamina;
 	bIsDashing = true;
 
-	if (Player->GetCharacterMovement()->MovementMode == MOVE_Falling)
+	if (CharacterMovementComponent->MovementMode == MOVE_Falling)
 	{
-		FVector NewVelocity = Player->GetCharacterMovement()->GetLastUpdateVelocity();
+		FVector NewVelocity = CharacterMovementComponent->GetLastUpdateVelocity();
 		NewVelocity.Z = 0;
-		Player->GetCharacterMovement()->Velocity = NewVelocity;
-		Player->GetCharacterMovement()->UpdateComponentVelocity();
-		Player->GetCharacterMovement()->GravityScale = 0.05f;
+		CharacterMovementComponent->Velocity = NewVelocity;
+		CharacterMovementComponent->UpdateComponentVelocity();
+		CharacterMovementComponent->GravityScale = 0.05f;
 
 		if (!DashGravityHandle.IsValid())
 		{
@@ -298,7 +337,7 @@ void UMoveComponent::Dash(const FInputActionInstance& InputActionInstance)
 			FTimerDelegate::CreateLambda(
 				[&]
 				{
-					Player->GetCharacterMovement()->GravityScale = 1.f;
+					CharacterMovementComponent->GravityScale = 1.f;
 					DashGravityHandle.Invalidate();
 				}),
 			0.4f,
@@ -306,13 +345,13 @@ void UMoveComponent::Dash(const FInputActionInstance& InputActionInstance)
 		}
 	}
 	
-	Player->GetCharacterMovement()->AddImpulse(MoveVector * DashForce, true);
+	CharacterMovementComponent->AddImpulse(MoveVector * DashForce, true);
 	PlayDashAnim();
 }
 
 void UMoveComponent::ManageFlying(const float DeltaTime)
 {
-	if (Player->GetCharacterMovement()->MovementMode != MOVE_Flying)
+	if (CharacterMovementComponent->MovementMode != MOVE_Flying)
 	{
 		return;
 	}
@@ -322,7 +361,7 @@ void UMoveComponent::ManageFlying(const float DeltaTime)
 
 	if (Stamina <= 0.f)
 	{
-		Player->GetCharacterMovement()->SetMovementMode(MOVE_Falling);
+		CharacterMovementComponent->SetMovementMode(MOVE_Falling);
 		return;
 	}
 		
