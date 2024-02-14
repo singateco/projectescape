@@ -145,11 +145,11 @@ void UMoveComponent::SetEffectState()
 	if (CharacterMovementComponent->GetLastUpdateVelocity().Length() > DashLineShowVelocity ||
 		CharacterMovementComponent->IsFlying() && CharacterMovementComponent->GetLastUpdateVelocity().Length() > DashLineShowVelocity / 2.f)
 	{
-		DashLine->SetVisibility(true);
+		DashLine->Activate();
 	}
 	else
 	{
-		DashLine->SetVisibility(false);
+		DashLine->Deactivate();
 	}
 
 	if (CharacterMovementComponent->IsFlying() ||
