@@ -36,6 +36,14 @@ void UEnemyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	IsFalling = movement->IsFalling();
 }
 
+void UEnemyAnimInstance::PlayShootMontage()
+{
+	if ( EnemyShootMontage )
+	{
+		Montage_Play( EnemyShootMontage );
+	}
+}
+
 void UEnemyAnimInstance::PlayHitAnimMontage()
 {
 	if ( EnemyHitMontage )
@@ -49,6 +57,15 @@ void UEnemyAnimInstance::PlayDieAnimMontage()
 	if(EnemyDieMontage)
 	{
 		Montage_Play( EnemyDieMontage );
+	}
+}
+
+void UEnemyAnimInstance::AnimNotify_DamageEnd()
+{
+	if(Enemy)
+	{
+		Enemy->EnemyBaseFSM->OnChangeMoveState();
+		Montage_Stop( 0.1f, EnemyHitMontage);
 	}
 }
 

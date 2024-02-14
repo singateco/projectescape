@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "Enemy/EnemyBaseFSM.h"
 #include "EnemyAnimInstance.generated.h"
 
 /**
@@ -21,6 +22,9 @@ public:
 	UPROPERTY()
 		class AEnemyBase* Enemy;
 
+	UPROPERTY( EditAnywhere, BlueprintReadWrite )
+		EEnemyState State;
+
 	// 앞뒤로 움직이는 속력
 	UPROPERTY( EditAnywhere, BlueprintReadWrite )
 		float Speed;
@@ -36,9 +40,15 @@ public:
 		UAnimMontage* EnemyHitMontage;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category="AnimMontage" )
+		UAnimMontage* EnemyShootMontage;
+
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category="AnimMontage" )
 		UAnimMontage* EnemyDieMontage;
 
+	void PlayShootMontage();
 	void PlayHitAnimMontage();
 	void PlayDieAnimMontage();
 
+
+	void AnimNotify_DamageEnd();
 };

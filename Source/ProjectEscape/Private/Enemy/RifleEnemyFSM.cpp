@@ -48,7 +48,7 @@ void URifleEnemyFSM::TickAttack()
 	if(CurrentTime > AttackTime)
 	{
 		CurrentTime = 0;
-		//EnemyAnim->IsAttack = true;
+		EnemyAnim->PlayShootMontage();
 
 		FVector DirectionToPlayer = (Player->GetActorLocation() - Enemy->GetActorLocation()).GetSafeNormal();
 		FRotator RotationToPlayer = DirectionToPlayer.Rotation();

@@ -54,20 +54,6 @@ void UEnemyBaseFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 	}
 }
 
-void UEnemyBaseFSM::SetState(EEnemyState Next)
-{
-	//check(EnemyAnim);
-	// 이동상태로 전이한다면
-	if (Next == EEnemyState::Move)
-	{
-		// 랜덤위치를 갱신하고싶다.
-		UpdateRandomLocation(Enemy->GetActorLocation(), 500, RandomLocation);
-	}
-
-	State = Next;
-	//EnemyAnim->State = Next;
-	
-}
 
 void UEnemyBaseFSM::TickIdle()
 {
@@ -108,8 +94,10 @@ void UEnemyBaseFSM::TickMove()
 		}
 	}
 
-	if (Player)
-	Ai->SetFocus(Player);
+	if ( Player )
+	{
+		Ai->SetFocus( Player );
+	}
 
 	if(dir.Size() <= AttackDistance && bCanSeePlayer )
 	{
@@ -130,13 +118,16 @@ void UEnemyBaseFSM::TickAttack()
 
 void UEnemyBaseFSM::TickDamage()
 {
-
+	
 }
 
 void UEnemyBaseFSM::TickDie()
 {
 	// 죽으면 총 안맞게 하기	
 	Enemy->GetCapsuleComponent()->SetCollisionResponseToChannel( ECC_Visibility, ECR_Ignore );
+
+	Ai->StopMovement();
+	Ai->ClearFocus(2);
 
 	CurrentTime += GetWorld()->GetDeltaSeconds();
 
@@ -152,9 +143,14 @@ void UEnemyBaseFSM::TickDie()
 
 }
 
+void UEnemyBaseFSM::OnChangeMoveState()
+{
+	SetState( EEnemyState::Move );
+}
+
 void UEnemyBaseFSM::OnTakeDamage(int32 Damage)
 {
-	//Ai->StopMovement();
+	Ai->StopMovement();
 	UpdateHP(-Damage);
 	if(HP > 0)
 	{
@@ -167,6 +163,23 @@ void UEnemyBaseFSM::OnTakeDamage(int32 Damage)
 		EnemyAnim->PlayDieAnimMontage();
 	}
 }
+
+void UEnemyBaseFSM::SetState( EEnemyState Next )
+{
+	check( EnemyAnim );
+	// 이동상태로 전이한다면
+	if ( Next == EEnemyState::Move )
+	{
+		// 랜덤위치를 갱신하고싶다.
+		UpdateRandomLocation( Enemy->GetActorLocation(), 500, RandomLocation );
+	}
+
+	State = Next;
+	EnemyAnim->State = Next;
+	CurrentTime = 0;
+
+}
+
 
 void UEnemyBaseFSM::UpdateHP(int32 NewHP)
 {

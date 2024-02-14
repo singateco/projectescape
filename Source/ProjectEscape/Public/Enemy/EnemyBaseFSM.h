@@ -55,10 +55,13 @@ public:
 	UPROPERTY(EditAnywhere)
 	float AttackTime = 0.5f;
 
+	UPROPERTY( EditAnywhere )
+	float DamageTime = 1.0f;
+
 	UPROPERTY(EditAnywhere)
 	float AttackDistance;
 
-	float DieTime = 3.0f;
+	float DieTime = 10.0f;
 	FVector RandomLocation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -80,7 +83,7 @@ public:
 	void TickDamage();
 	void TickDie();
 
-
+	void OnChangeMoveState();
 	void OnTakeDamage(int32 Damage);
 	void UpdateHP(int32 NewHP);
 
