@@ -23,6 +23,7 @@ URifleEnemyFSM::URifleEnemyFSM()
 
 	AttackDistance = 1500;
 	MaxHP = 3;
+
 }
 
 
@@ -49,7 +50,12 @@ void URifleEnemyFSM::TickAttack()
 		CurrentTime = 0;
 		//EnemyAnim->IsAttack = true;
 
-		GetWorld()->SpawnActor<AEnemyBullet>(AEnemyBullet::StaticClass(), Enemy->BulletREF->GetComponentTransform());
+		FVector DirectionToPlayer = (Player->GetActorLocation() - Enemy->GetActorLocation()).GetSafeNormal();
+		FRotator RotationToPlayer = DirectionToPlayer.Rotation();
+
+		check( EnemyBulletFactory );
+		GetWorld()->SpawnActor<AEnemyBullet>(EnemyBulletFactory, Enemy->BulletREF->GetComponentLocation(), RotationToPlayer);
+		
 	}
 
 	float dist = FVector::Dist(Player->GetActorLocation(), Enemy->GetActorLocation());

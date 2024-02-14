@@ -24,7 +24,7 @@ AEnemyBase::AEnemyBase()
 
 	EnemyBaseFSM = CreateDefaultSubobject<UEnemyBaseFSM>(TEXT("EnemyBaseFSM"));
 	BulletREF = CreateDefaultSubobject<UArrowComponent>(TEXT("BulletREF"));
-	BulletREF->SetRelativeLocation(FVector(20, 0, 50));
+	BulletREF->SetRelativeLocation(FVector(40, 0, 50));
 	BulletREF->SetupAttachment(RootComponent);
 	EnemyHPComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("EnemyHPComponent"));
 	EnemyHPComponent->SetupAttachment(RootComponent);

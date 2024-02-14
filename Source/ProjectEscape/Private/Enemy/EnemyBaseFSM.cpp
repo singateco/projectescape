@@ -109,6 +109,8 @@ void UEnemyBaseFSM::TickDamage()
 
 void UEnemyBaseFSM::TickDie()
 {
+	Enemy->EnemyHPComponent->SetVisibility( false );
+
 	CurrentTime += GetWorld()->GetDeltaSeconds();
 	if(CurrentTime > DieTime )
 	{
