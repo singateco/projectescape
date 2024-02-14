@@ -50,6 +50,8 @@ public:
 		class AAIController* Ai;
 
 	float CurrentTime;
+
+	float WidgetTime = 1.0f;
 	UPROPERTY(EditAnywhere)
 	float AttackTime = 0.5f;
 
@@ -82,5 +84,5 @@ public:
 	void OnTakeDamage(int32 Damage);
 	void UpdateHP(int32 NewHP);
 
-	//bool UpdateRandomLocation(FVector origin, float radius, FVector& outLocation);
+	bool UpdateRandomLocation(FVector origin, float radius, FVector& outLocation);
 };

@@ -37,11 +37,8 @@ public:
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly)
 		class UEnemyBaseFSM* EnemyBaseFSM;
 
-	/*UPROPERTY( EditAnywhere, BlueprintReadWrite )
-		float MaxHP{ 1 };
-
-	UPROPERTY( EditAnywhere, BlueprintReadWrite )
-		float HP{ 1 };*/
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
+		class UNavigationInvokerComponent* NavComponent;
 
 	// --------------------- Function ---------------------------
 

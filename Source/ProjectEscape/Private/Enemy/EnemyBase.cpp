@@ -3,6 +3,7 @@
 
 #include "Enemy/EnemyBase.h"
 
+#include "NavigationInvokerComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
@@ -23,6 +24,8 @@ AEnemyBase::AEnemyBase()
 	PrimaryActorTick.bCanEverTick = true;
 
 	EnemyBaseFSM = CreateDefaultSubobject<UEnemyBaseFSM>(TEXT("EnemyBaseFSM"));
+	NavComponent=CreateDefaultSubobject<UNavigationInvokerComponent>(TEXT("NavComponent"));
+
 	BulletREF = CreateDefaultSubobject<UArrowComponent>(TEXT("BulletREF"));
 	BulletREF->SetRelativeLocation(FVector(40, 0, 50));
 	BulletREF->SetupAttachment(RootComponent);
@@ -50,6 +53,8 @@ AEnemyBase::AEnemyBase()
 
 	AIControllerClass = AEnemyAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
+	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
 
 }
 
