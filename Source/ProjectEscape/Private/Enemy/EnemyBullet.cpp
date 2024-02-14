@@ -20,6 +20,7 @@ AEnemyBullet::AEnemyBullet()
 	EnemyBulletMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("EnemyBulletMesh"));
 	EnemyBulletMesh->SetupAttachment(SphereCollision);
 	EnemyBulletMesh->SetRelativeScale3D(FVector(3.0f, 0.1f, 0.1f));
+	EnemyBulletMesh->SetCollisionEnabled( ECollisionEnabled::NoCollision );
 
 	ConstructorHelpers::FObjectFinder<UStaticMesh>BulletMesh(TEXT("/Script/Engine.StaticMesh'/Game/Material/TracerRound.TracerRound'"));
 
@@ -38,6 +39,7 @@ AEnemyBullet::AEnemyBullet()
 	MovementComponent->InterpLocationTime = 0.05f;
 	MovementComponent->ProjectileGravityScale = 0;
 
+	SetLifeSpan( 3.0f );
 }
 
 
@@ -50,12 +52,13 @@ void AEnemyBullet::BeginPlay()
 	{
 		SphereCollision->OnComponentBeginOverlap.AddDynamic( this, &AEnemyBullet::OnSphereComponentBeginHit );
 	}
+
 }
 
 void AEnemyBullet::OnSphereComponentBeginHit( UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult )
 {
-	//Destroy();
+	this->Destroy();
 }
 
 // Called every frame

@@ -45,11 +45,8 @@ AEnemyBase::AEnemyBase()
 	UCapsuleComponent* cap = GetCapsuleComponent();
 	auto mesh = GetMesh();
 
-	cap->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
-	cap->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
-
-	mesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
-	mesh->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+	cap->SetCollisionProfileName( FName( "Enemy") );
+	mesh->SetCollisionProfileName( FName( "NoCollision" ) );
 
 	AIControllerClass = AEnemyAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
@@ -59,7 +56,7 @@ AEnemyBase::AEnemyBase()
 void AEnemyBase::BeginPlay()
 {
 	Super::BeginPlay();
-	HP = MaxHP;
+
 }
 
 void AEnemyBase::Tick(float DeltaSeconds)
@@ -73,21 +70,30 @@ void AEnemyBase::Tick(float DeltaSeconds)
 	EnemyHPComponent->SetWorldRotation(newRoatation);
 }
 
-void AEnemyBase::DamageProcess(float DamageValue)
+void AEnemyBase::DoDamageUpdateUI(int32 HP, int32 MaxHP)
 {
-	HP -= DamageValue;
-
-	if (HP <= 0)
+	if(EnemyHPComponent && EnemyHPComponent->GetWidget())
 	{
-		Destroy();
-	}
-	else
-	{
-		if (EnemyHPComponent && EnemyHPComponent->GetWidget())
-		{
-			UEnemyHealthBar* Widget = Cast<UEnemyHealthBar>(EnemyHPComponent->GetWidget());
-			Widget->UpdateHP(HP, MaxHP);
-		}
+		UEnemyHealthBar* HealthBar = Cast<UEnemyHealthBar>( EnemyHPComponent->GetWidget() );
+		HealthBar->UpdateHP( HP, MaxHP );
 	}
 }
+
+//void AEnemyBase::DamageProcess(float DamageValue)
+//{
+//	HP -= DamageValue;
+//
+//	if (HP <= 0)
+//	{
+//		EnemyBaseFSM->SetState(EEnemyState::Die);
+//	}
+//	else
+//	{
+//		if (EnemyHPComponent && EnemyHPComponent->GetWidget())
+//		{
+//			UEnemyHealthBar* Widget = Cast<UEnemyHealthBar>(EnemyHPComponent->GetWidget());
+//			Widget->UpdateHP(HP, MaxHP);
+//		}
+//	}
+//}
 

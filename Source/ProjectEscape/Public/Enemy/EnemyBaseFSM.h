@@ -51,12 +51,18 @@ public:
 
 	float CurrentTime;
 	UPROPERTY(EditAnywhere)
-	float AttackTime = 0.3;
+	float AttackTime = 0.5f;
 
+	UPROPERTY(EditAnywhere)
 	float AttackDistance;
+
+	float DieTime = 3.0f;
 	FVector RandomLocation;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 HP;
+
+	UPROPERTY( EditAnywhere, BlueprintReadWrite )
 	int32 MaxHP;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

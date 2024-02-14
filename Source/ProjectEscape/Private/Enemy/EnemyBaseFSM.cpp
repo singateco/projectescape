@@ -4,8 +4,10 @@
 #include "Enemy/EnemyBaseFSM.h"
 
 #include "AIController.h"
+#include "Components/WidgetComponent.h"
 #include "Enemy/EnemyAnimInstance.h"
 #include "Enemy/EnemyBase.h"
+#include "Enemy/EnemyHealthBar.h"
 #include "Player/ProjectEscapePlayer.h"
 
 // Sets default values for this component's properties
@@ -107,6 +109,11 @@ void UEnemyBaseFSM::TickDamage()
 
 void UEnemyBaseFSM::TickDie()
 {
+	CurrentTime += GetWorld()->GetDeltaSeconds();
+	if(CurrentTime > DieTime )
+	{
+		Enemy->Destroy();
+	}
 
 }
 
@@ -119,11 +126,17 @@ void UEnemyBaseFSM::OnTakeDamage(int32 Damage)
 		SetState(EEnemyState::Damage);
 		//PlayMontageDamage();
 	}
+	else
+	{
+		SetState( EEnemyState::Die );
+	}
 }
 
 void UEnemyBaseFSM::UpdateHP(int32 NewHP)
 {
 	HP = FMath::Max(0, HP + NewHP);
+
+	Enemy->DoDamageUpdateUI( HP, MaxHP );
 }
 
 

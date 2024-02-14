@@ -6,6 +6,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"
 #include "Enemy/EnemyBase.h"
+#include "Enemy/EnemyBaseFSM.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystem.h"
@@ -143,11 +144,12 @@ void UFireComponent::NormalGunFire()
 			UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), GunEffect, EndPos2, FRotator() );
 		}
 		
-		
-		
+
 		if (Enemy)
 		{
-			Enemy->DamageProcess(1);
+			auto FSM = Enemy->GetDefaultSubobjectByName(TEXT("EnemyBaseFSM"));
+			UEnemyBaseFSM* EnemyBaseFsm=Cast<UEnemyBaseFSM>( FSM );
+			EnemyBaseFsm->OnTakeDamage(1);
 		}
 	}
 	//auto Anim = Cast<UProjectEscapeAnimInstance>(GetMesh()->GetAnimInstance());

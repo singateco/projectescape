@@ -37,15 +37,18 @@ public:
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly)
 		class UEnemyBaseFSM* EnemyBaseFSM;
 
-	UPROPERTY( EditAnywhere, BlueprintReadWrite )
+	/*UPROPERTY( EditAnywhere, BlueprintReadWrite )
 		float MaxHP{ 1 };
 
 	UPROPERTY( EditAnywhere, BlueprintReadWrite )
-		float HP{ 1 };
+		float HP{ 1 };*/
 
 	// --------------------- Function ---------------------------
 
-	UFUNCTION( BlueprintCallable )
-		void DamageProcess( float DamageValue );
+	//UFUNCTION( BlueprintCallable )
+	//	void DamageProcess( float DamageValue );
 
+
+	UFUNCTION()
+	void DoDamageUpdateUI( int32 HP, int32 MaxHP);
 };
