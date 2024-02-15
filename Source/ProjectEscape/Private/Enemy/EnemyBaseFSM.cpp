@@ -173,7 +173,10 @@ void UEnemyBaseFSM::OnTakeDamage(float Damage_Unused)
 void UEnemyBaseFSM::OnDying()
 {
 	SetState( EEnemyState::Die );
-	EnemyAnim->PlayDieAnimMontage();
+	//EnemyAnim->PlayDieAnimMontage();
+
+	Enemy->GetMesh()->SetCollisionProfileName( TEXT( "Ragdoll" ) );
+	Enemy->GetMesh()->SetSimulatePhysics( true );
 }
 
 void UEnemyBaseFSM::SetState( EEnemyState Next )
