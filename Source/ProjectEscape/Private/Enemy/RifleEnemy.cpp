@@ -29,8 +29,4 @@ ARifleEnemy::ARifleEnemy(const FObjectInitializer& ObjectInitializer)
 	MaxHP = 4;
 }
 
-void ARifleEnemy::BeginPlay()
-{
-	Super::BeginPlay();
-}
 
