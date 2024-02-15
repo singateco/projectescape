@@ -5,6 +5,7 @@
 
 #include "AIController.h"
 #include "NavigationSystem.h"
+#include "Character/StatsComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Enemy/EnemyAnimInstance.h"
@@ -19,7 +20,6 @@ UEnemyBaseFSM::UEnemyBaseFSM()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
 }
 
 
@@ -33,9 +33,11 @@ void UEnemyBaseFSM::BeginPlay()
 	Ai = Cast<AAIController>(Enemy->GetController());
 	Player = Cast<AProjectEscapePlayer>(GetWorld()->GetFirstPlayerController()->GetPawn());
 
-	HP = 0;
-	UpdateHP(MaxHP);
-	
+	if (UStatsComponent* StatsComponent = Enemy->GetStatsComponent())
+	{
+		StatsComponent->OnTakenDamage.AddDynamic(this, &UEnemyBaseFSM::OnTakeDamage);
+		StatsComponent->OnHPReachedZero.AddDynamic(this, &UEnemyBaseFSM::OnDying);
+	}
 }
 
 
@@ -43,7 +45,16 @@ void UEnemyBaseFSM::BeginPlay()
 void UEnemyBaseFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
+	
+	DrawDebugString(GetWorld(),
+		Enemy->GetActorLocation() + FVector(0, 0, 100),
+		UEnum::GetDisplayValueAsText(State).ToString(),
+		nullptr,
+		FColor::Orange,
+		0,
+		true,
+		0.9);
+		
 	switch (State)
 	{
 	case EEnemyState::Idle: TickIdle(); break;
@@ -118,7 +129,12 @@ void UEnemyBaseFSM::TickAttack()
 
 void UEnemyBaseFSM::TickDamage()
 {
-	
+	Ai->StopMovement();
+
+	if (!EnemyAnim->IsAnyMontagePlaying())
+	{
+		SetState(EEnemyState::Idle);
+	}
 }
 
 void UEnemyBaseFSM::TickDie()
@@ -148,20 +164,16 @@ void UEnemyBaseFSM::OnChangeMoveState()
 	SetState( EEnemyState::Move );
 }
 
-void UEnemyBaseFSM::OnTakeDamage(int32 Damage)
+void UEnemyBaseFSM::OnTakeDamage()
 {
-	Ai->StopMovement();
-	UpdateHP(-Damage);
-	if(HP > 0)
-	{
-		//SetState(EEnemyState::Damage);
-		EnemyAnim->PlayHitAnimMontage();
-	}
-	else
-	{
-		SetState( EEnemyState::Die );
-		EnemyAnim->PlayDieAnimMontage();
-	}
+	SetState( EEnemyState::Damage );
+	EnemyAnim->PlayHitAnimMontage();
+}
+
+void UEnemyBaseFSM::OnDying()
+{
+	SetState( EEnemyState::Die );
+	EnemyAnim->PlayDieAnimMontage();
 }
 
 void UEnemyBaseFSM::SetState( EEnemyState Next )
@@ -180,13 +192,6 @@ void UEnemyBaseFSM::SetState( EEnemyState Next )
 
 }
 
-
-void UEnemyBaseFSM::UpdateHP(int32 NewHP)
-{
-	HP = FMath::Max(0, HP + NewHP);
-
-	Enemy->DoDamageUpdateUI( HP, MaxHP );
-}
 
 bool UEnemyBaseFSM::UpdateRandomLocation(FVector origin, float radius, FVector& outLocation)
 {

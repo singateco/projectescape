@@ -22,9 +22,5 @@ public:
 	class URifleEnemyFSM* RifleEnemyFSM;*/
 	
 	// --------------------- Function ---------------------------
-
 	
-
-
-
 };

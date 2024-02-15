@@ -4,6 +4,7 @@
 #include "Enemy/EnemyBullet.h"
 
 #include "Components/SphereComponent.h"
+#include "Engine/StaticMeshActor.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
 // Sets default values
@@ -58,9 +59,10 @@ void AEnemyBullet::BeginPlay()
 void AEnemyBullet::OnSphereComponentBeginHit( UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult )
 {
-
-
-	this->Destroy();
+	if (Cast<AStaticMeshActor>(OtherActor))
+	{
+		this->Destroy();
+	}
 }
 
 // Called every frame

@@ -144,16 +144,11 @@ void UFireComponent::NormalGunFire()
 			UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), GunEffect, EndPos2, FRotator() );
 		}
 		
-
 		if (Enemy)
 		{
-			auto FSM = Enemy->GetDefaultSubobjectByName(TEXT("EnemyBaseFSM"));
-			UEnemyBaseFSM* EnemyBaseFsm=Cast<UEnemyBaseFSM>( FSM );
-			EnemyBaseFsm->OnTakeDamage(1);
+			Enemy->ProcessDamage(1);
 		}
 	}
-	//auto Anim = Cast<UProjectEscapeAnimInstance>(GetMesh()->GetAnimInstance());
-	//Anim->PlayerFireAnimation();
 }
 
 void UFireComponent::AttachPistol()

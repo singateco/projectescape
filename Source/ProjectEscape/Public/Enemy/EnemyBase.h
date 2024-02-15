@@ -22,6 +22,8 @@ public:
 	virtual void BeginPlay() override;
 
 	virtual void Tick( float DeltaSeconds ) override;
+	
+	virtual void PreInitializeComponents() override;
 
 	// --------------------- Variable ---------------------------
 
@@ -30,6 +32,9 @@ public:
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly )
 		class UWidgetComponent* EnemyHPComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	class UEnemyHealthBar* EnemyHealthBarWidget;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly )
 		UArrowComponent* BulletREF;
@@ -44,8 +49,4 @@ public:
 
 	//UFUNCTION( BlueprintCallable )
 	//	void DamageProcess( float DamageValue );
-
-
-	UFUNCTION()
-	void DoDamageUpdateUI( int32 HP, int32 MaxHP);
 };

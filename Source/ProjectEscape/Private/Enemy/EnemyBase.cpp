@@ -31,6 +31,7 @@ AEnemyBase::AEnemyBase()
 	BulletREF->SetupAttachment(RootComponent);
 	EnemyHPComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("EnemyHPComponent"));
 	EnemyHPComponent->SetupAttachment(RootComponent);
+	
 	//WBP(블루프린트 클래스)를 로드해서 HPComp의 위젯으로 설정, FClassFinder 주소 마지막에 _C해야함 블루프린트라서
 	ConstructorHelpers::FClassFinder<UUserWidget> tempHP(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/UI/WBP_EnemyHealthBar.WBP_EnemyHealthBar_C'"));
 
@@ -75,12 +76,16 @@ void AEnemyBase::Tick(float DeltaSeconds)
 	EnemyHPComponent->SetWorldRotation(newRoatation);
 }
 
-void AEnemyBase::DoDamageUpdateUI(int32 HP, int32 MaxHP)
+void AEnemyBase::PreInitializeComponents()
 {
-	if(EnemyHPComponent && EnemyHPComponent->GetWidget())
+	Super::PreInitializeComponents();
+
+	if (EnemyHPComponent)
 	{
-		UEnemyHealthBar* HealthBar = Cast<UEnemyHealthBar>( EnemyHPComponent->GetWidget() );
-		HealthBar->UpdateHP( HP, MaxHP );
+		TSubclassOf<UUserWidget> WidgetClass = EnemyHPComponent->GetWidgetClass();
+		EnemyHealthBarWidget = Cast<UEnemyHealthBar>(CreateWidget(GetWorld(), WidgetClass));
+		EnemyHealthBarWidget->OwnedEnemy = this;
+		EnemyHPComponent->SetWidget(EnemyHealthBarWidget);
 	}
 }
 
