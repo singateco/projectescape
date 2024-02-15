@@ -3,12 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagAssetInterface.h"
 #include "Character/StatsComponent.h"
 #include "GameFramework/Character.h"
 #include "CharacterBase.generated.h"
 
 UCLASS()
-class PROJECTESCAPE_API ACharacterBase : public ACharacter
+class PROJECTESCAPE_API ACharacterBase : public ACharacter, public IGameplayTagAssetInterface
 {
 	GENERATED_BODY()
 
@@ -40,4 +41,9 @@ public:
 	UStatsComponent* GetStatsComponent() const { return StatsComponent; }
 
 	virtual void PreInitializeComponents() override;
+	
+	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
+
+	void AddGameplayTag(const FGameplayTag& TagToAdd);
+	void RemoveGameplayTag(const FGameplayTag& TagToRemove);
 };

@@ -14,6 +14,7 @@
 #include "Player/GrabComponent.h"
 #include "Player/PhysicsHandleComp.h"
 #include "Player/PlayerStatsComponent.h"
+#include "ProjectEscape/PEGameplayTags.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -125,7 +126,7 @@ void AProjectEscapePlayer::Look(const FInputActionValue& Value)
 
 void AProjectEscapePlayer::Die()
 {
-	if (bIsDead)
+	if (HasMatchingGameplayTag(PEGameplayTags::Status_IsDead))
 	{
 		return;
 	}
@@ -138,8 +139,8 @@ void AProjectEscapePlayer::Die()
 	
 	UAnimInstance* AnimInst = GetMesh()->GetAnimInstance();
 	AnimInst->Montage_Play(DyingAnimMontage);
-	
-	bIsDead = true;
+
+	AddGameplayTag(PEGameplayTags::Status_IsDead);
 }
 
 void AProjectEscapePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

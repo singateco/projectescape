@@ -164,7 +164,7 @@ void UEnemyBaseFSM::OnChangeMoveState()
 	SetState( EEnemyState::Move );
 }
 
-void UEnemyBaseFSM::OnTakeDamage()
+void UEnemyBaseFSM::OnTakeDamage(float Damage_Unused)
 {
 	SetState( EEnemyState::Damage );
 	EnemyAnim->PlayHitAnimMontage();

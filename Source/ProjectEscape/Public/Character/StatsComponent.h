@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "GameplayTagContainer.h"
 #include "StatsComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FHPChanged, float, ChangedMaxHP, float, ChangedHP);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FTakenDamage);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTakenDamage, float, Damage);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FHPReachedZero);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -46,6 +47,15 @@ public:
 		}
 	}
 
+	UPROPERTY()
+	FGameplayTagContainer GameplayTagContainer;
+
+	UFUNCTION(BlueprintCallable)
+	void AddTag(const FGameplayTag& TagToAdd) { GameplayTagContainer.AddTag(TagToAdd); }
+
+	UFUNCTION(BlueprintCallable)
+	void RemoveTag(const FGameplayTag& TagToRemove) { GameplayTagContainer.RemoveTag(TagToRemove); }
+	
 	UFUNCTION()
 	void ProcessDamage(const float DamageValue);
 

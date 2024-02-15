@@ -80,7 +80,7 @@ public:
 	void OnChangeMoveState();
 
 	UFUNCTION()
-	void OnTakeDamage();
+	void OnTakeDamage(float Damage_Unused);
 
 	UFUNCTION()
 	void OnDying();

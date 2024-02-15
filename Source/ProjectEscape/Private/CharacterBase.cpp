@@ -44,3 +44,30 @@ void ACharacterBase::PreInitializeComponents()
 		StatsComponent->SetMaxHP(MaxHP);
 	}
 }
+
+void ACharacterBase::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
+{
+	if (StatsComponent)
+	{
+		TagContainer.Reset();
+		TagContainer.AppendTags(StatsComponent->GameplayTagContainer);	
+	}
+}
+
+void ACharacterBase::AddGameplayTag(const FGameplayTag& TagToAdd)
+{
+	if (StatsComponent)
+	{
+		StatsComponent->AddTag(TagToAdd);
+	}
+}
+
+void ACharacterBase::RemoveGameplayTag(const FGameplayTag& TagToRemove)
+{
+	if (StatsComponent)
+	{
+		StatsComponent->RemoveTag(TagToRemove);
+	}
+}
+
+

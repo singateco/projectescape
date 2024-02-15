@@ -8,15 +8,14 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Enemy/EnemyAIController.h"
-#include "Enemy/EnemyAIPerception.h"
 #include "Enemy/EnemyBaseFSM.h"
 
 #include "Enemy/EnemyHealthBar.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "Perception/AISenseConfig_Sight.h"
 #include "Player/ProjectEscapePlayer.h"
+#include "UI/DamageNumber.h"
 
 
 AEnemyBase::AEnemyBase()
@@ -44,6 +43,13 @@ AEnemyBase::AEnemyBase()
 		EnemyHPComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 
+	ConstructorHelpers::FClassFinder<UUserWidget> DamageNumberWidgetFinder {TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/UI/WBP_DamageNumber.WBP_DamageNumber_C'")};
+
+	if (DamageNumberWidgetFinder.Succeeded())
+	{
+		DamageNumberWidgetClass = DamageNumberWidgetFinder.Class;
+	}
+
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	UCapsuleComponent* cap = GetCapsuleComponent();
@@ -63,6 +69,9 @@ void AEnemyBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	check(DamageNumberWidgetClass);
+	
+	StatsComponent->OnTakenDamage.AddUniqueDynamic(this, &AEnemyBase::DisplayDamageNumber);
 }
 
 void AEnemyBase::Tick(float DeltaSeconds)
@@ -89,21 +98,10 @@ void AEnemyBase::PreInitializeComponents()
 	}
 }
 
-//void AEnemyBase::DamageProcess(float DamageValue)
-//{
-//	HP -= DamageValue;
-//
-//	if (HP <= 0)
-//	{
-//		EnemyBaseFSM->SetState(EEnemyState::Die);
-//	}
-//	else
-//	{
-//		if (EnemyHPComponent && EnemyHPComponent->GetWidget())
-//		{
-//			UEnemyHealthBar* Widget = Cast<UEnemyHealthBar>(EnemyHPComponent->GetWidget());
-//			Widget->UpdateHP(HP, MaxHP);
-//		}
-//	}
-//}
-
+void AEnemyBase::DisplayDamageNumber(const float DamageToDisplay)
+{
+	UDamageNumber* DamageWidget = Cast<UDamageNumber>(CreateWidget(GetWorld(), DamageNumberWidgetClass));
+	DamageWidget->Actor = this;
+	DamageWidget->DamageToDisplay = DamageToDisplay;
+	DamageWidget->AddToViewport(0);
+}

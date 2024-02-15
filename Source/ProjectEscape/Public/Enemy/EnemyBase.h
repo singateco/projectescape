@@ -36,6 +36,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class UEnemyHealthBar* EnemyHealthBarWidget;
 
+	UPROPERTY(EditDefaultsOnly, meta = (Class))
+	TSubclassOf<UUserWidget> DamageNumberWidgetClass;
+
 	UPROPERTY( EditAnywhere, BlueprintReadOnly )
 		UArrowComponent* BulletREF;
 
@@ -47,6 +50,6 @@ public:
 
 	// --------------------- Function ---------------------------
 
-	//UFUNCTION( BlueprintCallable )
-	//	void DamageProcess( float DamageValue );
+	UFUNCTION()
+	void DisplayDamageNumber(const float DamageToDisplay);
 };
