@@ -10,6 +10,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystem.h"
+#include "Player/PlayerStatsComponent.h"
 #include "ProjectEscape/Public/Player/ProjectEscapePlayer.h"
 #include "Weapon/NormalGun.h"
 
@@ -154,7 +155,7 @@ void UFireComponent::NormalGunFire()
 		
 		if (Enemy)
 		{
-			Enemy->ProcessDamage(1);
+			Enemy->ProcessDamage(Player->PlayerStatsComponent->GetGunDamage());
 		}
 	}
 }

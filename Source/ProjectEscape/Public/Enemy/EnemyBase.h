@@ -16,8 +16,7 @@ class PROJECTESCAPE_API AEnemyBase : public ACharacterBase
 	GENERATED_BODY()
 
 public:
-
-	AEnemyBase();
+	explicit AEnemyBase(const FObjectInitializer& ObjectInitializer);
 
 	virtual void BeginPlay() override;
 
@@ -27,9 +26,9 @@ public:
 
 	// --------------------- Variable ---------------------------
 
-	//UPROPERTY( EditAnywhere, BlueprintReadOnly )
-		//class UEnemyBaseFSM* EnemyBaseFSM;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UEnemyStatsComponent* EnemyStatsComponent;
+	
 	UPROPERTY( EditAnywhere, BlueprintReadOnly )
 		class UWidgetComponent* EnemyHPComponent;
 

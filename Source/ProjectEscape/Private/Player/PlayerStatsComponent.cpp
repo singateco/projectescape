@@ -9,6 +9,11 @@ UPlayerStatsComponent::UPlayerStatsComponent()
 {
 }
 
+float UPlayerStatsComponent::GetGunDamage()
+{
+	return GunDamage * GunDamageMultiplier;
+}
+
 void UPlayerStatsComponent::BeginPlay()
 {
 	Super::BeginPlay();
