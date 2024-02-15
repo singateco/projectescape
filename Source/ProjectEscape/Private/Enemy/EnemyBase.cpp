@@ -11,6 +11,7 @@
 #include "Enemy/EnemyBaseFSM.h"
 
 #include "Enemy/EnemyHealthBar.h"
+#include "Enemy/EnemyStatsComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -18,10 +19,13 @@
 #include "UI/DamageNumber.h"
 
 
-AEnemyBase::AEnemyBase()
+AEnemyBase::AEnemyBase(const FObjectInitializer& ObjectInitializer)
+	:
+	Super(ObjectInitializer.SetDefaultSubobjectClass<UEnemyStatsComponent>(TEXT("Stats Component")))
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	EnemyStatsComponent = Cast<UEnemyStatsComponent>(StatsComponent);
 	EnemyBaseFSM = CreateDefaultSubobject<UEnemyBaseFSM>(TEXT("EnemyBaseFSM"));
 	NavComponent = CreateDefaultSubobject<UNavigationInvokerComponent>(TEXT("NavComponent"));
 
@@ -70,7 +74,6 @@ void AEnemyBase::BeginPlay()
 	Super::BeginPlay();
 
 	check(DamageNumberWidgetClass);
-	
 	StatsComponent->OnTakenDamage.AddUniqueDynamic(this, &AEnemyBase::DisplayDamageNumber);
 }
 

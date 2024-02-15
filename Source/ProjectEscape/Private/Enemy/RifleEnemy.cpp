@@ -3,7 +3,9 @@
 
 #include "Enemy/RifleEnemy.h"
 
-ARifleEnemy::ARifleEnemy()
+ARifleEnemy::ARifleEnemy(const FObjectInitializer& ObjectInitializer)
+	:
+	Super(ObjectInitializer)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
