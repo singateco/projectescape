@@ -30,7 +30,7 @@ void UEnemyHealthBar::NativeConstruct()
 
 	if (OwnedEnemy)
 	{
-		OwnedEnemy->GetStatsComponent()->OnHPChanged.AddDynamic(this, &UEnemyHealthBar::UpdateHP);
-		OwnedEnemy->GetStatsComponent()->OnHPReachedZero.AddDynamic(this, &UEnemyHealthBar::HPtoZero);
+		OwnedEnemy->GetStatsComponent()->OnHPChanged.AddUniqueDynamic(this, &UEnemyHealthBar::UpdateHP);
+		OwnedEnemy->GetStatsComponent()->OnHPReachedZero.AddUniqueDynamic(this, &UEnemyHealthBar::HPtoZero);
 	}
 }

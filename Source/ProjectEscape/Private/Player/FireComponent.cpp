@@ -65,6 +65,13 @@ void UFireComponent::BeginPlay()
 	AttachPistol();
 }
 
+void UFireComponent::Deactivate()
+{
+	Super::Deactivate();
+
+	EnhancedInputComponent->ClearBindingsForObject(this);
+}
+
 void UFireComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
@@ -85,6 +92,7 @@ void UFireComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 void UFireComponent::SetupPlayerInputComponent(UEnhancedInputComponent* PlayerInputComponent)
 {
+	EnhancedInputComponent = PlayerInputComponent;
 	PlayerInputComponent->BindAction(ActionFire, ETriggerEvent::Started, this, &UFireComponent::NormalGunFire);
 	PlayerInputComponent->BindAction(ActionAimDownSight, ETriggerEvent::Started, this, &UFireComponent::StartAimDown);
 	PlayerInputComponent->BindAction(ActionAimDownSight, ETriggerEvent::Completed, this, &UFireComponent::EndAimDown);

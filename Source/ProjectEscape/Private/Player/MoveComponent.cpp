@@ -7,6 +7,7 @@
 #include "NiagaraComponent.h"
 #include "PECharacterMovementComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Player/PlayerStatsComponent.h"
 #include "ProjectEscape/Public/Player/ProjectEscapePlayer.h"
 
 
@@ -25,14 +26,7 @@ UMoveComponent::UMoveComponent()
 	{
 		JumpAction = JumpActionObjectFinder.Object;
 	}
-
-	const static ConstructorHelpers::FObjectFinder<UInputAction> LookActionObjectFinder
-		{TEXT("/Script/EnhancedInput.InputAction'/Game/ThirdPerson/Input/Actions/IA_Look.IA_Look'")};
-
-	if (LookActionObjectFinder.Succeeded())
-	{
-		LookAction = LookActionObjectFinder.Object;
-	}
+	
 
 	const static ConstructorHelpers::FObjectFinder<UInputAction> MoveActionObjectFinder
 		{TEXT("/Script/EnhancedInput.InputAction'/Game/ThirdPerson/Input/Actions/IA_Move.IA_Move'")};
@@ -75,13 +69,14 @@ void UMoveComponent::InitializeComponent()
 
 void UMoveComponent::ShowDebugStat()
 {
-	FString StaminaString = FString::Printf(TEXT("Stamina: %.f/%.f"), Stamina, MaxStamina);
-	StaminaString += FString::Printf(TEXT("\nVelocity: %.f"), CharacterMovementComponent->GetLastUpdateVelocity().Length());
-	StaminaString += FString::Printf(TEXT("\nMovement Mode: %s"), *CharacterMovementComponent->GetMovementName());
-
+	FString DebugString = FString::Printf(TEXT("Stamina: %.f/%.f"), Stamina, MaxStamina);
+	DebugString += FString::Printf(TEXT("\nVelocity: %.f"), CharacterMovementComponent->GetLastUpdateVelocity().Length());
+	DebugString += FString::Printf(TEXT("\nMovement Mode: %s"), *CharacterMovementComponent->GetMovementName());
+	DebugString += FString::Printf(TEXT("\nHP: %.f/%.f"), Player->PlayerStatsComponent->GetHP(), Player->PlayerStatsComponent->GetMaxHP());
+	
 	DrawDebugString(GetWorld(),
 		Player->GetActorLocation(),
-		StaminaString,
+		DebugString,
 		nullptr,
 		FColor::White,
 		0.f,
@@ -180,6 +175,13 @@ void UMoveComponent::BeginPlay()
 	Stamina = MaxStamina;
 }
 
+void UMoveComponent::Deactivate()
+{
+	Super::Deactivate();
+
+	EnhancedInputComponent->ClearBindingsForObject(this);
+}
+
 
 // Called every frame
 void UMoveComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -230,15 +232,14 @@ void UMoveComponent::RecoverStamina(const float DeltaTime)
 void UMoveComponent::SetupPlayerInputComponent(UEnhancedInputComponent* PlayerInputComponent)
 {
 
+	EnhancedInputComponent = PlayerInputComponent;
+
 	// Jumping
 	PlayerInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &UMoveComponent::HandleJump);
 	PlayerInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, Player, &ACharacter::StopJumping);
 
 	// Moving
 	PlayerInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &UMoveComponent::Move);
-	
-	// Looking
-	PlayerInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &UMoveComponent::Look);
 
 	// 대시
 	PlayerInputComponent->BindAction(DashAction, ETriggerEvent::Started, this, &UMoveComponent::Dash);
@@ -272,18 +273,6 @@ void UMoveComponent::Move(const FInputActionValue& Value)
 	}
 }
 
-void UMoveComponent::Look(const FInputActionValue& Value)
-{
-	// input is a Vector2D
-	FVector2D LookAxisVector = Value.Get<FVector2D>();
-
-	if (Player->Controller != nullptr)
-	{
-		// add yaw and pitch input to controller
-		Player->AddControllerYawInput(LookAxisVector.X);
-		Player->AddControllerPitchInput(LookAxisVector.Y);
-	}
-}
 
 void UMoveComponent::HandleJump(const FInputActionInstance& InputActionInstance)
 {

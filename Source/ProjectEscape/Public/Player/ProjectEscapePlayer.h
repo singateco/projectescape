@@ -25,6 +25,9 @@ class AProjectEscapePlayer : public ACharacterBase
 	GENERATED_BODY()
 
 public:
+
+	AProjectEscapePlayer(const FObjectInitializer& ObjectInitializer);
+	
 	// #################################
 	// ########### PROPERTIES ##########
 	// #################################
@@ -48,21 +51,35 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputMappingContext* DefaultMappingContext;
 	
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+	class UPlayerStatsComponent* PlayerStatsComponent;
+	
 	// #################################
 	// ########### FUNCTIONS ###########
 	// #################################
-	
-	AProjectEscapePlayer();
 
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
+	/** Called for looking input */
+	void Look(const FInputActionValue& Value);
+
+	UFUNCTION()
+	void Die();
+
+	UPROPERTY(VisibleAnywhere)
+	bool bIsDead {false};
+
 protected:
 	// #################################
 	// ########### FUNCTIONS ###########
 	// #################################
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UAnimMontage* DyingAnimMontage;
 	
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -84,6 +101,9 @@ private:
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
-
+	
+	/** Look Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* LookAction;
 };
 

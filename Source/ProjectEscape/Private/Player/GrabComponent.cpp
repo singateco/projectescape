@@ -75,6 +75,8 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 void UGrabComponent::SetupPlayerInputComponent(UEnhancedInputComponent* PlayerInputComponent)
 {
+	EnhancedInputComponent = PlayerInputComponent;
+	
 	//PlayerInputComponent->BindAction(ActionGrab, ETriggerEvent::Started, this, &UGrabComponent::GrabObject);
 	PlayerInputComponent->BindAction(ActionGrab, ETriggerEvent::Started, this, &UGrabComponent::SphereGrabObject);
 	PlayerInputComponent->BindAction( ActionGrab, ETriggerEvent::Completed, this, &UGrabComponent::ReleaseObject );
@@ -244,4 +246,11 @@ void UGrabComponent::SphereGrabObject()
 
 
 	}
+}
+
+void UGrabComponent::Deactivate()
+{
+	Super::Deactivate();
+
+	EnhancedInputComponent->ClearBindingsForObject(this);
 }
