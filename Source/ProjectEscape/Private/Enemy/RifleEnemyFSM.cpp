@@ -52,7 +52,7 @@ void URifleEnemyFSM::TickAttack()
 		FRotator RotationToPlayer = DirectionToPlayer.Rotation();
 
 		check( EnemyBulletFactory );
-		GetWorld()->SpawnActor<AEnemyBullet>(EnemyBulletFactory, Enemy->BulletREF->GetComponentLocation(), RotationToPlayer);
+		GetWorld()->SpawnActor<AEnemyBullet>(EnemyBulletFactory, Enemy->GunMesh->GetSocketLocation(FName(TEXT("Muzzle"))), RotationToPlayer);
 		
 	}
 

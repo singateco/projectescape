@@ -23,11 +23,11 @@ AEnemyBase::AEnemyBase()
 	PrimaryActorTick.bCanEverTick = true;
 
 	EnemyBaseFSM = CreateDefaultSubobject<UEnemyBaseFSM>(TEXT("EnemyBaseFSM"));
-	NavComponent=CreateDefaultSubobject<UNavigationInvokerComponent>(TEXT("NavComponent"));
+	NavComponent = CreateDefaultSubobject<UNavigationInvokerComponent>(TEXT("NavComponent"));
 
-	BulletREF = CreateDefaultSubobject<UArrowComponent>(TEXT("BulletREF"));
-	BulletREF->SetRelativeLocation(FVector(40, 0, 50));
-	BulletREF->SetupAttachment(RootComponent);
+	GunMesh=CreateDefaultSubobject<USkeletalMeshComponent>( TEXT( "GunMesh" ) );
+	GunMesh->SetupAttachment( GetMesh(), FName( TEXT( "RightHandSocket" ) ) );
+
 	EnemyHPComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("EnemyHPComponent"));
 	EnemyHPComponent->SetupAttachment(RootComponent);
 	

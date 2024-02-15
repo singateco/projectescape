@@ -39,8 +39,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, meta = (Class))
 	TSubclassOf<UUserWidget> DamageNumberWidgetClass;
 
-	UPROPERTY( EditAnywhere, BlueprintReadOnly )
-		UArrowComponent* BulletREF;
+	UPROPERTY( EditDefaultsOnly )
+		USkeletalMeshComponent* GunMesh;
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly)
 		class UEnemyBaseFSM* EnemyBaseFSM;
