@@ -27,6 +27,9 @@ public:
 	UPROPERTY()
 	AProjectEscapePlayer* Player;
 
+	UPROPERTY()
+	UEnhancedInputComponent* EnhancedInputComponent;
+
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
 	ANormalGun* NormalGun;
 
@@ -84,8 +87,10 @@ public:
 	UFUNCTION()
 	void HandleFireAnimation();
 
+	virtual void Deactivate() override;
+	
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-
+	
 };

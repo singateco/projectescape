@@ -65,12 +65,6 @@ public:
 	FVector RandomLocation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 HP;
-
-	UPROPERTY( EditAnywhere, BlueprintReadWrite )
-	int32 MaxHP;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bCanSeePlayer = false;
 
 	// --------------------- Function ---------------------------
@@ -84,8 +78,12 @@ public:
 	void TickDie();
 
 	void OnChangeMoveState();
-	void OnTakeDamage(int32 Damage);
-	void UpdateHP(int32 NewHP);
+
+	UFUNCTION()
+	void OnTakeDamage(float Damage_Unused);
+
+	UFUNCTION()
+	void OnDying();
 
 	bool UpdateRandomLocation(FVector origin, float radius, FVector& outLocation);
 };

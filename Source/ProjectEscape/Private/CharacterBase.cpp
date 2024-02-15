@@ -4,9 +4,13 @@
 #include "ProjectEscape/Public/CharacterBase.h"
 
 #include "PECharacterMovementComponent.h"
+#include "Character/StatsComponent.h"
 
 ACharacterBase::ACharacterBase(const FObjectInitializer& ObjectInitializer)
-	:Super(ObjectInitializer.SetDefaultSubobjectClass<UPECharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
+	:
+	Super(ObjectInitializer.SetDefaultSubobjectClass<UPECharacterMovementComponent>(
+		  ACharacter::CharacterMovementComponentName)),
+	StatsComponent(CreateDefaultSubobject<UStatsComponent>(TEXT("Stats Component")))
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -30,4 +34,40 @@ void ACharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
+
+void ACharacterBase::PreInitializeComponents()
+{
+	Super::PreInitializeComponents();
+
+	if (MaxHP != -1)
+	{
+		StatsComponent->SetMaxHP(MaxHP);
+	}
+}
+
+void ACharacterBase::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
+{
+	if (StatsComponent)
+	{
+		TagContainer.Reset();
+		TagContainer.AppendTags(StatsComponent->GameplayTagContainer);	
+	}
+}
+
+void ACharacterBase::AddGameplayTag(const FGameplayTag& TagToAdd)
+{
+	if (StatsComponent)
+	{
+		StatsComponent->AddTag(TagToAdd);
+	}
+}
+
+void ACharacterBase::RemoveGameplayTag(const FGameplayTag& TagToRemove)
+{
+	if (StatsComponent)
+	{
+		StatsComponent->RemoveTag(TagToRemove);
+	}
+}
+
 

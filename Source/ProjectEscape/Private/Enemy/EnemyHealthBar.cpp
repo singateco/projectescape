@@ -3,6 +3,7 @@
 
 #include "Enemy/EnemyHealthBar.h"
 #include "Components/ProgressBar.h"
+#include "Enemy/EnemyBase.h"
 
 void UEnemyHealthBar::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
@@ -12,10 +13,24 @@ void UEnemyHealthBar::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 
 }
 
-void UEnemyHealthBar::UpdateHP(int HP, int MaxHP)
+void UEnemyHealthBar::UpdateHP(float MaxHP, float HP)
 {
-	TargetPercent = (float)HP / MaxHP;
+	TargetPercent = HP / MaxHP;
 	HPBar->SetPercent(TargetPercent);
-	
-	
+}
+
+void UEnemyHealthBar::HPtoZero()
+{
+	HPBar->SetPercent(0.f);
+}
+
+void UEnemyHealthBar::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	if (OwnedEnemy)
+	{
+		OwnedEnemy->GetStatsComponent()->OnHPChanged.AddUniqueDynamic(this, &UEnemyHealthBar::UpdateHP);
+		OwnedEnemy->GetStatsComponent()->OnHPReachedZero.AddUniqueDynamic(this, &UEnemyHealthBar::HPtoZero);
+	}
 }

@@ -15,16 +15,5 @@ class PROJECTESCAPE_API ARifleEnemy : public AEnemyBase
 	GENERATED_BODY()
 
 public:
-	ARifleEnemy();
-
-	// --------------------- Variable ---------------------------
-	/*UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	class URifleEnemyFSM* RifleEnemyFSM;*/
-	
-	// --------------------- Function ---------------------------
-
-	
-
-
-
+	ARifleEnemy(const FObjectInitializer& ObjectInitializer);
 };

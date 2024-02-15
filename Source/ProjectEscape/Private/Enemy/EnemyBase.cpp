@@ -8,21 +8,24 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Enemy/EnemyAIController.h"
-#include "Enemy/EnemyAIPerception.h"
 #include "Enemy/EnemyBaseFSM.h"
 
 #include "Enemy/EnemyHealthBar.h"
+#include "Enemy/EnemyStatsComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "Perception/AISenseConfig_Sight.h"
 #include "Player/ProjectEscapePlayer.h"
+#include "UI/DamageNumber.h"
 
 
-AEnemyBase::AEnemyBase()
+AEnemyBase::AEnemyBase(const FObjectInitializer& ObjectInitializer)
+	:
+	Super(ObjectInitializer.SetDefaultSubobjectClass<UEnemyStatsComponent>(TEXT("Stats Component")))
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	EnemyStatsComponent = Cast<UEnemyStatsComponent>(StatsComponent);
 	EnemyBaseFSM = CreateDefaultSubobject<UEnemyBaseFSM>(TEXT("EnemyBaseFSM"));
 	NavComponent=CreateDefaultSubobject<UNavigationInvokerComponent>(TEXT("NavComponent"));
 
@@ -31,6 +34,7 @@ AEnemyBase::AEnemyBase()
 	BulletREF->SetupAttachment(RootComponent);
 	EnemyHPComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("EnemyHPComponent"));
 	EnemyHPComponent->SetupAttachment(RootComponent);
+	
 	//WBP(블루프린트 클래스)를 로드해서 HPComp의 위젯으로 설정, FClassFinder 주소 마지막에 _C해야함 블루프린트라서
 	ConstructorHelpers::FClassFinder<UUserWidget> tempHP(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/UI/WBP_EnemyHealthBar.WBP_EnemyHealthBar_C'"));
 
@@ -41,6 +45,13 @@ AEnemyBase::AEnemyBase()
 		EnemyHPComponent->SetDrawSize(FVector2D(80, 20));
 		EnemyHPComponent->SetRelativeLocation(FVector(0, 0, 110));
 		EnemyHPComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+
+	ConstructorHelpers::FClassFinder<UUserWidget> DamageNumberWidgetFinder {TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/UI/WBP_DamageNumber.WBP_DamageNumber_C'")};
+
+	if (DamageNumberWidgetFinder.Succeeded())
+	{
+		DamageNumberWidgetClass = DamageNumberWidgetFinder.Class;
 	}
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
@@ -62,6 +73,8 @@ void AEnemyBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	check(DamageNumberWidgetClass);
+	StatsComponent->OnTakenDamage.AddUniqueDynamic(this, &AEnemyBase::DisplayDamageNumber);
 }
 
 void AEnemyBase::Tick(float DeltaSeconds)
@@ -75,30 +88,23 @@ void AEnemyBase::Tick(float DeltaSeconds)
 	EnemyHPComponent->SetWorldRotation(newRoatation);
 }
 
-void AEnemyBase::DoDamageUpdateUI(int32 HP, int32 MaxHP)
+void AEnemyBase::PreInitializeComponents()
 {
-	if(EnemyHPComponent && EnemyHPComponent->GetWidget())
+	Super::PreInitializeComponents();
+
+	if (EnemyHPComponent)
 	{
-		UEnemyHealthBar* HealthBar = Cast<UEnemyHealthBar>( EnemyHPComponent->GetWidget() );
-		HealthBar->UpdateHP( HP, MaxHP );
+		TSubclassOf<UUserWidget> WidgetClass = EnemyHPComponent->GetWidgetClass();
+		EnemyHealthBarWidget = Cast<UEnemyHealthBar>(CreateWidget(GetWorld(), WidgetClass));
+		EnemyHealthBarWidget->OwnedEnemy = this;
+		EnemyHPComponent->SetWidget(EnemyHealthBarWidget);
 	}
 }
 
-//void AEnemyBase::DamageProcess(float DamageValue)
-//{
-//	HP -= DamageValue;
-//
-//	if (HP <= 0)
-//	{
-//		EnemyBaseFSM->SetState(EEnemyState::Die);
-//	}
-//	else
-//	{
-//		if (EnemyHPComponent && EnemyHPComponent->GetWidget())
-//		{
-//			UEnemyHealthBar* Widget = Cast<UEnemyHealthBar>(EnemyHPComponent->GetWidget());
-//			Widget->UpdateHP(HP, MaxHP);
-//		}
-//	}
-//}
-
+void AEnemyBase::DisplayDamageNumber(const float DamageToDisplay)
+{
+	UDamageNumber* DamageWidget = Cast<UDamageNumber>(CreateWidget(GetWorld(), DamageNumberWidgetClass));
+	DamageWidget->Actor = this;
+	DamageWidget->DamageToDisplay = DamageToDisplay;
+	DamageWidget->AddToViewport(0);
+}

@@ -10,7 +10,7 @@ public class ProjectEscape : ModuleRules
 
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "UMG", "AIModule",
 													"InputCore", "EnhancedInput", "NavigationSystem", "GameplayTasks"
-													,"Niagara"
+													,"Niagara", "GameplayTags", "GameplayTagsEditor"
 		});
 	}
 }

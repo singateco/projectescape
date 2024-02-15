@@ -16,20 +16,27 @@ class PROJECTESCAPE_API AEnemyBase : public ACharacterBase
 	GENERATED_BODY()
 
 public:
-
-	AEnemyBase();
+	explicit AEnemyBase(const FObjectInitializer& ObjectInitializer);
 
 	virtual void BeginPlay() override;
 
 	virtual void Tick( float DeltaSeconds ) override;
+	
+	virtual void PreInitializeComponents() override;
 
 	// --------------------- Variable ---------------------------
 
-	//UPROPERTY( EditAnywhere, BlueprintReadOnly )
-		//class UEnemyBaseFSM* EnemyBaseFSM;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UEnemyStatsComponent* EnemyStatsComponent;
+	
 	UPROPERTY( EditAnywhere, BlueprintReadOnly )
 		class UWidgetComponent* EnemyHPComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	class UEnemyHealthBar* EnemyHealthBarWidget;
+
+	UPROPERTY(EditDefaultsOnly, meta = (Class))
+	TSubclassOf<UUserWidget> DamageNumberWidgetClass;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly )
 		UArrowComponent* BulletREF;
@@ -42,10 +49,6 @@ public:
 
 	// --------------------- Function ---------------------------
 
-	//UFUNCTION( BlueprintCallable )
-	//	void DamageProcess( float DamageValue );
-
-
 	UFUNCTION()
-	void DoDamageUpdateUI( int32 HP, int32 MaxHP);
+	void DisplayDamageNumber(const float DamageToDisplay);
 };

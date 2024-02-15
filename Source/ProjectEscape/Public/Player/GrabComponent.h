@@ -30,6 +30,8 @@ public:
 	UPROPERTY()
 	AProjectEscapePlayer* Player;
 
+	UPROPERTY()
+	UEnhancedInputComponent* EnhancedInputComponent;
 
 	UPROPERTY( EditDefaultsOnly, Category="Weapon" )
 	float MaxDistanceToGrab=10000000.0f;
@@ -80,4 +82,6 @@ public:
 	void ReleaseObject();
 
 	void SphereGrabObject();
+	
+	virtual void Deactivate() override;
 };

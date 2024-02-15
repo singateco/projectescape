@@ -3,7 +3,9 @@
 
 #include "Enemy/RifleEnemy.h"
 
-ARifleEnemy::ARifleEnemy()
+ARifleEnemy::ARifleEnemy(const FObjectInitializer& ObjectInitializer)
+	:
+	Super(ObjectInitializer)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -15,6 +17,6 @@ ARifleEnemy::ARifleEnemy()
 		GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -90), FRotator(0, -90, 0));
 	}
 
-
+	MaxHP = 4;
 }
 

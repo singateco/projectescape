@@ -6,10 +6,9 @@
 #include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"
 #include "Enemy/EnemyBase.h"
-#include "Enemy/EnemyBaseFSM.h"
-#include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystem.h"
+#include "Player/PlayerStatsComponent.h"
 #include "ProjectEscape/Public/Player/ProjectEscapePlayer.h"
 #include "Weapon/NormalGun.h"
 
@@ -65,6 +64,13 @@ void UFireComponent::BeginPlay()
 	AttachPistol();
 }
 
+void UFireComponent::Deactivate()
+{
+	Super::Deactivate();
+
+	EnhancedInputComponent->ClearBindingsForObject(this);
+}
+
 void UFireComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
@@ -85,6 +91,7 @@ void UFireComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 void UFireComponent::SetupPlayerInputComponent(UEnhancedInputComponent* PlayerInputComponent)
 {
+	EnhancedInputComponent = PlayerInputComponent;
 	PlayerInputComponent->BindAction(ActionFire, ETriggerEvent::Started, this, &UFireComponent::NormalGunFire);
 	PlayerInputComponent->BindAction(ActionAimDownSight, ETriggerEvent::Started, this, &UFireComponent::StartAimDown);
 	PlayerInputComponent->BindAction(ActionAimDownSight, ETriggerEvent::Completed, this, &UFireComponent::EndAimDown);
@@ -144,16 +151,11 @@ void UFireComponent::NormalGunFire()
 			UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), GunEffect, EndPos2, FRotator() );
 		}
 		
-
 		if (Enemy)
 		{
-			auto FSM = Enemy->GetDefaultSubobjectByName(TEXT("EnemyBaseFSM"));
-			UEnemyBaseFSM* EnemyBaseFsm=Cast<UEnemyBaseFSM>( FSM );
-			EnemyBaseFsm->OnTakeDamage(1);
+			Enemy->ProcessDamage(Player->PlayerStatsComponent->GetGunDamage());
 		}
 	}
-	//auto Anim = Cast<UProjectEscapeAnimInstance>(GetMesh()->GetAnimInstance());
-	//Anim->PlayerFireAnimation();
 }
 
 void UFireComponent::AttachPistol()

@@ -36,9 +36,6 @@ public:
 
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
-
-	/** Called for looking input */
-	void Look(const FInputActionValue& Value);
 	
 	// Handles jumping.
 	void HandleJump(const FInputActionInstance& InputActionInstance);
@@ -72,6 +69,9 @@ public:
 
 	UPROPERTY()
 	class UPECharacterMovementComponent* CharacterMovementComponent;
+
+	UPROPERTY()
+	UEnhancedInputComponent* EnhancedInputComponent;
 
 
 	// =============== 비행 ===============
@@ -162,10 +162,7 @@ private:
 	/** Move Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* MoveAction;
-
-	/** Look Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputAction* LookAction;
+	
 	
 	/** 대시 Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -174,4 +171,7 @@ private:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+
+public:
+	virtual void Deactivate() override;
 };

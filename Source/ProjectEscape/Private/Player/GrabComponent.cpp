@@ -75,6 +75,8 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 void UGrabComponent::SetupPlayerInputComponent(UEnhancedInputComponent* PlayerInputComponent)
 {
+	EnhancedInputComponent = PlayerInputComponent;
+	
 	//PlayerInputComponent->BindAction(ActionGrab, ETriggerEvent::Started, this, &UGrabComponent::GrabObject);
 	PlayerInputComponent->BindAction(ActionGrab, ETriggerEvent::Started, this, &UGrabComponent::SphereGrabObject);
 	PlayerInputComponent->BindAction( ActionGrab, ETriggerEvent::Completed, this, &UGrabComponent::ReleaseObject );
@@ -150,12 +152,13 @@ void UGrabComponent::ReleaseObject()
 		SphereTraceIgnoreActorsArray.Add( Player );
 
 		bool bTraceResult=UKismetSystemLibrary::SphereTraceMulti( GetWorld(), Start, End, RadiusDetection, TraceTypeQuery,
-			false, SphereTraceIgnoreActorsArray, EDrawDebugTrace::ForDuration, HitInfoArray, true );
+			false, SphereTraceIgnoreActorsArray, EDrawDebugTrace::None, HitInfoArray, true );
 
 
 		/**************************************************************************************************/
 		/**************************************************************************************************/
-
+		ThrowingLoc = Player->GetFollowCamera()->GetForwardVector() * MaxDistanceToGrab;
+		
 		if ( bTraceResult )
 		{
 			for ( FHitResult& HitInfo : HitInfoArray )
@@ -168,18 +171,15 @@ void UGrabComponent::ReleaseObject()
 					{
 						FVector EnemyLoc = Enemy->GetActorLocation();
 						ThrowingLoc = EnemyLoc;
-
-					}else
-					{
-						ThrowingLoc = Player->GetFollowCamera()->GetForwardVector() * MaxDistanceToGrab;
+						break;
 					}
 			}
 		}
 
 		//FVector ThrowingDirection = HandleObject->GetGrabbedComponent()->GetComponentLocation() - ThrowingLoc;
-		FVector ThrowingDirection =ThrowingLoc - HandleObject->GetGrabbedComponent()->GetComponentLocation();
-		HandleObject->GetGrabbedComponent()->AddImpulse( ThrowingDirection * ThrowingPower);
-
+		FVector ThrowingDirection = ThrowingLoc - HandleObject->GetGrabbedComponent()->GetComponentLocation();
+		ThrowingDirection.Normalize();
+		HandleObject->GetGrabbedComponent()->AddImpulse( ThrowingDirection * ThrowingPower, NAME_None, true);
 		HandleObject->ReleaseComponent();
 
 		bIsGrabbing=false;
@@ -214,7 +214,7 @@ void UGrabComponent::SphereGrabObject()
 	SphereTraceIgnoreActorsArray.Add( Player );
 
 	bool bTraceResult = UKismetSystemLibrary::SphereTraceMulti( GetWorld(), Start, End, RadiusDetection, TraceTypeQuery,
-		false, SphereTraceIgnoreActorsArray, EDrawDebugTrace::ForDuration, HitInfoArray, true );
+		false, SphereTraceIgnoreActorsArray, EDrawDebugTrace::None, HitInfoArray, true );
 
 
 	/**************************************************************************************************/
@@ -246,4 +246,11 @@ void UGrabComponent::SphereGrabObject()
 
 
 	}
+}
+
+void UGrabComponent::Deactivate()
+{
+	Super::Deactivate();
+
+	EnhancedInputComponent->ClearBindingsForObject(this);
 }

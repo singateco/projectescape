@@ -13,14 +13,26 @@
 #include "Player/FireComponent.h"
 #include "Player/GrabComponent.h"
 #include "Player/PhysicsHandleComp.h"
+#include "Player/PlayerStatsComponent.h"
+#include "ProjectEscape/PEGameplayTags.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
 //////////////////////////////////////////////////////////////////////////
 // AProjectEscapePlayer
 
-AProjectEscapePlayer::AProjectEscapePlayer()
+AProjectEscapePlayer::AProjectEscapePlayer(const FObjectInitializer& ObjectInitializer)
+	:
+	Super(ObjectInitializer.SetDefaultSubobjectClass<UPlayerStatsComponent>(TEXT("Stats Component")))
 {
+	const static ConstructorHelpers::FObjectFinder<UInputAction> LookActionObjectFinder
+		{TEXT("/Script/EnhancedInput.InputAction'/Game/ThirdPerson/Input/Actions/IA_Look.IA_Look'")};
+
+	if (LookActionObjectFinder.Succeeded())
+	{
+		LookAction = LookActionObjectFinder.Object;
+	}
+	
 	PrimaryActorTick.bCanEverTick = true;
 	
 	// Set size for collision capsule
@@ -64,6 +76,11 @@ AProjectEscapePlayer::AProjectEscapePlayer()
 	FireComponent = CreateDefaultSubobject<UFireComponent>(TEXT("Fire Component"));
 	GrabComponent = CreateDefaultSubobject<UGrabComponent>(TEXT("Grab Component"));
 	PhysicsHandleComponent = CreateDefaultSubobject<UPhysicsHandleComp>( TEXT( "PysicsHandleComponent" ) );
+
+	PlayerStatsComponent = Cast<UPlayerStatsComponent>(StatsComponent);
+
+	// Set MaxHP
+	MaxHP = 30;
 }
 
 void AProjectEscapePlayer::BeginPlay()
@@ -79,6 +96,11 @@ void AProjectEscapePlayer::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
+
+	if (PlayerStatsComponent)
+	{
+		PlayerStatsComponent->OnHPReachedZero.AddUniqueDynamic(this, &AProjectEscapePlayer::Die);
+	}
 }
 
 void AProjectEscapePlayer::Tick(float DeltaSeconds)
@@ -89,6 +111,38 @@ void AProjectEscapePlayer::Tick(float DeltaSeconds)
 //////////////////////////////////////////////////////////////////////////
 // Input
 
+void AProjectEscapePlayer::Look(const FInputActionValue& Value)
+{
+	// input is a Vector2D
+	FVector2D LookAxisVector = Value.Get<FVector2D>();
+
+	if (Controller != nullptr)
+	{
+		// add yaw and pitch input to controller
+		AddControllerYawInput(LookAxisVector.X);
+		AddControllerPitchInput(LookAxisVector.Y);
+	}
+}
+
+void AProjectEscapePlayer::Die()
+{
+	if (HasMatchingGameplayTag(PEGameplayTags::Status_IsDead))
+	{
+		return;
+	}
+
+	bUseControllerRotationYaw = false;
+	
+	MoveComponent->Deactivate();
+	FireComponent->Deactivate();
+	GrabComponent->Deactivate();
+	
+	UAnimInstance* AnimInst = GetMesh()->GetAnimInstance();
+	AnimInst->Montage_Play(DyingAnimMontage);
+
+	AddGameplayTag(PEGameplayTags::Status_IsDead);
+}
+
 void AProjectEscapePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	// Set up action bindings
@@ -97,6 +151,9 @@ void AProjectEscapePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 		MoveComponent->SetupPlayerInputComponent(EnhancedInputComponent);
 		FireComponent->SetupPlayerInputComponent(EnhancedInputComponent);
 		GrabComponent->SetupPlayerInputComponent(EnhancedInputComponent);
+		
+		// Looking
+		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AProjectEscapePlayer::Look);
 	}
 	else
 	{

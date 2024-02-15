@@ -32,9 +32,4 @@ public:
 		AEnemyBullet* EnemyBullet;
 
 	void TickAttack() override;
-
-
-	
-
-
 };

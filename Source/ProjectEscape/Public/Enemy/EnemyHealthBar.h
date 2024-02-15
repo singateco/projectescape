@@ -17,14 +17,25 @@ class PROJECTESCAPE_API UEnemyHealthBar : public UUserWidget
 public:
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
+	UFUNCTION()
+	void UpdateHP(float MaxHP, float HP);
 
+	UFUNCTION()
+	void HPtoZero();
+
+protected:
+	
+	virtual void NativeConstruct() override;
+
+public:
 	UPROPERTY(EditInstanceOnly, meta = (BindWidget))
 		class UProgressBar* HPBar;
 
 	UPROPERTY(EditInstanceOnly, meta = (BindWidget))
 		class UProgressBar* HPBarGuide;
 
-	float TargetPercent = 1;
+	UPROPERTY(VisibleAnywhere)
+	class AEnemyBase* OwnedEnemy;
 
-	void UpdateHP(int HP, int MaxHP);
+	float TargetPercent = 1;
 };

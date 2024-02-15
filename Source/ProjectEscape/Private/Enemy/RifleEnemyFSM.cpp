@@ -22,8 +22,6 @@ URifleEnemyFSM::URifleEnemyFSM()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	AttackDistance = 3000;
-	MaxHP = 3;
-
 }
 
 
