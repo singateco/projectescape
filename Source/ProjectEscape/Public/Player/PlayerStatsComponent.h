@@ -16,6 +16,8 @@ public:
 	// Sets default values for this component's properties
 	UPlayerStatsComponent();
 
+	UPROPERTY( EditDefaultsOnly, Category="Damage" )
+	float GrabDamageValue=500.0f;
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

@@ -10,6 +10,7 @@
 class UParticleSystem;
 class UStaticMeshComponent;
 class USphereComponent;
+class AProjectEscapePlayer;
 
 UCLASS()
 class PROJECTESCAPE_API APickableActor : public AActor
@@ -32,6 +33,8 @@ public:
 	UPROPERTY( EditDefaultsOnly)
 	UParticleSystem* GunEffect;
 
+	UPROPERTY( EditDefaultsOnly )
+	AProjectEscapePlayer* Player;
 
 protected:
 	// Called when the game starts or when spawned
