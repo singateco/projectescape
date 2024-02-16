@@ -34,6 +34,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UDataTable* UpgradeDataTable;
 
+	UPROPERTY( EditDefaultsOnly, Category="Damage" )
+	float GrabDamageValue=500.0f;
+
+
+
+	UPROPERTY( EditDefaultsOnly, Category="Fire" )
+	int MaxBullets = 30;
+
+	UPROPERTY( EditDefaultsOnly, Category="Fire" )
+	int CurrentBullets;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

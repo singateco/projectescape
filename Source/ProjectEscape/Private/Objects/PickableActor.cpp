@@ -10,6 +10,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Particles/ParticleSystem.h"
+#include "Player/PlayerStatsComponent.h"
+#include "Player/ProjectEscapePlayer.h"
 
 // Sets default values
 APickableActor::APickableActor()
@@ -19,17 +21,20 @@ APickableActor::APickableActor()
 
 	CollisionComp=CreateDefaultSubobject<USphereComponent>( TEXT( "CollisionComp" ) );
 	SetRootComponent( CollisionComp );
+	CollisionComp->SetCollisionProfileName( TEXT( "PickUpActor" ) );
+	CollisionComp->SetNotifyRigidBodyCollision( true ); // Simulation Generates Hit Events
+	CollisionComp->SetSimulatePhysics(true);
 
 	MeshComp=CreateDefaultSubobject<UStaticMeshComponent>( TEXT( "MeshComp" ) );
 	MeshComp->SetupAttachment( RootComponent );
-	MeshComp->SetCollisionEnabled( ECollisionEnabled::NoCollision );
+	MeshComp->SetCollisionProfileName( TEXT( "PickUpActor" ) );
+	//MeshComp->SetCollisionEnabled( ECollisionEnabled::NoCollision );
 
 	static ConstructorHelpers::FObjectFinder<UParticleSystem> FireEffectFinder{ TEXT( "/Script/Engine.ParticleSystem'/Game/StarterContent/Particles/P_Explosion.P_Explosion'" ) };
 	if ( FireEffectFinder.Succeeded() )
 	{
 		GunEffect=FireEffectFinder.Object;
 	}
-	//Box->SetGenerateOverlapEvents( true );
 	//Box->SetCollisionProfileName( TEXT( "GrabObject" ) );
 }
 
@@ -37,7 +42,9 @@ APickableActor::APickableActor()
 void APickableActor::BeginPlay()
 {
 	Super::BeginPlay();
+	CollisionComp->OnComponentHit.AddDynamic( this, &APickableActor::OnCompHit );
 	MeshComp->OnComponentHit.AddDynamic(this, &APickableActor::OnCompHit );
+	Player=Cast<AProjectEscapePlayer>( GetWorld()->GetFirstPlayerController()->GetPawn() );
 }
 
 // Called every frame
@@ -50,11 +57,16 @@ void APickableActor::Tick(float DeltaTime)
 void APickableActor::OnCompHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	FVector NormalImpulse, const FHitResult& Hit)
 {
-	const TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+	//UE_LOG(LogTemp, Warning, TEXT("%.1f"), NormalImpulse.Length());
+
+
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+	//ObjectTypes.Add(EObjectTypeQuery::)
 	const TArray<AActor*> ActorsToIgnoreArray;
 	TArray<AActor*> OutActorsArray;
 
-	bool bSphereOverlapResult = UKismetSystemLibrary::SphereOverlapActors( GetWorld(), this->GetActorLocation(), SphereRadius, ObjectTypes, AEnemyBase::StaticClass(), ActorsToIgnoreArray, OutActorsArray);
+	//bool bSphereOverlapResult = UKismetSystemLibrary::SphereOverlapActors( GetWorld(), this->GetActorLocation(), SphereRadius, ObjectTypes, AEnemyBase::StaticClass(), ActorsToIgnoreArray, OutActorsArray);
+	bool bSphereOverlapResult = UKismetSystemLibrary::SphereOverlapActors( GetWorld(), this->GetActorLocation(), SphereRadius, ObjectTypes, nullptr, ActorsToIgnoreArray, OutActorsArray);
 	 
 	if( bSphereOverlapResult )
 	{
@@ -62,17 +74,22 @@ void APickableActor::OnCompHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 		for ( AActor* HitActor : OutActorsArray )
 		{
 			//auto Enemy=Cast<AEnemyBase>( HitActor );
-			auto Enemy=Cast<ACharacterBase>( HitActor );
-			if ( Enemy )
+			auto OtherCharacter = Cast<AEnemyBase>( HitActor );
+			if ( OtherCharacter )
 			{
 				//Enemy->EnemyBaseFSM->OnTakeDamage();
-				//Enemy.
+				OtherCharacter->ProcessDamage(Player->PlayerStatsComponent->GrabDamageValue);
 			}
 
-			UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), GunEffect, this->GetActorLocation(), FRotator() , FVector(10), true, EPSCPoolMethod::None, true);
-
-			this->Destroy();
 		}
-		
+
+	}
+
+	if(	this->MeshComp->GetComponentVelocity().Length() > 1000 )
+	{
+		UE_LOG( LogTemp, Warning, TEXT( "%.1f" ), this->MeshComp->GetComponentVelocity().Length() );
+		UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), GunEffect, this->GetActorLocation(), FRotator(), FVector( 10 ), true, EPSCPoolMethod::None, true );
+
+		this->Destroy();
 	}
 }
