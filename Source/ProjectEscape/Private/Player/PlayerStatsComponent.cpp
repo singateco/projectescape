@@ -38,13 +38,13 @@ void UPlayerStatsComponent::OnEnemyHitByPlayerGun(AEnemyBase* Enemy, FHitResult 
 		TArray<AActor*> ActorsToIgnore;
 		TArray<UPrimitiveComponent*> OutComponents;
 		
-		//DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 8.f, 16, FColor::White, false, 2, 0, 1);
+		//DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 12.f, 16, FColor::White, false, 2, 0, 1);
 		//DrawDebugBox(GetWorld(), WeakPointBox->GetComponentLocation(), WeakPointBox->GetScaledBoxExtent(), FColor::Red, false, 2.f, 0, 2.f);
 
 		bHitWeakPoint = UKismetSystemLibrary::SphereOverlapComponents(
 			GetWorld(),
 			HitResult.ImpactPoint,
-			8.f,
+			12.f,
 			ObjectTypes,
 			nullptr,
 			ActorsToIgnore,
