@@ -140,7 +140,6 @@ void UEnemyBaseFSM::TickDamage()
 void UEnemyBaseFSM::TickDie()
 {
 	// 죽으면 총 안맞게 하기	
-	Enemy->GetCapsuleComponent()->SetCollisionProfileName( FName( "NoCollision" ) );
 
 	Ai->StopMovement();
 	Ai->ClearFocus(2);
@@ -175,8 +174,10 @@ void UEnemyBaseFSM::OnDying()
 	SetState( EEnemyState::Die );
 	//EnemyAnim->PlayDieAnimMontage();
 
-	Enemy->GetMesh()->SetCollisionProfileName( TEXT( "Ragdoll" ) );
-	Enemy->GetMesh()->SetSimulatePhysics( true );
+	Enemy->GetCapsuleComponent()->SetCollisionProfileName(FName("NoCollision"));
+	Enemy->GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
+	Enemy->GetMesh()->SetSimulatePhysics(true);
+
 }
 
 void UEnemyBaseFSM::SetState( EEnemyState Next )

@@ -4,7 +4,7 @@
 #include "Enemy/EnemyBase.h"
 
 #include "NavigationInvokerComponent.h"
-#include "Components/ArrowComponent.h"
+#include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Enemy/EnemyAIController.h"
@@ -29,7 +29,14 @@ AEnemyBase::AEnemyBase(const FObjectInitializer& ObjectInitializer)
 	EnemyBaseFSM = CreateDefaultSubobject<UEnemyBaseFSM>(TEXT("EnemyBaseFSM"));
 	NavComponent = CreateDefaultSubobject<UNavigationInvokerComponent>(TEXT("NavComponent"));
 
-	GunMesh=CreateDefaultSubobject<USkeletalMeshComponent>( TEXT( "GunMesh" ) );
+	WeakPoint = CreateDefaultSubobject<UBoxComponent>( TEXT( "WeakPoint" ) );
+	WeakPoint->SetupAttachment( GetMesh() );
+	WeakPoint->SetBoxExtent(FVector(16.f));
+	WeakPoint->SetCollisionObjectType(ECC_GameTraceChannel4);
+	WeakPoint->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	WeakPoint->SetCollisionResponseToAllChannels(ECR_Ignore);
+	
+	GunMesh = CreateDefaultSubobject<USkeletalMeshComponent>( TEXT( "GunMesh" ) );
 	GunMesh->SetupAttachment( GetMesh(), FName( TEXT( "RightHandSocket" ) ) );
 
 	EnemyHPComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("EnemyHPComponent"));

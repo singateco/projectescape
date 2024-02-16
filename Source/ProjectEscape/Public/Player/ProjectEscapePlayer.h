@@ -51,7 +51,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputMappingContext* DefaultMappingContext;
 	
-	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
 	class UPlayerStatsComponent* PlayerStatsComponent;
 	
