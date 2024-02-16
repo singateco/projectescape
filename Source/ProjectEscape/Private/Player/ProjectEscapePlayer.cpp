@@ -126,11 +126,6 @@ void AProjectEscapePlayer::Look(const FInputActionValue& Value)
 
 void AProjectEscapePlayer::Die()
 {
-	if (HasMatchingGameplayTag(PEGameplayTags::Status_IsDead))
-	{
-		return;
-	}
-
 	bUseControllerRotationYaw = false;
 	
 	MoveComponent->Deactivate();
@@ -139,8 +134,6 @@ void AProjectEscapePlayer::Die()
 	
 	UAnimInstance* AnimInst = GetMesh()->GetAnimInstance();
 	AnimInst->Montage_Play(DyingAnimMontage);
-
-	AddGameplayTag(PEGameplayTags::Status_IsDead);
 }
 
 void AProjectEscapePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

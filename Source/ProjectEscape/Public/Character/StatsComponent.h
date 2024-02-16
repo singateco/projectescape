@@ -7,6 +7,7 @@
 #include "GameplayTagContainer.h"
 #include "StatsComponent.generated.h"
 
+class ACharacterBase;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FHPChanged, float, ChangedMaxHP, float, ChangedHP);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTakenDamage, float, Damage);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FHPReachedZero);
@@ -48,6 +49,9 @@ public:
 	}
 
 	UPROPERTY()
+	ACharacterBase* OwningChara;
+
+	UPROPERTY()
 	FGameplayTagContainer GameplayTagContainer;
 
 	UFUNCTION(BlueprintCallable)
@@ -65,7 +69,7 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FHPChanged OnHPChanged;
 	
-	FORCEINLINE void ProcessDying() const { OnHPReachedZero.Broadcast(); }
+	void ProcessDying();
 
 	UPROPERTY(BlueprintAssignable)
 	FHPReachedZero OnHPReachedZero;
