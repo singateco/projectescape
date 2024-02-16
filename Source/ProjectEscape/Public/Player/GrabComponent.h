@@ -40,9 +40,16 @@ public:
 	UPhysicsHandleComp* HandleObject;
 
 	UPROPERTY( EditDefaultsOnly, Category="Grab" )
-	float NewInterpolSpeed= 0.0f;
+	float NewInterpolSpeed= 6.0f;
 
+	UPROPERTY( EditDefaultsOnly, Category="Grab" )
 	bool bIsGrabbing = false;
+
+	UPROPERTY( EditDefaultsOnly, Category="Grab" )
+	bool bIsPushing = false;
+
+	UPROPERTY( EditDefaultsOnly, Category="Grab" )
+	bool bIsPulling = false;
 
 	UPROPERTY( EditDefaultsOnly, Category="Grab" )
 	float NewAngle = 1.0f;
@@ -57,7 +64,7 @@ public:
 	APickableActor* ObjectInHand;
 
 	UPROPERTY( EditDefaultsOnly, Category="Throw" )
-	float ThrowingPower = 1000.0f;
+	float ThrowingPower = 7000.0f;
 
 	//UPROPERTY( EditDefaultsOnly, Category="Throw" )
 	//FVector EnemyLoc;
