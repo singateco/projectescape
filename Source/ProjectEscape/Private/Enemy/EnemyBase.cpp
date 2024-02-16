@@ -31,6 +31,11 @@ AEnemyBase::AEnemyBase(const FObjectInitializer& ObjectInitializer)
 
 	WeakPoint = CreateDefaultSubobject<UBoxComponent>( TEXT( "WeakPoint" ) );
 	WeakPoint->SetupAttachment( GetMesh() );
+	WeakPoint->SetBoxExtent(FVector(16.f));
+	WeakPoint->SetCollisionObjectType(ECC_GameTraceChannel4);
+	WeakPoint->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	WeakPoint->SetCollisionResponseToAllChannels(ECR_Ignore);
+	
 	GunMesh = CreateDefaultSubobject<USkeletalMeshComponent>( TEXT( "GunMesh" ) );
 	GunMesh->SetupAttachment( GetMesh(), FName( TEXT( "RightHandSocket" ) ) );
 

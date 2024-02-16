@@ -5,7 +5,9 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"
+#include "Character/Debuff.h"
 #include "Enemy/EnemyBase.h"
+#include "Enemy/EnemyStatsComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystem.h"
 #include "Player/PlayerStatsComponent.h"
@@ -153,7 +155,7 @@ void UFireComponent::NormalGunFire()
 		
 		if (Enemy)
 		{
-			Enemy->ProcessDamage(Player->PlayerStatsComponent->GetGunDamage());
+			OnEnemyHitByPlayerGun.Broadcast(Enemy, HitInfo2);
 		}
 	}
 }

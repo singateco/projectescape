@@ -50,8 +50,8 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 	// ...
 
-	float TargetSpeed = 50.0f;
-	NewInterpolSpeed = FMath::FInterpTo( NewInterpolSpeed, TargetSpeed, DeltaTime, 0.5 );
+	//float TargetSpeed = 50.0f;
+	//NewInterpolSpeed = FMath::FInterpTo( NewInterpolSpeed, TargetSpeed, DeltaTime, 0.5 );
 
 	HandleObject->SetInterpolationSpeed( NewInterpolSpeed );
 
@@ -59,10 +59,10 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	{
 		HandleObject->SetTargetLocation( Player->GetFollowCamera()->GetComponentLocation() + Player->GetFollowCamera()->GetForwardVector()*500 );
 		//HandleObject->SetTargetLocation( Player->GetMesh()->GetSocketLocation("GrabPosition") );
-		NewAngle+= RotSpeed * DeltaTime;
+		//NewAngle+= RotSpeed * DeltaTime;
 		//FRotator NewRotation = FRotator( 0, NewAngle, 0 );
-		FRotator NewRotation = FRotator( NewAngle, NewAngle, NewAngle );
-		HandleObject->SetTargetRotation( NewRotation );
+		//FRotator NewRotation = FRotator( NewAngle, NewAngle, NewAngle );
+		//HandleObject->SetTargetRotation( NewRotation );
 		//HandleObject->SetAngularDamping(10*DeltaTime);
 
 
@@ -89,6 +89,9 @@ void UGrabComponent::GrabObject()
 		return;
 	}
 
+	bIsPulling = true;
+	bIsPushing = false;
+
 	// 1. Collision Check - LineTrace 1st
 	FHitResult HitInfo;
 	// 1) From Crosshair
@@ -103,38 +106,26 @@ void UGrabComponent::GrabObject()
 	DrawDebugLine( GetWorld(), StartPos, EndPos, FColor::Red, true );
 	if( bHit )
 	{
-		NewInterpolSpeed = 0.0f;
-
 		//HandleObject->GrabComponentAtLocationWithRotation( HitInfo.GetComponent(), TEXT("GrabObject"),HitInfo.GetComponent()->GetComponentLocation(), HitInfo.GetComponent()->GetComponentRotation());
 		HandleObject->GrabComponentAtLocation( HitInfo.GetComponent(), TEXT("GrabObject"),HitInfo.GetComponent()->GetComponentLocation());
 
 		//HandleObject->SetAngularDamping( 0 );
-
-
-		//HandleObject->SetInterpolationSpeed(NewInterpolSpeed);
-
 		if(HandleObject->GetGrabbedComponent() != nullptr )
 		{
 			bIsGrabbing = true;
 		}
 	}
-
-
 }
 
 void UGrabComponent::ReleaseObject()
 {
 	if ( bIsGrabbing == false ) return;
 
+	bIsPulling=false;
+	bIsPushing=true;
+
 	if(bIsGrabbing == true )
 	{
-
-
-
-
-
-
-
 		/********************************** Sphere Trace SingleByChannel **********************************/
 		/**************************************************************************************************/
 
@@ -183,15 +174,11 @@ void UGrabComponent::ReleaseObject()
 		HandleObject->ReleaseComponent();
 
 		bIsGrabbing=false;
-
-
-
 	}
 }
 
 void UGrabComponent::SphereGrabObject()
 {
-
 	if ( bIsGrabbing == true )
 	{
 		return;

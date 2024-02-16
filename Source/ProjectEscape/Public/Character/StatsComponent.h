@@ -7,6 +7,7 @@
 #include "GameplayTagContainer.h"
 #include "StatsComponent.generated.h"
 
+class UEffect;
 class ACharacterBase;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FHPChanged, float, ChangedMaxHP, float, ChangedHP);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTakenDamage, float, Damage);
@@ -20,7 +21,7 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (DisplayPriority = 1))
     float HP {3};
 
     UPROPERTY()
@@ -48,10 +49,22 @@ public:
 		}
 	}
 
+	/*
+	 * 적용받고 있는 이펙트들.
+	 */
+	UPROPERTY(VisibleAnywhere)
+	TArray<UEffect*> Effects;
+
+	UFUNCTION(BlueprintCallable)
+	void AddEffect(UEffect* EffectToAdd);
+
+	UFUNCTION(BlueprintCallable)
+	void RemoveEffect(UEffect* EffectToRemove);
+
 	UPROPERTY()
 	ACharacterBase* OwningChara;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	FGameplayTagContainer GameplayTagContainer;
 
 	UFUNCTION(BlueprintCallable)

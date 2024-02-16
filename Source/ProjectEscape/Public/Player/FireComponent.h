@@ -6,12 +6,14 @@
 #include "Components/ActorComponent.h"
 #include "FireComponent.generated.h"
 
-
+class AEnemyBase;
 struct FInputActionInstance;
 struct FInputActionValue;
 class UInputAction;
 class AProjectEscapePlayer;
 class ANormalGun;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEnemyHitByPlayerGun, AEnemyBase*, Enemy, FHitResult, HitResult);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROJECTESCAPE_API UFireComponent : public UActorComponent
@@ -21,9 +23,7 @@ class PROJECTESCAPE_API UFireComponent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UFireComponent();
-
-
-
+	
 	UPROPERTY()
 	AProjectEscapePlayer* Player;
 
@@ -32,7 +32,8 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
 	ANormalGun* NormalGun;
-
+	
+	FEnemyHitByPlayerGun OnEnemyHitByPlayerGun;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	float MaxDistanceToGun = 100000.0f;
@@ -52,13 +53,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Pistol")
 	class UParticleSystem* GunEffect;
 
-	
-
 	virtual void InitializeComponent() override;
 
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
 	
 	void SetupPlayerInputComponent(UEnhancedInputComponent* PlayerInputComponent) ;
 

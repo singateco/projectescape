@@ -28,13 +28,20 @@ public:
 	UStaticMeshComponent* MeshComp;
 
 	UPROPERTY( EditAnywhere )
-	float SphereRadius = 500.0f;
+	float SphereRadius = 700.0f;
 
 	UPROPERTY( EditDefaultsOnly)
 	UParticleSystem* GunEffect;
 
 	UPROPERTY( EditDefaultsOnly )
 	AProjectEscapePlayer* Player;
+
+	UPROPERTY( EditDefaultsOnly )
+	float EmitterScaleValue = 7;
+
+	FString txt1;
+	FString txt2;
+	FString txt3;
 
 protected:
 	// Called when the game starts or when spawned
