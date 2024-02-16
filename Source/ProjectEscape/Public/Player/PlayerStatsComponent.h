@@ -7,6 +7,7 @@
 #include "PlayerStatsComponent.generated.h"
 
 
+class AEnemyBase;
 class AProjectEscapePlayer;
 class UUpgrade;
 
@@ -20,7 +21,13 @@ public:
 	UPlayerStatsComponent();
 	
 	UFUNCTION()
-	float GetGunDamage() const;
+	float GetGunDamage(const bool bHitWeakPoint) const;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<TSubclassOf<UEffect>> EffectsToApplyWhenEnemyHitByPlayerGun;
+
+	UFUNCTION()
+	void OnEnemyHitByPlayerGun(AEnemyBase* Enemy, FHitResult HitResult);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	AProjectEscapePlayer* Player;
@@ -36,8 +43,6 @@ public:
 
 	UPROPERTY( EditDefaultsOnly, Category="Damage" )
 	float GrabDamageValue=500.0f;
-
-
 
 	UPROPERTY( EditDefaultsOnly, Category="Fire" )
 	int MaxBullets = 30;
@@ -57,6 +62,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage", meta = (AllowPrivateAccess))
 	float GunDamageMultiplier {1};
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage", meta = (AllowPrivateAccess))
+	float GunWeakPointMultiplier {1.5f};
 	
 	float InitialGunDamage;
 	float InitialGunDamageMultiplier;

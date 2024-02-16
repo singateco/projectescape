@@ -31,6 +31,7 @@ AEnemyBase::AEnemyBase(const FObjectInitializer& ObjectInitializer)
 
 	WeakPoint = CreateDefaultSubobject<UBoxComponent>( TEXT( "WeakPoint" ) );
 	WeakPoint->SetupAttachment( GetMesh() );
+	WeakPoint->SetBoxExtent(FVector(16.f));
 	GunMesh = CreateDefaultSubobject<USkeletalMeshComponent>( TEXT( "GunMesh" ) );
 	GunMesh->SetupAttachment( GetMesh(), FName( TEXT( "RightHandSocket" ) ) );
 
