@@ -3,7 +3,9 @@
 
 #include "System/ProjectEscapePlayerController.h"
 
+#include "Player/ProjectEscapePlayer.h"
 #include "UI/MainUI.h"
+#include "UI/PlayerHP.h"
 
 void AProjectEscapePlayerController::BeginPlay()
 {
@@ -18,4 +20,8 @@ void AProjectEscapePlayerController::BeginPlay()
 	//OrderMenuWidget = CreateWidget<UOrderMenuWidget>( this , OrderMenuWidgetClass , TEXT( "OrderMenuWidget" ) );
 	InGameWIdget->AddToViewport();
 
+	PlayerHPWidget = CreateWidget<UPlayerHP>(this, PlayerHPWidgetClass, TEXT("PlayerHPWidget"));
+	AProjectEscapePlayer* PEPlayer = Cast<AProjectEscapePlayer>(GetCharacter());
+	PlayerHPWidget->OwnedPlayer = PEPlayer;
+	PlayerHPWidget->AddToViewport();
 }

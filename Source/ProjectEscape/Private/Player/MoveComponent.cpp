@@ -72,7 +72,6 @@ void UMoveComponent::ShowDebugStat()
 	FString DebugString = FString::Printf(TEXT("Stamina: %.f/%.f"), Stamina, MaxStamina);
 	DebugString += FString::Printf(TEXT("\nVelocity: %.f"), CharacterMovementComponent->GetLastUpdateVelocity().Length());
 	DebugString += FString::Printf(TEXT("\nMovement Mode: %s"), *CharacterMovementComponent->GetMovementName());
-	DebugString += FString::Printf(TEXT("\nHP: %.f/%.f"), Player->PlayerStatsComponent->GetHP(), Player->PlayerStatsComponent->GetMaxHP());
 	
 	DrawDebugString(GetWorld(),
 		Player->GetActorLocation(),
