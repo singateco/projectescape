@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "CharacterBase.h"
-#include "Perception/AIPerceptionTypes.h"
 #include "EnemyBase.generated.h"
 
 /**
@@ -30,7 +29,7 @@ public:
 	class UEnemyStatsComponent* EnemyStatsComponent;
 	
 	UPROPERTY( EditAnywhere, BlueprintReadOnly )
-		class UWidgetComponent* EnemyHPComponent;
+	class UWidgetComponent* EnemyHPComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class UEnemyHealthBar* EnemyHealthBarWidget;
@@ -38,14 +37,17 @@ public:
 	UPROPERTY(EditDefaultsOnly, meta = (Class))
 	TSubclassOf<UUserWidget> DamageNumberWidgetClass;
 
-	UPROPERTY( EditAnywhere, BlueprintReadOnly )
-		UArrowComponent* BulletREF;
+	UPROPERTY( EditDefaultsOnly )
+	USkeletalMeshComponent* GunMesh;
+
+	UPROPERTY( EditDefaultsOnly )
+	class UBoxComponent* WeakPoint;
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly)
-		class UEnemyBaseFSM* EnemyBaseFSM;
+	class UEnemyBaseFSM* EnemyBaseFSM;
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
-		class UNavigationInvokerComponent* NavComponent;
+	class UNavigationInvokerComponent* NavComponent;
 
 	// --------------------- Function ---------------------------
 

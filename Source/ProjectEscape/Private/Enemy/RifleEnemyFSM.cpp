@@ -9,6 +9,7 @@
 #include "Enemy/EnemyAnimInstance.h"
 #include "Enemy/EnemyBullet.h"
 #include "Enemy/RifleEnemy.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Player/ProjectEscapePlayer.h"
 
 
@@ -22,6 +23,12 @@ URifleEnemyFSM::URifleEnemyFSM()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	AttackDistance = 3000;
+
+	MinAttackTime = 0.5f;
+	MaxAttackTime = 1.0f;
+
+	Accuracy = 3;
+	Spread = 5.0f;
 }
 
 
@@ -42,6 +49,7 @@ void URifleEnemyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 void URifleEnemyFSM::TickAttack()
 {
 	CurrentTime += GetWorld()->GetDeltaSeconds();
+	AttackTime = FMath::RandRange( MinAttackTime, MaxAttackTime );
 
 	if(CurrentTime > AttackTime)
 	{
@@ -52,8 +60,23 @@ void URifleEnemyFSM::TickAttack()
 		FRotator RotationToPlayer = DirectionToPlayer.Rotation();
 
 		check( EnemyBulletFactory );
-		GetWorld()->SpawnActor<AEnemyBullet>(EnemyBulletFactory, Enemy->BulletREF->GetComponentLocation(), RotationToPlayer);
+
+		float RandAccuracy = FMath::RandRange( 0, 9 );
+		if(RandAccuracy < Accuracy )
+		{
+			GetWorld()->SpawnActor<AEnemyBullet>( EnemyBulletFactory, Enemy->GunMesh->GetSocketLocation( FName( TEXT( "Muzzle" ) ) ), RotationToPlayer );
+		}
+		else
+		{
+			float X=UKismetMathLibrary::RandomFloatInRange( Spread * -1, Spread );
+			float Y=UKismetMathLibrary::RandomFloatInRange( Spread * -1, Spread );
+			float Z=UKismetMathLibrary::RandomFloatInRange( Spread * -1, Spread );
+
+			GetWorld()->SpawnActor<AEnemyBullet>( EnemyBulletFactory, Enemy->GunMesh->GetSocketLocation( FName( TEXT( "Muzzle" ) ) ), RotationToPlayer + FRotator( X, Y, Z ) );
+		}
+
 		
+
 	}
 
 	float dist = FVector::Dist(Player->GetActorLocation(), Enemy->GetActorLocation());

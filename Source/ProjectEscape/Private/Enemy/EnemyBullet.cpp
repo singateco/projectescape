@@ -16,12 +16,13 @@ AEnemyBullet::AEnemyBullet()
 
 	SphereCollision = CreateDefaultSubobject<USphereComponent>(TEXT("SphereCollision"));
 	SetRootComponent(SphereCollision);
-	SphereCollision->SetSphereRadius(4.0f);
+	SphereCollision->SetSphereRadius(2.0f);
 	SphereCollision->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+	SphereCollision->SetCollisionResponseToChannel(ECC_GameTraceChannel3, ECR_Ignore);
 
 	EnemyBulletMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("EnemyBulletMesh"));
 	EnemyBulletMesh->SetupAttachment(SphereCollision);
-	EnemyBulletMesh->SetRelativeScale3D(FVector(3.0f, 0.1f, 0.1f));
+	EnemyBulletMesh->SetRelativeScale3D(FVector(1.0f, 0.01f, 0.03f));
 	EnemyBulletMesh->SetCollisionEnabled( ECollisionEnabled::NoCollision );
 
 	ConstructorHelpers::FObjectFinder<UStaticMesh>BulletMesh(TEXT("/Script/Engine.StaticMesh'/Game/Material/TracerRound.TracerRound'"));

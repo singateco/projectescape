@@ -3,6 +3,9 @@
 
 #include "Character/StatsComponent.h"
 
+#include "CharacterBase.h"
+#include "ProjectEscape/PEGameplayTags.h"
+
 
 // Sets default values for this component's properties
 UStatsComponent::UStatsComponent()
@@ -17,12 +20,19 @@ void UStatsComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	OwningChara = GetOwner<ACharacterBase>();
+	
 	// Initialize HP.
 	HP = MaxHP;
 }
 
 void UStatsComponent::ProcessDamage(const float DamageValue)
 {
+	if (OwningChara->HasMatchingGameplayTag(PEGameplayTags::Status_IsDead))
+	{
+		return;
+	}
+	
 	HP = FMath::Max(HP - DamageValue, 0);
 	OnHPChanged.Broadcast(MaxHP, HP);
 	OnTakenDamage.Broadcast(DamageValue);
@@ -31,4 +41,10 @@ void UStatsComponent::ProcessDamage(const float DamageValue)
 	{
 		ProcessDying();
 	}
+}
+
+void UStatsComponent::ProcessDying()
+{
+	AddTag(PEGameplayTags::Status_IsDead);
+	OnHPReachedZero.Broadcast();
 }

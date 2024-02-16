@@ -22,7 +22,7 @@ APickableActor::APickableActor()
 	CollisionComp=CreateDefaultSubobject<USphereComponent>( TEXT( "CollisionComp" ) );
 	SetRootComponent( CollisionComp );
 	CollisionComp->SetCollisionProfileName( TEXT( "PickUpActor" ) );
-	CollisionComp->SetNotifyRigidBodyCollision( true );
+	CollisionComp->SetNotifyRigidBodyCollision( true ); // Simulation Generates Hit Events
 	CollisionComp->SetSimulatePhysics(true);
 
 	MeshComp=CreateDefaultSubobject<UStaticMeshComponent>( TEXT( "MeshComp" ) );
@@ -42,6 +42,7 @@ APickableActor::APickableActor()
 void APickableActor::BeginPlay()
 {
 	Super::BeginPlay();
+	CollisionComp->OnComponentHit.AddDynamic( this, &APickableActor::OnCompHit );
 	MeshComp->OnComponentHit.AddDynamic(this, &APickableActor::OnCompHit );
 	Player=Cast<AProjectEscapePlayer>( GetWorld()->GetFirstPlayerController()->GetPawn() );
 }

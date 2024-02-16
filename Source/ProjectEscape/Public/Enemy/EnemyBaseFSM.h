@@ -52,16 +52,22 @@ public:
 	float CurrentTime;
 
 	float WidgetTime = 1.0f;
-	UPROPERTY(EditAnywhere)
-	float AttackTime = 0.5f;
 
-	UPROPERTY( EditAnywhere )
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EnemyState" )
+	float MinAttackTime;
+
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "EnemyState" )
+	float MaxAttackTime;
+
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "EnemyState" )
+	float AttackTime;
+
 	float DamageTime = 1.0f;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EnemyState" )
 	float AttackDistance;
 
-	float DieTime = 10.0f;
+	float DieTime = 6.0f;
 	FVector RandomLocation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

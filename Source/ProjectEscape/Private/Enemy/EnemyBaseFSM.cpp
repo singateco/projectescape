@@ -97,7 +97,7 @@ void UEnemyBaseFSM::TickMove()
 	{
 		//  길 위에 랜덤한 위치를 하나 정해서 그곳으로 이동하고싶다.
 		FPathFollowingRequestResult r;
-		r.Code=Ai->MoveToLocation( RandomLocation );
+		r.Code = Ai->MoveToLocation( RandomLocation );
 		//  만약 그곳에 도착했거나 문제가 있다면 랜덤한 위치를 갱신하고싶다.
 		if ( r != EPathFollowingRequestResult::RequestSuccessful )
 		{
@@ -140,7 +140,6 @@ void UEnemyBaseFSM::TickDamage()
 void UEnemyBaseFSM::TickDie()
 {
 	// 죽으면 총 안맞게 하기	
-	Enemy->GetCapsuleComponent()->SetCollisionResponseToChannel( ECC_Visibility, ECR_Ignore );
 
 	Ai->StopMovement();
 	Ai->ClearFocus(2);
@@ -173,7 +172,12 @@ void UEnemyBaseFSM::OnTakeDamage(float Damage_Unused)
 void UEnemyBaseFSM::OnDying()
 {
 	SetState( EEnemyState::Die );
-	EnemyAnim->PlayDieAnimMontage();
+	//EnemyAnim->PlayDieAnimMontage();
+
+	Enemy->GetCapsuleComponent()->SetCollisionProfileName(FName("NoCollision"));
+	Enemy->GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
+	Enemy->GetMesh()->SetSimulatePhysics(true);
+
 }
 
 void UEnemyBaseFSM::SetState( EEnemyState Next )

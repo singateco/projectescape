@@ -4,7 +4,7 @@
 #include "Enemy/EnemyBase.h"
 
 #include "NavigationInvokerComponent.h"
-#include "Components/ArrowComponent.h"
+#include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Enemy/EnemyAIController.h"
@@ -27,11 +27,13 @@ AEnemyBase::AEnemyBase(const FObjectInitializer& ObjectInitializer)
 
 	EnemyStatsComponent = Cast<UEnemyStatsComponent>(StatsComponent);
 	EnemyBaseFSM = CreateDefaultSubobject<UEnemyBaseFSM>(TEXT("EnemyBaseFSM"));
-	NavComponent=CreateDefaultSubobject<UNavigationInvokerComponent>(TEXT("NavComponent"));
+	NavComponent = CreateDefaultSubobject<UNavigationInvokerComponent>(TEXT("NavComponent"));
 
-	BulletREF = CreateDefaultSubobject<UArrowComponent>(TEXT("BulletREF"));
-	BulletREF->SetRelativeLocation(FVector(40, 0, 50));
-	BulletREF->SetupAttachment(RootComponent);
+	WeakPoint = CreateDefaultSubobject<UBoxComponent>( TEXT( "WeakPoint" ) );
+	WeakPoint->SetupAttachment( GetMesh() );
+	GunMesh = CreateDefaultSubobject<USkeletalMeshComponent>( TEXT( "GunMesh" ) );
+	GunMesh->SetupAttachment( GetMesh(), FName( TEXT( "RightHandSocket" ) ) );
+
 	EnemyHPComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("EnemyHPComponent"));
 	EnemyHPComponent->SetupAttachment(RootComponent);
 	
