@@ -8,7 +8,9 @@
 #include "PECharacterMovementComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Player/PlayerStatsComponent.h"
+#include "ProjectEscape/PEGameplayTags.h"
 #include "ProjectEscape/Public/Player/ProjectEscapePlayer.h"
+#include "UI/PlayerStaminaUI.h"
 
 
 // Sets default values for this component's properties
@@ -91,7 +93,7 @@ void UMoveComponent::HandleOnMontageEnded(UAnimMontage* Montage, bool Interrupte
 		Montage == DashLeftAnimMontage ||
 		Montage == DashRightAnimMontage)
 	{
-		bIsDashing = false;
+		Player->RemoveGameplayTag(PEGameplayTags::Status_IsDashing);
 	}
 }
 
@@ -190,7 +192,12 @@ void UMoveComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	ManageFlying(DeltaTime);
 	RecoverStamina(DeltaTime);
 	SetEffectState();
-	ShowDebugStat();
+	//ShowDebugStat();
+
+	if (PlayerStaminaUI)
+	{
+		PlayerStaminaUI->UpdateStamina(MaxStamina, Stamina);
+	}
 }
 
 void UMoveComponent::CheckForGroundWhileFlying()
@@ -302,13 +309,15 @@ void UMoveComponent::HandleLanding(const FHitResult& Hit)
 
 void UMoveComponent::Dash(const FInputActionInstance& InputActionInstance)
 {
-	if (Stamina < DashStamina)
+	if (Stamina < DashStamina
+		//|| bIsDashing
+		)
 	{
 		return;
 	}
 
 	Stamina -= DashStamina;
-	bIsDashing = true;
+	Player->AddGameplayTag(PEGameplayTags::Status_IsDashing);
 
 	if (CharacterMovementComponent->MovementMode == MOVE_Falling)
 	{

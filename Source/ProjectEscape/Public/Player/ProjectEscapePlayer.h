@@ -72,6 +72,10 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	bool bIsDead {false};
 
+
+	UPROPERTY( VisibleAnywhere )
+	bool IsReloading=false;
+
 protected:
 	// #################################
 	// ########### FUNCTIONS ###########

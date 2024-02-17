@@ -5,6 +5,7 @@
 
 #include "Character/Effect.h"
 #include "Components/BoxComponent.h"
+#include "Components/TextBlock.h"
 #include "Enemy/EnemyBase.h"
 #include "Enemy/EnemyStatsComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -14,6 +15,8 @@
 #include "Player/ProjectEscapePlayer.h"
 #include "Player/Upgrade.h"
 #include "ProjectEscape/PEGameplayTags.h"
+#include "System/ProjectEscapePlayerController.h"
+#include "UI/MainUI.h"
 
 
 // Sets default values for this component's properties
@@ -63,6 +66,15 @@ void UPlayerStatsComponent::InitializeStat()
 {
 	GunDamage = InitialGunDamage;
 	GunDamageMultiplier = InitialGunDamageMultiplier;
+	//Initialize Bullet
+	CurrentBullets = MaxBullets;
+
+	auto PC=Cast<AProjectEscapePlayerController>( GetWorld()->GetFirstPlayerController() );
+	if ( PC == nullptr ) {
+		return;
+	}
+	PC->InGameWIdget->TXT_CurrentBullets->SetText( FText::AsNumber( MaxBullets ) );
+
 }
 
 
