@@ -24,12 +24,13 @@ public:
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UPlayerHP> PlayerHPWidgetClass;
-public:
+
 	UPROPERTY( EditDefaultsOnly)
 	TSubclassOf<UMainUI> InGameWIdgetClass;
 
 	UPROPERTY()
 	UPlayerHP* PlayerHPWidget;
+
 	UPROPERTY( EditDefaultsOnly)
 	UMainUI* InGameWIdget;
 
@@ -44,8 +45,6 @@ private:
 	//UPROPERTY( EditDefaultsOnly, Meta=(AllowPrivateAccess) )
 	//TSubclassOf<UMainUI> InGameWIdgetClass;
 
-	UPROPERTY( EditDefaultsOnly, Meta=(AllowPrivateAccess) )
-	UMainUI* InGameWIdget;
 	//UPROPERTY( EditDefaultsOnly, Meta=(AllowPrivateAccess) )
 	//UMainUI* InGameWIdget;
 
