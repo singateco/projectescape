@@ -59,6 +59,9 @@ public:
 	// ########### PROPERTIES ##########
 	// #################################
 
+	UPROPERTY()
+	class UPlayerStaminaUI* PlayerStaminaUI;
+	
 	// 마지막으로 받은 X,Y 입력값. 대시시 사용함.
 	UPROPERTY(BlueprintReadWrite)
 	FVector MoveVector;
@@ -98,7 +101,7 @@ public:
 
 	// 대시 사용시 사용하는 스태미나.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|Dashing")
-	float DashStamina {25.f};
+	float DashStamina {33.f};
 
 	// ============= 스태미나 ===============
 	

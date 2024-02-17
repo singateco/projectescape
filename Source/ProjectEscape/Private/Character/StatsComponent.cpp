@@ -24,7 +24,7 @@ void UStatsComponent::BeginPlay()
 	OwningChara = GetOwner<ACharacterBase>();
 	
 	// Initialize HP.
-	HP = MaxHP;
+	SetHP(MaxHP);
 }
 
 void UStatsComponent::AddEffect(UEffect* EffectToAdd)
