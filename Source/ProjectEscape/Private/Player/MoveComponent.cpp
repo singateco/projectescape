@@ -8,6 +8,7 @@
 #include "PECharacterMovementComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Player/PlayerStatsComponent.h"
+#include "ProjectEscape/PEGameplayTags.h"
 #include "ProjectEscape/Public/Player/ProjectEscapePlayer.h"
 #include "UI/PlayerStaminaUI.h"
 
@@ -92,7 +93,7 @@ void UMoveComponent::HandleOnMontageEnded(UAnimMontage* Montage, bool Interrupte
 		Montage == DashLeftAnimMontage ||
 		Montage == DashRightAnimMontage)
 	{
-		bIsDashing = false;
+		Player->RemoveGameplayTag(PEGameplayTags::Status_IsDashing);
 	}
 }
 
@@ -316,7 +317,7 @@ void UMoveComponent::Dash(const FInputActionInstance& InputActionInstance)
 	}
 
 	Stamina -= DashStamina;
-	bIsDashing = true;
+	Player->AddGameplayTag(PEGameplayTags::Status_IsDashing);
 
 	if (CharacterMovementComponent->MovementMode == MOVE_Falling)
 	{

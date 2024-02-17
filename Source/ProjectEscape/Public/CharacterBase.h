@@ -44,6 +44,9 @@ public:
 	
 	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
 
+	UFUNCTION(BlueprintCallable)
 	void AddGameplayTag(const FGameplayTag& TagToAdd);
+
+	UFUNCTION(BlueprintCallable)
 	void RemoveGameplayTag(const FGameplayTag& TagToRemove);
 };

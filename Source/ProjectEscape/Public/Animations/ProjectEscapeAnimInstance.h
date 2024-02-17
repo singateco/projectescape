@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -9,6 +9,10 @@
 /**
  * 
  */
+
+class AProjectEscapePlayer;
+class UAnimMontag;
+
 UCLASS()
 class PROJECTESCAPE_API UProjectEscapeAnimInstance : public UAnimInstance
 {
@@ -16,6 +20,21 @@ class PROJECTESCAPE_API UProjectEscapeAnimInstance : public UAnimInstance
 
 public:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
+
+	UPROPERTY()
+
+	const AProjectEscapePlayer* Player;
+
+	////Normal Gun Reload
+	//UPROPERTY( EditDefaultsOnly, Category="MyAnimSettings" )
+	//UAnimMontage* ReloadMontage;
+
+	void PlayReloadAnimation();
+
+	//재장전 끝났을때 호출될 Modify 이벤트 함수
+	UFUNCTION()
+	void AnimNotify_AN_Reload_C();
+
 
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Character State Data")

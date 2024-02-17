@@ -119,10 +119,7 @@ public:
 	bool bCanRecoverStamina {true};
 
 	// ############### 애니메이션 ################
-
-	UPROPERTY(VisibleAnywhere)
-	bool bIsDashing {false};
-
+	
 	UFUNCTION()
 	void HandleOnMontageEnded(UAnimMontage* Montage, bool Interrupted);
 	

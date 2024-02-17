@@ -82,7 +82,7 @@ void APickableActor::OnCompHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 		ActorsToIgnoreArray.Add( this );
 		TArray<AActor*> OutActorsArray;
 
-		bool bSphereOverlapResult=UKismetSystemLibrary::SphereOverlapActors( GetWorld(), this->GetActorLocation(), SphereRadius, ObjectTypes, nullptr, ActorsToIgnoreArray, OutActorsArray );
+		bool bSphereOverlapResult=UKismetSystemLibrary::SphereOverlapActors( GetWorld(), this->MeshComp->GetComponentLocation(), SphereRadius, ObjectTypes, nullptr, ActorsToIgnoreArray, OutActorsArray );
 		//bool bSphereOverlapResult=UKismetSystemLibrary::SphereOverlapActors( GetWorld(), this->GetActorLocation(), SphereRadius, ObjectTypes, AActor::StaticClass(), ActorsToIgnoreArray, OutActorsArray );
 
 		txt1=(Player->GrabComponent->bIsGrabbing) ? "true" : "false";
