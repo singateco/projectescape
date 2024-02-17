@@ -53,7 +53,7 @@ public:
 
 	float WidgetTime = 1.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EnemyState" )
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "EnemyState" )
 	float MinAttackTime;
 
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "EnemyState" )
@@ -61,6 +61,12 @@ public:
 
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "EnemyState" )
 	float AttackTime;
+
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "EnemyState" )
+	int32 Accuracy;
+
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "EnemyState" )
+	float Spread;
 
 	float DamageTime = 1.0f;
 

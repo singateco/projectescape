@@ -24,18 +24,11 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-
 	UPROPERTY( EditAnyWhere , BlueprintReadWrite, Category = "Rifle")
 		TSubclassOf<class AEnemyBullet> EnemyBulletFactory;
 
 	UPROPERTY( EditAnywhere , BlueprintReadWrite, Category = "Rifle" )
 		AEnemyBullet* EnemyBullet;
-
-	UPROPERTY( EditAnywhere , BlueprintReadWrite, Category = "EnemyState" )
-		int32 Accuracy;
-
-	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "EnemyState" )
-		float Spread;
 
 	void TickAttack() override;
 };

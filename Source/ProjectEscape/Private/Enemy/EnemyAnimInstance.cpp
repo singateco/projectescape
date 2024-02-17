@@ -46,10 +46,23 @@ void UEnemyAnimInstance::PlayShootMontage()
 
 void UEnemyAnimInstance::PlayHitAnimMontage()
 {
-	if ( EnemyHitMontage )
+	bHitMontage = FMath::RandBool();
+
+	if(bHitMontage )
 	{
-		Montage_Play( EnemyHitMontage );
+		if ( EnemyHitMontage )
+		{
+			Montage_Play( EnemyHitMontage );
+		}
 	}
+	else
+	{
+		if ( EnemyHitMontage2 )
+		{
+			Montage_Play( EnemyHitMontage2 );
+		}
+	}
+	
 }
 
 void UEnemyAnimInstance::PlayDieAnimMontage()
