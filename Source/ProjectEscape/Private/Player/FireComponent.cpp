@@ -14,6 +14,7 @@
 #include "Particles/ParticleSystem.h"
 #include "Player/GrabComponent.h"
 #include "Player/PlayerStatsComponent.h"
+#include "ProjectEscape/PEGameplayTags.h"
 #include "ProjectEscape/Public/Player/ProjectEscapePlayer.h"
 #include "System/ProjectEscapePlayerController.h"
 #include "UI/MainUI.h"
@@ -131,7 +132,7 @@ void UFireComponent::SetupPlayerInputComponent(UEnhancedInputComponent* PlayerIn
 
 void UFireComponent::NormalGunFire()
 {
-	if (bHasPistol == false || Player->IsReloading == true) {
+	if (bHasPistol == false || Player->IsReloading == true || Player->HasMatchingGameplayTag(PEGameplayTags::Status_IsDashing)) {
 		return;
 	}
 
@@ -142,14 +143,15 @@ void UFireComponent::NormalGunFire()
 	}
 
 	HandleFireAnimation();
-
 	Player->PlayerStatsComponent->CurrentBullets--;
 
 	if ( PC == nullptr ) {
 		return;
 	}
 	PC->InGameWIdget->SetCurrentBullets();
-
+		
+	const float RecoilValue = FMath::RandRange(RecoilValueMin,RecoilValueMax);
+	Player->AddControllerPitchInput(-RecoilValue);
 
 	//FRotator GazeRotation = UKismetMathLibrary::FindLookAtRotation(Player->GetActorLocation(), Player->GetCameraBoom()->GetForwardVector() * MaxDistanceToGun);
 	//Player->SetActorRotation(GazeRotation);

@@ -64,6 +64,12 @@ public:
 	UPROPERTY()
 	UMainUI* MainUI;
 
+	UPROPERTY(EditAnywhere, Category = "Settings|Recoil")
+	float RecoilValueMin {.15};
+
+	UPROPERTY(EditAnywhere, Category = "Settings|Recoil")
+	float RecoilValueMax {.4};
+
 	virtual void InitializeComponent() override;
 
 	// Called every frame

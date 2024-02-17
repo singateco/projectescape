@@ -9,6 +9,7 @@
 #include "Player/FireComponent.h"
 #include "Player/MoveComponent.h"
 #include "Player/ProjectEscapePlayer.h"
+#include "ProjectEscape/PEGameplayTags.h"
 
 void UProjectEscapeAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
@@ -30,8 +31,8 @@ void UProjectEscapeAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	{
 		return;
 	}
+	bIsDashing = Player->HasMatchingGameplayTag(PEGameplayTags::Status_IsDashing);
 	bHasFiring = Player->FireComponent->bHasFired;
-	bIsDashing = Player->MoveComponent->bIsDashing;
 }
 
 
