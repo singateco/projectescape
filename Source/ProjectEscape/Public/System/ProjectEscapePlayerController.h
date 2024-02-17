@@ -20,13 +20,19 @@ class PROJECTESCAPE_API AProjectEscapePlayerController : public APlayerControlle
 public:
 	virtual void BeginPlay() override;
 
+public:
+	UPROPERTY( EditDefaultsOnly)
+	TSubclassOf<UMainUI> InGameWIdgetClass;
+
+	UPROPERTY( EditDefaultsOnly)
+	UMainUI* InGameWIdget;
 
 
 private:
-	UPROPERTY( EditDefaultsOnly, Meta=(AllowPrivateAccess) )
-	TSubclassOf<UMainUI> InGameWIdgetClass;
+	//UPROPERTY( EditDefaultsOnly, Meta=(AllowPrivateAccess) )
+	//TSubclassOf<UMainUI> InGameWIdgetClass;
 
-	UPROPERTY( EditDefaultsOnly, Meta=(AllowPrivateAccess) )
-	UMainUI* InGameWIdget;
+	//UPROPERTY( EditDefaultsOnly, Meta=(AllowPrivateAccess) )
+	//UMainUI* InGameWIdget;
 
 };

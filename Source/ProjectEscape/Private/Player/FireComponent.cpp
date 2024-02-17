@@ -4,15 +4,21 @@
 #include "Player/FireComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Animations/ProjectEscapeAnimInstance.h"
 #include "Camera/CameraComponent.h"
 #include "Character/Debuff.h"
+#include "Components/TextBlock.h"
 #include "Enemy/EnemyBase.h"
 #include "Enemy/EnemyStatsComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystem.h"
+#include "Player/GrabComponent.h"
 #include "Player/PlayerStatsComponent.h"
 #include "ProjectEscape/Public/Player/ProjectEscapePlayer.h"
+#include "System/ProjectEscapePlayerController.h"
+#include "UI/MainUI.h"
 #include "Weapon/NormalGun.h"
+#include "System/ProjectEscapePlayerController.h"
 
 // Sets default values for this component's properties
 UFireComponent::UFireComponent()
@@ -46,6 +52,14 @@ UFireComponent::UFireComponent()
 	{
 		FireMontage = FireMontageFinder.Object;
 	}
+
+
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ReloadMontageFinder{ TEXT( "/Script/Engine.AnimMontage'/Game/Animations/Actions/AM_MM_Pistol_Reload.AM_MM_Pistol_Reload'" ) };
+	if ( ReloadMontageFinder.Succeeded() )
+	{
+		ReloadMontage=ReloadMontageFinder.Object;
+	}
 }
 
 
@@ -56,6 +70,17 @@ void  UFireComponent::HandleFireAnimation()
 	AnimInstance->Montage_Play(FireMontage);
 }
 
+
+
+void UFireComponent::PlayReloadAnimation()
+{
+	UAnimInstance* AnimInstance = Cast<ACharacter>( GetOwner() )->GetMesh()->GetAnimInstance();
+	if ( ReloadMontage ) {
+		AnimInstance->Montage_Play( ReloadMontage );
+	}
+}
+
+
 // Called when the game starts
 void UFireComponent::BeginPlay()
 {
@@ -64,6 +89,8 @@ void UFireComponent::BeginPlay()
 	check(NormalGunClass);
 	NormalGun = GetWorld()->SpawnActor<ANormalGun>(NormalGunClass);
 	AttachPistol();
+	InitBullets();
+
 }
 
 void UFireComponent::Deactivate()
@@ -79,6 +106,8 @@ void UFireComponent::InitializeComponent()
 
 	Player = GetOwner<AProjectEscapePlayer>();
 	check(Player);
+
+	PC=Cast<AProjectEscapePlayerController>( GetWorld()->GetFirstPlayerController() );
 }
 
 
@@ -95,22 +124,35 @@ void UFireComponent::SetupPlayerInputComponent(UEnhancedInputComponent* PlayerIn
 {
 	EnhancedInputComponent = PlayerInputComponent;
 	PlayerInputComponent->BindAction(ActionFire, ETriggerEvent::Started, this, &UFireComponent::NormalGunFire);
+	PlayerInputComponent->BindAction(ActionReload, ETriggerEvent::Started, this, &UFireComponent::BulletReload );
 	PlayerInputComponent->BindAction(ActionAimDownSight, ETriggerEvent::Started, this, &UFireComponent::StartAimDown);
 	PlayerInputComponent->BindAction(ActionAimDownSight, ETriggerEvent::Completed, this, &UFireComponent::EndAimDown);
 }
 
 void UFireComponent::NormalGunFire()
 {
-	if (bHasPistol == false ) {
+	if (bHasPistol == false || Player->IsReloading == true) {
+		return;
+	}
+
+	if( Player->PlayerStatsComponent->CurrentBullets <= 0 )
+	{
+		BulletReload();
 		return;
 	}
 
 	HandleFireAnimation();
 
+	Player->PlayerStatsComponent->CurrentBullets--;
+
+	if ( PC == nullptr ) {
+		return;
+	}
+	PC->InGameWIdget->SetCurrentBullets();
+
+
 	//FRotator GazeRotation = UKismetMathLibrary::FindLookAtRotation(Player->GetActorLocation(), Player->GetCameraBoom()->GetForwardVector() * MaxDistanceToGun);
 	//Player->SetActorRotation(GazeRotation);
-
-	// �ѽ��
 
 	// 1. Collision Check - LineTrace 1st
 	FHitResult HitInfo1;
@@ -171,7 +213,6 @@ void UFireComponent::AttachPistol()
 	NormalGun->AttachToComponent(BodyComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("GunPosition"));
 }
 
-
 void UFireComponent::DetachPistol()
 {
 	bHasPistol = false;
@@ -188,4 +229,29 @@ void UFireComponent::StartAimDown(const FInputActionInstance& InputActionInstanc
 void UFireComponent::EndAimDown(const FInputActionInstance& InputActionInstance)
 {
 	//Player->GetCameraBoom()->TargetArmLength = 300;
+}
+
+void UFireComponent::BulletReload(){
+
+	//GameTag로 변경하기
+	// 장전하고 있으면 장전 못함, 염력 사용중이면 장전 못함
+	if ( Player->IsReloading == true || Player->GrabComponent->bIsGrabbing == true) {
+		return;
+	}
+
+	PlayReloadAnimation();
+
+	//auto AnimInst = Cast<UProjectEscapeAnimInstance>( Player->GetMesh()->GetAnimInstance() );
+	//AnimInst->PlayReloadAnimation(); // 애니메이션 끝나고 InitBullets함수 실행
+
+}
+
+void UFireComponent::InitBullets()
+{
+	Player->PlayerStatsComponent->CurrentBullets=Player->PlayerStatsComponent->MaxBullets;
+
+	PC->InGameWIdget->TXT_CurrentBullets->SetText( FText::AsNumber( Player->PlayerStatsComponent->MaxBullets ) );
+	PC->InGameWIdget->TXT_MaxBullets->SetText( FText::AsNumber( Player->PlayerStatsComponent->MaxBullets ) );
+
+	Player->IsReloading = false;
 }

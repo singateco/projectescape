@@ -1,4 +1,4 @@
-#include "PEGameplayTags.h"
+﻿#include "PEGameplayTags.h"
 #include "Engine/EngineTypes.h"
 #include "GameplayTagsManager.h"
 
@@ -13,4 +13,5 @@ namespace PEGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Stat_Gun_DamageMultiplier, "Stat.Gun.DamageMultiplier", "총 데미지 배수")
 	
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_IsDead, "Status.IsDead", "타겟이 죽어있다.")
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT( Status_IsReload, "Status.IsReload", "장전중." )
 }

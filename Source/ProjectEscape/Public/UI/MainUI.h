@@ -11,16 +11,26 @@
  */
 
 class UTextBlock;
-
+class AProjectEscapePlayer;
 
 UCLASS()
 class UMainUI : public UUserWidget
 {
 	GENERATED_BODY()
+public:
+
+	virtual void NativePreConstruct() override;
 
 public:
+	UPROPERTY(EditDefaultsOnly)
+	AProjectEscapePlayer* Player;
+
 	UPROPERTY( BlueprintReadWrite, meta=(BindWidget) )
 	UTextBlock* TXT_CurrentBullets;
-		UPROPERTY( BlueprintReadWrite, meta=(BindWidget) )
+
+	UPROPERTY( BlueprintReadWrite, meta=(BindWidget) )
 	UTextBlock* TXT_MaxBullets;
+
+	UFUNCTION()
+	void SetCurrentBullets();
 };

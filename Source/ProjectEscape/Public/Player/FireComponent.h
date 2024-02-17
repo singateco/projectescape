@@ -12,6 +12,9 @@ struct FInputActionValue;
 class UInputAction;
 class AProjectEscapePlayer;
 class ANormalGun;
+class UMainUI;
+class UParticleSystem;
+class AProjectEscapePlayerController;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEnemyHitByPlayerGun, AEnemyBase*, Enemy, FHitResult, HitResult);
 
@@ -44,14 +47,22 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* ActionFire;
 
+
+	UPROPERTY( EditDefaultsOnly, Category="Input" )
+	UInputAction* ActionReload;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* ActionAimDownSight;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-	TSubclassOf<class ANormalGun> NormalGunClass;
+	TSubclassOf<ANormalGun> NormalGunClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Pistol")
-	class UParticleSystem* GunEffect;
+	UParticleSystem* GunEffect;
+
+
+	UPROPERTY()
+	UMainUI* MainUI;
 
 	virtual void InitializeComponent() override;
 
@@ -72,6 +83,11 @@ public:
 
 	void EndAimDown(const FInputActionInstance& InputActionInstance);
 
+
+	void BulletReload();
+
+	void InitBullets();
+
 	// ############# Animations ##############
 
 	// 전 프레임에 총 발사했는지 여부
@@ -79,14 +95,26 @@ public:
 	bool bHasFired {false};
 
 	// 총 발사시 플레이되는 몽타주
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="MyAnimSettings" )
 	UAnimMontage* FireMontage;
+
+
+	//Normal Gun Reload
+	UPROPERTY( EditDefaultsOnly, Category="MyAnimSettings" )
+	UAnimMontage* ReloadMontage;
 
 	UFUNCTION()
 	void HandleFireAnimation();
 
+
+	UFUNCTION()
+	void PlayReloadAnimation();
+
 	virtual void Deactivate() override;
-	
+
+	UPROPERTY( EditAnywhere )
+	AProjectEscapePlayerController* PC;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
