@@ -59,6 +59,9 @@ public:
 	// ########### PROPERTIES ##########
 	// #################################
 
+	UPROPERTY()
+	class UPlayerStaminaUI* PlayerStaminaUI;
+	
 	// 마지막으로 받은 X,Y 입력값. 대시시 사용함.
 	UPROPERTY(BlueprintReadWrite)
 	FVector MoveVector;

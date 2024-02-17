@@ -22,5 +22,4 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UBoxComponent* SpawnBoxExtent;
-
 };

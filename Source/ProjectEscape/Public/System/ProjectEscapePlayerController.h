@@ -10,6 +10,7 @@
  * 
  */
 
+class UPlayerStaminaUI;
 class UPlayerHP;
 class UMainUI;
 
@@ -26,7 +27,13 @@ public:
 
 	UPROPERTY()
 	UPlayerHP* PlayerHPWidget;
-	
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UPlayerStaminaUI> PlayerStaminaUIWidgetClass;
+
+	UPROPERTY()
+	UPlayerStaminaUI* PlayerStaminaUIWidget;
+		
 private:
 	UPROPERTY( EditDefaultsOnly, Meta=(AllowPrivateAccess) )
 	TSubclassOf<UMainUI> InGameWIdgetClass;
