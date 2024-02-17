@@ -46,14 +46,26 @@ public:
 		UAnimMontage* EnemyShootMontage;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category="AnimMontage" )
+		UAnimMontage* EnemyGrenadeMontage;
+
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category="AnimMontage" )
 		UAnimMontage* EnemyDieMontage;
 
 	bool bHitMontage;
 
 	void PlayShootMontage();
+	void PlayGrenadeMontage();
 	void PlayHitAnimMontage();
 	void PlayDieAnimMontage();
 
+	UFUNCTION()
+	void AnimNotify_HitEnd();
 
-	void AnimNotify_DamageEnd();
+	UFUNCTION()
+	void AnimNotify_ThrowGrenade();
+
+	UFUNCTION()
+	void AnimNotify_FinishGrenade();
+
+
 };

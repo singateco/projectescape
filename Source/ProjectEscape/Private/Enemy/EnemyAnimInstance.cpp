@@ -4,6 +4,7 @@
 #include "Enemy/EnemyAnimInstance.h"
 
 #include "Enemy/EnemyBase.h"
+#include "Enemy/GrenadeEnemyFSM.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 void UEnemyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -44,6 +45,14 @@ void UEnemyAnimInstance::PlayShootMontage()
 	}
 }
 
+void UEnemyAnimInstance::PlayGrenadeMontage()
+{
+	if(EnemyGrenadeMontage )
+	{
+		Montage_Play( EnemyGrenadeMontage );
+	}
+}
+
 void UEnemyAnimInstance::PlayHitAnimMontage()
 {
 	bHitMontage = FMath::RandBool();
@@ -73,12 +82,31 @@ void UEnemyAnimInstance::PlayDieAnimMontage()
 	}
 }
 
-void UEnemyAnimInstance::AnimNotify_DamageEnd()
+void UEnemyAnimInstance::AnimNotify_HitEnd()
 {
 	if(Enemy)
 	{
 		Enemy->EnemyBaseFSM->OnChangeMoveState();
 		Montage_Stop( 0.1f, EnemyHitMontage);
+	}
+}
+
+void UEnemyAnimInstance::AnimNotify_ThrowGrenade()
+{
+	if( Enemy )
+	{
+		auto FSM=Cast<UGrenadeEnemyFSM>( Enemy->EnemyBaseFSM );
+		FSM->ThrowGrenade();
+	}
+	
+}
+
+void UEnemyAnimInstance::AnimNotify_FinishGrenade()
+{
+	if( Enemy )
+	{
+		auto FSM=Cast<UGrenadeEnemyFSM>( Enemy->EnemyBaseFSM );
+		FSM->bCanShoot = true;
 	}
 }
 

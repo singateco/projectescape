@@ -26,7 +26,9 @@ public:
 	UPROPERTY( EditDefaultsOnly )
 	UStaticMeshComponent* GrenadeMesh;
 
-	UPROPERTY( EditDefaultsOnly )
-	class USphereComponent* SphereComponent;
+	UPROPERTY( EditAnywhere )
+	class UProjectileMovementComponent* MovementComponent;
 
+
+	void Explosion();
 };

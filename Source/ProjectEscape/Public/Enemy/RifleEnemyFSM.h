@@ -27,8 +27,5 @@ public:
 	UPROPERTY( EditAnyWhere , BlueprintReadWrite, Category = "Rifle")
 		TSubclassOf<class AEnemyBullet> EnemyBulletFactory;
 
-	UPROPERTY( EditAnywhere , BlueprintReadWrite, Category = "Rifle" )
-		AEnemyBullet* EnemyBullet;
-
 	void TickAttack() override;
 };

@@ -12,6 +12,7 @@ enum class EEnemyState : uint8
 	Idle	 UMETA(DisplayName = "Idle"),
 	Move	 UMETA(DisplayName = "Move"),
 	Attack	 UMETA(DisplayName = "Attack"),
+	Grenade UMETA(DisplayNae = "Grenade"),
 	Damage	UMETA(DisplayName = "Damage"),
 	Die		UMETA(DisplayName = "Die"),
 };
@@ -49,7 +50,7 @@ public:
 	UPROPERTY()
 		class AAIController* Ai;
 
-	float CurrentTime;
+	float CurrentTime = 0;
 
 	float WidgetTime = 1.0f;
 

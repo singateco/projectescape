@@ -28,12 +28,23 @@ public:
 	UPROPERTY( EditAnyWhere, BlueprintReadWrite, Category="Rifle" )
 		TSubclassOf<class AEnemyBullet> EnemyBulletFactory;
 
-	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category="Rifle" )
-		AEnemyBullet* EnemyBullet;
+	UPROPERTY( EditAnyWhere, BlueprintReadWrite, Category="Grenade" )
+		TSubclassOf<class AGrenade> EnemyGrenadeFactory;
+
+	UPROPERTY( EditDefaultsOnly )
+		AGrenade* EnemyGrenade;
 
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category="EnemyState" )
 		float GrenadeTime = 5.0f;
 
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category="EnemyState" )
+		float ChangeGrenadeTime = 0;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	bool bCanShoot = true;
+
 	void TickAttack() override;
+
+	void ThrowGrenade();
 
 };
