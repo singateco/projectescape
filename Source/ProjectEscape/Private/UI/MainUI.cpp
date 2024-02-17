@@ -13,7 +13,7 @@ void UMainUI::NativePreConstruct()
 	Super::NativePreConstruct();
 
 	Player=Cast<AProjectEscapePlayer>( GetWorld()->GetFirstPlayerController()->GetPawn() );
-
+	
 }
 
 void UMainUI::SetCurrentBullets()
