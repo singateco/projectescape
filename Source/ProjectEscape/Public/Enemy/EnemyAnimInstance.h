@@ -58,8 +58,8 @@ public:
 	void PlayHitAnimMontage();
 	void PlayDieAnimMontage();
 
-	UFUNCTION()
-	void AnimNotify_HitEnd();
+	/*UFUNCTION()
+	void AnimNotify_HitEnd();*/
 
 	UFUNCTION()
 	void AnimNotify_ThrowGrenade();

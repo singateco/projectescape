@@ -4,7 +4,10 @@
 #include "Enemy/Grenade.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Player/ProjectEscapePlayer.h"
+#include "ProjectEscape/ProjectEscape.h"
 
 // Sets default values
 AGrenade::AGrenade()
@@ -42,7 +45,13 @@ AGrenade::AGrenade()
 void AGrenade::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	FTimerHandle Handle;
+	GetWorld()->GetTimerManager().SetTimer( Handle, FTimerDelegate::CreateLambda( [&]
+		{
+			Explosion();
+		} ), ExplosionTime, false );
+
 }
 
 // Called every frame
@@ -54,9 +63,31 @@ void AGrenade::Tick(float DeltaTime)
 
 void AGrenade::Explosion()
 {
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+	TArray<AActor*> ActorsToIgnoreArray;
+	ActorsToIgnoreArray.Add( this );
+	TArray<AActor*> OutActorsArray;
 
-	//UKismetSystemLibrary::SphereOverlapActors( GetWorld(), );
+	DrawDebugSphere( GetWorld(), GrenadeMesh->GetComponentLocation(), SphereRadius, 100, FColor::Red, false, 3 );
 
+	bool bSphereOverlapResult = UKismetSystemLibrary::SphereOverlapActors( GetWorld(), GrenadeMesh->GetComponentLocation(), SphereRadius, ObjectTypes, nullptr, ActorsToIgnoreArray, OutActorsArray );
 
+	if ( bSphereOverlapResult )
+	{
+		for ( AActor* HitActor : OutActorsArray )
+		{
+			auto OtherCharacter=Cast<AProjectEscapePlayer>( HitActor );
+			if ( OtherCharacter )
+			{
+				OtherCharacter->ProcessDamage(10);
+			}
+		}
+
+		UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), ExplosionEffect, GrenadeMesh->GetComponentLocation(), FRotator(), FVector( 10 ), true, EPSCPoolMethod::None, true );
+		
+
+		this->Destroy();
+
+	}
 }
 

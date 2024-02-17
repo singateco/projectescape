@@ -87,7 +87,7 @@ public:
 	void TickIdle();
 	virtual void TickMove();
 	virtual void TickAttack();
-	void TickDamage();
+	virtual void TickDamage();
 	void TickDie();
 
 	void OnChangeMoveState();

@@ -49,7 +49,7 @@ AEnemyBase::AEnemyBase(const FObjectInitializer& ObjectInitializer)
 	{
 		EnemyHPComponent->SetWidgetClass(tempHP.Class);
 		EnemyHPComponent->SetWidgetSpace(EWidgetSpace::Screen);
-		EnemyHPComponent->SetDrawSize(FVector2D(80, 20));
+		EnemyHPComponent->SetDrawSize(FVector2D(80, 10));
 		EnemyHPComponent->SetRelativeLocation(FVector(0, 0, 110));
 		EnemyHPComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}

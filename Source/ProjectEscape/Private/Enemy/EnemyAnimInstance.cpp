@@ -82,14 +82,14 @@ void UEnemyAnimInstance::PlayDieAnimMontage()
 	}
 }
 
-void UEnemyAnimInstance::AnimNotify_HitEnd()
-{
-	if(Enemy)
-	{
-		Enemy->EnemyBaseFSM->OnChangeMoveState();
-		Montage_Stop( 0.1f, EnemyHitMontage);
-	}
-}
+//void UEnemyAnimInstance::AnimNotify_HitEnd()
+//{
+//	if(Enemy)
+//	{
+//		Enemy->EnemyBaseFSM->OnChangeMoveState();
+//		Montage_Stop( 0.1f, EnemyHitMontage);
+//	}
+//}
 
 void UEnemyAnimInstance::AnimNotify_ThrowGrenade()
 {
@@ -98,7 +98,6 @@ void UEnemyAnimInstance::AnimNotify_ThrowGrenade()
 		auto FSM=Cast<UGrenadeEnemyFSM>( Enemy->EnemyBaseFSM );
 		FSM->ThrowGrenade();
 	}
-	
 }
 
 void UEnemyAnimInstance::AnimNotify_FinishGrenade()
@@ -107,6 +106,7 @@ void UEnemyAnimInstance::AnimNotify_FinishGrenade()
 	{
 		auto FSM=Cast<UGrenadeEnemyFSM>( Enemy->EnemyBaseFSM );
 		FSM->bCanShoot = true;
+		Enemy->GunMesh->SetVisibility( true );
 	}
 }
 

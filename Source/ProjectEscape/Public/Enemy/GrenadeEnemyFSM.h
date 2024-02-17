@@ -43,6 +43,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	bool bCanShoot = true;
 
+	void TickDamage() override;
 	void TickAttack() override;
 
 	void ThrowGrenade();

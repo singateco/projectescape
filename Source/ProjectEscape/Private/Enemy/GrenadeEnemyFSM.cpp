@@ -39,6 +39,13 @@ void UGrenadeEnemyFSM::TickComponent( float DeltaTime, ELevelTick TickType, FAct
 	Super::TickComponent( DeltaTime, TickType, ThisTickFunction );
 }
 
+void UGrenadeEnemyFSM::TickDamage()
+{
+	Super::TickDamage();
+	bCanShoot = true;
+
+}
+
 void UGrenadeEnemyFSM::TickAttack()
 {
 	CurrentTime += GetWorld()->GetDeltaSeconds();
@@ -73,10 +80,11 @@ void UGrenadeEnemyFSM::TickAttack()
 
 	if(ChangeGrenadeTime > GrenadeTime )
 	{
+		Ai->StopMovement();
 		bCanShoot = false;
 		ChangeGrenadeTime = 0;
 		EnemyAnim->PlayGrenadeMontage();
-		
+		Enemy->GunMesh->SetVisibility( false );
 	}
 
 	float dist=FVector::Dist( Player->GetActorLocation(), Enemy->GetActorLocation() );

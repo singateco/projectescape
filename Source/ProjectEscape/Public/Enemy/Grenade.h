@@ -29,6 +29,17 @@ public:
 	UPROPERTY( EditAnywhere )
 	class UProjectileMovementComponent* MovementComponent;
 
+	UPROPERTY( EditAnywhere, Category = Effect )
+	UParticleSystem* ExplosionEffect;
+
+	UPROPERTY( EditAnywhere, Category = Effect )
+	USoundBase* ExplosionSound;
+
+	UPROPERTY( EditAnywhere )
+	float ExplosionTime = 4.0f;
+
+	UPROPERTY( EditAnywhere )
+	float SphereRadius = 500.0f;
 
 	void Explosion();
 };
