@@ -17,22 +17,21 @@ public:
 
 	virtual void NativeConstruct() override;
 	
-	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
-
 	UFUNCTION()
 	void UpdateHP(float MaxHP, float HP);
 	
-	UPROPERTY(EditInstanceOnly, meta = (BindWidget))
-	class UProgressBar* HPBar;
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, meta = (BindWidget))
+	class URadialSlider* HPBar;
 
-	UPROPERTY(EditInstanceOnly, meta = (BindWidget))
-	UProgressBar* HPBarGuide;
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, meta = (BindWidget))
+	URadialSlider* HPBarGuide;
 
-	UPROPERTY(EditInstanceOnly, meta = (BindWidget))
-	class UTextBlock* HPText;
+	UFUNCTION(BlueprintImplementableEvent)
+	void PlayGuideAnim();
+	
+	UPROPERTY(BlueprintReadWrite)
+	float HPPercent;
 	
 	UPROPERTY(VisibleAnywhere)
 	class AProjectEscapePlayer* OwnedPlayer;
-
-	float TargetPercent = 1;
 };

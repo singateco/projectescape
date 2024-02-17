@@ -191,7 +191,7 @@ void UMoveComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	ManageFlying(DeltaTime);
 	RecoverStamina(DeltaTime);
 	SetEffectState();
-	ShowDebugStat();
+	//ShowDebugStat();
 
 	if (PlayerStaminaUI)
 	{
