@@ -7,17 +7,17 @@
 
 void UPlayerStaminaUI::UpdateStamina(const float MaxStamina, const float CurrentStamina)
 {
-	StaminaValue = 1.f - (CurrentStamina / MaxStamina);
+	const float NewStaminaValue = 1.f - (CurrentStamina / MaxStamina);
+	const float StaminaDelta = abs(StaminaValue - NewStaminaValue);
+	StaminaValue = NewStaminaValue;
 	StaminaSlider->SetValue(StaminaValue);
-}
 
-void UPlayerStaminaUI::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
-{
-	Super::NativeTick(MyGeometry, InDeltaTime);
-
-	if (StaminaSlider_Guide->Value != StaminaValue)
+	if (StaminaDelta >= AnimEnableDelta)
 	{
-		constexpr float InterpSpeed = 1.5;
-		StaminaSlider_Guide->SetValue(FMath::FInterpTo(StaminaSlider_Guide->Value, StaminaValue, InDeltaTime, InterpSpeed));
+		PlayGuideAnim();
+	}
+	else
+	{
+		if (!bPlayingGuideAnim) StaminaSlider_Guide->SetValue(StaminaValue);
 	}
 }

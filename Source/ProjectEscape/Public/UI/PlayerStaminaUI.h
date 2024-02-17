@@ -24,9 +24,15 @@ public:
 	UFUNCTION()
 	void UpdateStamina(const float MaxStamina, const float CurrentStamina);
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void PlayGuideAnim();
+
+	UPROPERTY(BlueprintReadWrite)
+	bool bPlayingGuideAnim {false};
+	
 	UPROPERTY()
 	float StaminaValue {1.f};
-	
-protected:
-	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+
+	UPROPERTY()
+	float AnimEnableDelta {0.1f};
 };

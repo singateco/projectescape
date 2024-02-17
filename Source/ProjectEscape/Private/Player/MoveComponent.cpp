@@ -308,7 +308,9 @@ void UMoveComponent::HandleLanding(const FHitResult& Hit)
 
 void UMoveComponent::Dash(const FInputActionInstance& InputActionInstance)
 {
-	if (Stamina < DashStamina || bIsDashing)
+	if (Stamina < DashStamina
+		//|| bIsDashing
+		)
 	{
 		return;
 	}
