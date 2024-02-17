@@ -237,7 +237,8 @@ void UFireComponent::BulletReload(){
 
 	//GameTag로 변경하기
 	// 장전하고 있으면 장전 못함, 염력 사용중이면 장전 못함
-	if ( Player->IsReloading == true || Player->GrabComponent->bIsGrabbing == true) {
+	if ( Player->IsReloading == true || Player->GrabComponent->bIsGrabbing == true
+		||Player->GetCurrentMontage() == ReloadMontage) {
 		return;
 	}
 
