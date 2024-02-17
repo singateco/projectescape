@@ -17,7 +17,7 @@ AGrenade::AGrenade()
 
 	GrenadeMesh = CreateDefaultSubobject<UStaticMeshComponent>( TEXT( "GrenadeMesh" ) );
 	SetRootComponent( GrenadeMesh );
-	GrenadeMesh->SetupAttachment( RootComponent );
+	//GrenadeMesh->SetupAttachment( RootComponent );
 	GrenadeMesh->SetRelativeScale3D( FVector( 2.0f ) );
 	GrenadeMesh->SetSimulatePhysics( true );
 

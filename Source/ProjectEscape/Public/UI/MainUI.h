@@ -19,8 +19,6 @@ class UMainUI : public UUserWidget
 	GENERATED_BODY()
 public:
 
-	virtual void NativePreConstruct() override;
-
 public:
 	UPROPERTY(EditDefaultsOnly)
 	AProjectEscapePlayer* Player;
@@ -33,4 +31,7 @@ public:
 
 	UFUNCTION()
 	void SetCurrentBullets();
+
+protected:
+	virtual void NativeOnInitialized() override;
 };
