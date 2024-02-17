@@ -9,6 +9,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Player/PlayerStatsComponent.h"
 #include "ProjectEscape/Public/Player/ProjectEscapePlayer.h"
+#include "UI/PlayerStaminaUI.h"
 
 
 // Sets default values for this component's properties
@@ -72,7 +73,6 @@ void UMoveComponent::ShowDebugStat()
 	FString DebugString = FString::Printf(TEXT("Stamina: %.f/%.f"), Stamina, MaxStamina);
 	DebugString += FString::Printf(TEXT("\nVelocity: %.f"), CharacterMovementComponent->GetLastUpdateVelocity().Length());
 	DebugString += FString::Printf(TEXT("\nMovement Mode: %s"), *CharacterMovementComponent->GetMovementName());
-	DebugString += FString::Printf(TEXT("\nHP: %.f/%.f"), Player->PlayerStatsComponent->GetHP(), Player->PlayerStatsComponent->GetMaxHP());
 	
 	DrawDebugString(GetWorld(),
 		Player->GetActorLocation(),
@@ -191,7 +191,12 @@ void UMoveComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	ManageFlying(DeltaTime);
 	RecoverStamina(DeltaTime);
 	SetEffectState();
-	ShowDebugStat();
+	//ShowDebugStat();
+
+	if (PlayerStaminaUI)
+	{
+		PlayerStaminaUI->UpdateStamina(MaxStamina, Stamina);
+	}
 }
 
 void UMoveComponent::CheckForGroundWhileFlying()
@@ -303,7 +308,9 @@ void UMoveComponent::HandleLanding(const FHitResult& Hit)
 
 void UMoveComponent::Dash(const FInputActionInstance& InputActionInstance)
 {
-	if (Stamina < DashStamina)
+	if (Stamina < DashStamina
+		//|| bIsDashing
+		)
 	{
 		return;
 	}

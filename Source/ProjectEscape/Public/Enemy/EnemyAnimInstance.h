@@ -40,10 +40,15 @@ public:
 		UAnimMontage* EnemyHitMontage;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category="AnimMontage" )
+		UAnimMontage* EnemyHitMontage2;
+
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category="AnimMontage" )
 		UAnimMontage* EnemyShootMontage;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category="AnimMontage" )
 		UAnimMontage* EnemyDieMontage;
+
+	bool bHitMontage;
 
 	void PlayShootMontage();
 	void PlayHitAnimMontage();

@@ -3,17 +3,11 @@
 
 #include "Enemy/RifleEnemyFSM.h"
 
-#include "AIController.h"
-#include "NavigationSystem.h"
-#include "Components/ArrowComponent.h"
 #include "Enemy/EnemyAnimInstance.h"
 #include "Enemy/EnemyBullet.h"
 #include "Enemy/RifleEnemy.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Player/ProjectEscapePlayer.h"
-
-
-#include "Runtime/AIModule/Classes/Navigation/PathFollowingComponent.h"
 
 // Sets default values for this component's properties
 URifleEnemyFSM::URifleEnemyFSM()
@@ -36,7 +30,6 @@ URifleEnemyFSM::URifleEnemyFSM()
 void URifleEnemyFSM::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 
@@ -74,8 +67,6 @@ void URifleEnemyFSM::TickAttack()
 
 			GetWorld()->SpawnActor<AEnemyBullet>( EnemyBulletFactory, Enemy->GunMesh->GetSocketLocation( FName( TEXT( "Muzzle" ) ) ), RotationToPlayer + FRotator( X, Y, Z ) );
 		}
-
-		
 
 	}
 

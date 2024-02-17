@@ -10,6 +10,8 @@
  * 
  */
 
+class UPlayerStaminaUI;
+class UPlayerHP;
 class UMainUI;
 
 UCLASS()
@@ -20,18 +22,30 @@ class PROJECTESCAPE_API AProjectEscapePlayerController : public APlayerControlle
 public:
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UPlayerHP> PlayerHPWidgetClass;
 public:
 	UPROPERTY( EditDefaultsOnly)
 	TSubclassOf<UMainUI> InGameWIdgetClass;
 
+	UPROPERTY()
+	UPlayerHP* PlayerHPWidget;
 	UPROPERTY( EditDefaultsOnly)
 	UMainUI* InGameWIdget;
 
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UPlayerStaminaUI> PlayerStaminaUIWidgetClass;
+
+	UPROPERTY()
+	UPlayerStaminaUI* PlayerStaminaUIWidget;
+		
 
 private:
 	//UPROPERTY( EditDefaultsOnly, Meta=(AllowPrivateAccess) )
 	//TSubclassOf<UMainUI> InGameWIdgetClass;
 
+	UPROPERTY( EditDefaultsOnly, Meta=(AllowPrivateAccess) )
+	UMainUI* InGameWIdget;
 	//UPROPERTY( EditDefaultsOnly, Meta=(AllowPrivateAccess) )
 	//UMainUI* InGameWIdget;
 
