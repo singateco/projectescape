@@ -144,6 +144,7 @@ void UEnemyBaseFSM::TickDie()
 	Ai->StopMovement();
 	Ai->ClearFocus(2);
 
+	Enemy->GunMesh->SetVisibility(false);
 	CurrentTime += GetWorld()->GetDeltaSeconds();
 
 	if(CurrentTime > WidgetTime )

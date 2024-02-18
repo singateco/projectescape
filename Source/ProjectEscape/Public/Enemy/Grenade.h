@@ -26,9 +26,6 @@ public:
 	UPROPERTY( EditDefaultsOnly )
 	UStaticMeshComponent* GrenadeMesh;
 
-	UPROPERTY( EditAnywhere )
-	class UProjectileMovementComponent* MovementComponent;
-
 	UPROPERTY( EditAnywhere, Category = Effect )
 	UParticleSystem* ExplosionEffect;
 

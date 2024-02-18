@@ -28,16 +28,6 @@ AGrenade::AGrenade()
 		GrenadeMesh->SetStaticMesh( TempGrenadeMesh.Object );
 	}
 
-	MovementComponent=CreateDefaultSubobject<UProjectileMovementComponent>( TEXT( "MovementComponent" ) );
-
-	MovementComponent->InitialSpeed = 2000;
-	MovementComponent->MaxSpeed = 2000;
-	//MovementComponent->Bounciness = 0.6;
-	MovementComponent->bShouldBounce = true;
-	//MovementComponent->Friction = 0.2 ;
-	//MovementComponent->InterpLocationTime = 0.05f;
-	MovementComponent->ProjectileGravityScale = 1;
-
 	SetLifeSpan( 10.0f );
 }
 

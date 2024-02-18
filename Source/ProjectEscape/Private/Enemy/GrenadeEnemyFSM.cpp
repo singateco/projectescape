@@ -98,11 +98,19 @@ void UGrenadeEnemyFSM::TickAttack()
 
 void UGrenadeEnemyFSM::ThrowGrenade()
 {
-	FVector DirectionToPlayer=(Player->GetActorLocation() - Enemy->GetActorLocation()).GetSafeNormal();
-	FRotator RotationToPlayer=DirectionToPlayer.Rotation();
+	FVector DirectionToPlayer = (Player->GetActorLocation() - Enemy->GetActorLocation()).GetSafeNormal();
 
-	EnemyGrenade=GetWorld()->SpawnActor<AGrenade>( EnemyGrenadeFactory, Enemy->GetMesh()->GetSocketLocation( FName( TEXT( "RightHandSocket" ) ) ), RotationToPlayer );
+	FVector Impulse = DirectionToPlayer * GrenadeSpeed;
+	Impulse.Z += AddVertical;
+
+	EnemyGrenade = GetWorld()->SpawnActor<AGrenade>( EnemyGrenadeFactory, Enemy->GetMesh()->GetSocketTransform( FName( TEXT( "RightHandSocket" ) ) ) );
+
+	EnemyGrenade->GrenadeMesh->SetPhysicsLinearVelocity( FVector::ZeroVector );
+	EnemyGrenade->GrenadeMesh->AddImpulse(Impulse);
+
 }
+
+
 
 
 

@@ -41,7 +41,13 @@ public:
 		float ChangeGrenadeTime = 0;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	bool bCanShoot = true;
+		bool bCanShoot = true;
+
+	UPROPERTY( EditAnywhere )
+		float GrenadeSpeed = 3500.0f;
+
+	UPROPERTY( EditAnywhere )
+		float AddVertical = 1200.0f;
 
 	void TickDamage() override;
 	void TickAttack() override;
