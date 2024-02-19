@@ -41,8 +41,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UDataTable* UpgradeDataTable;
 
-	UPROPERTY( EditDefaultsOnly, Category="Damage" )
+	UPROPERTY(EditAnywhere, Category="Grab")
 	float GrabDamageValue=500.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Grab")
+	float GrabExplosionRadius = 300.f;
 
 	UPROPERTY( EditDefaultsOnly, Category="Fire" )
 	int MaxBullets = 30;

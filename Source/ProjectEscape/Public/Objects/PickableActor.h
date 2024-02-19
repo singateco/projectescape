@@ -27,8 +27,8 @@ public:
 	UPROPERTY( EditAnywhere )
 	UStaticMeshComponent* MeshComp;
 
-	UPROPERTY( EditAnywhere )
-	float SphereRadius = 700.0f;
+	UPROPERTY( EditAnywhere, BlueprintReadWrite )
+	float SphereRadius = 300.f;
 
 	UPROPERTY( EditDefaultsOnly)
 	UParticleSystem* GunEffect;
@@ -51,6 +51,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	void GetExplosionRadius();
+	
 	UFUNCTION()
 	void OnCompHit( UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit );
 };
