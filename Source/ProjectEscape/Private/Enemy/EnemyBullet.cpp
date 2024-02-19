@@ -65,8 +65,11 @@ void AEnemyBullet::OnSphereComponentBeginHit( UPrimitiveComponent* OverlappedCom
 
 	if (AProjectEscapePlayer* Player = Cast<AProjectEscapePlayer>(OtherActor))
 	{
-		Player->ProcessDamage(1);
-		this->Destroy();
+		if (Cast<USkeletalMeshComponent>(OtherComp))
+		{
+			Player->ProcessDamage(1);
+			this->Destroy();
+		}
 	}
 	
 	if (Cast<AStaticMeshActor>(OtherActor))
