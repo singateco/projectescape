@@ -6,6 +6,7 @@
 #include "Enemy/EnemyAnimInstance.h"
 #include "Enemy/EnemyBullet.h"
 #include "Enemy/RifleEnemy.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Player/ProjectEscapePlayer.h"
 
@@ -67,7 +68,7 @@ void URifleEnemyFSM::TickAttack()
 
 			GetWorld()->SpawnActor<AEnemyBullet>( EnemyBulletFactory, Enemy->GunMesh->GetSocketLocation( FName( TEXT( "Muzzle" ) ) ), RotationToPlayer + FRotator( X, Y, Z ) );
 		}
-
+		UGameplayStatics::PlaySoundAtLocation( GetWorld(), AttackSound, Enemy->GunMesh->GetSocketLocation( FName( TEXT( "Muzzle" ) ) ) );
 	}
 
 	float dist = FVector::Dist(Player->GetActorLocation(), Enemy->GetActorLocation());
