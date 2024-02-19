@@ -68,7 +68,7 @@ void  UFireComponent::HandleFireAnimation()
 {
 	bHasFired = true;
 	UAnimInstance* AnimInstance = Cast<ACharacter>(GetOwner())->GetMesh()->GetAnimInstance();
-	AnimInstance->Montage_Play(FireMontage);
+	AnimInstance->Montage_Play(FireMontage, Player->PlayerStatsComponent->FireRate);
 }
 
 
@@ -77,7 +77,7 @@ void UFireComponent::PlayReloadAnimation()
 {
 	UAnimInstance* AnimInstance = Cast<ACharacter>( GetOwner() )->GetMesh()->GetAnimInstance();
 	if ( ReloadMontage ) {
-		AnimInstance->Montage_Play( ReloadMontage );
+		AnimInstance->Montage_Play(ReloadMontage, Player->PlayerStatsComponent->ReloadSpeedRate);
 	}
 }
 
@@ -91,7 +91,6 @@ void UFireComponent::BeginPlay()
 	NormalGun = GetWorld()->SpawnActor<ANormalGun>(NormalGunClass);
 	AttachPistol();
 	InitBullets();
-
 }
 
 void UFireComponent::Deactivate()
@@ -136,6 +135,11 @@ void UFireComponent::NormalGunFire()
 		return;
 	}
 
+	if (!Player->HasMatchingGameplayTag(PEGameplayTags::Status_CanShoot))
+	{
+		return;
+	}
+
 	if( Player->PlayerStatsComponent->CurrentBullets <= 0 )
 	{
 		BulletReload();
@@ -171,6 +175,8 @@ void UFireComponent::NormalGunFire()
 	//DrawDebugLine( GetWorld(), StartPos1, EndPos1, FColor::Blue, true );
 	if (bHit1) { 
 
+		Player->RemoveGameplayTag(PEGameplayTags::Status_CanShoot);
+		
 		// 2. Collision Check - LineTrace 2nd
 		// 1) From Muzzle
 		FVector StartPos2=NormalGun->NormalGunMesh->GetSocketLocation( TEXT( "Muzzle" ) );
@@ -266,4 +272,6 @@ void UFireComponent::InitBullets()
 	PC->InGameWIdget->TXT_MaxBullets->SetText( FText::AsNumber( Player->PlayerStatsComponent->MaxBullets ) );
 
 	Player->IsReloading = false;
+
+	Player->AddGameplayTag(PEGameplayTags::Status_CanShoot);
 }

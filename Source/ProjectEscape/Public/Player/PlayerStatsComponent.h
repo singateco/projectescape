@@ -42,16 +42,22 @@ public:
 	UDataTable* UpgradeDataTable;
 
 	UPROPERTY(EditAnywhere, Category="Grab")
-	float GrabDamageValue=500.0f;
+	float GrabDamageValue = 10.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Grab")
 	float GrabExplosionRadius = 300.f;
 
 	UPROPERTY( EditDefaultsOnly, Category="Fire" )
-	int MaxBullets = 30;
+	int MaxBullets = 13;
 
 	UPROPERTY( EditDefaultsOnly, Category="Fire" )
 	int CurrentBullets;
+
+	UPROPERTY( EditDefaultsOnly, Category="Fire" )
+	float FireRate {1.25f};
+
+	UPROPERTY( EditDefaultsOnly, Category="Fire" )
+	float ReloadSpeedRate {1.f};
 
 protected:
 	// Called when the game starts
@@ -67,7 +73,7 @@ private:
 	float GunDamageMultiplier {1};
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage", meta = (AllowPrivateAccess))
-	float GunWeakPointMultiplier {1.5f};
+	float GunWeakPointMultiplier {2.f};
 	
 	float InitialGunDamage;
 	float InitialGunDamageMultiplier;

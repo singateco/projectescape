@@ -22,8 +22,7 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 	UPROPERTY()
-
-	const AProjectEscapePlayer* Player;
+	AProjectEscapePlayer* Player;
 
 	////Normal Gun Reload
 	//UPROPERTY( EditDefaultsOnly, Category="MyAnimSettings" )
@@ -35,6 +34,10 @@ public:
 	UFUNCTION()
 	void AnimNotify_AN_Reload_C();
 
+	UFUNCTION()
+	void AnimNotify_SaveAttack();
+	
+	virtual void NativeBeginPlay() override;
 
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Character State Data")

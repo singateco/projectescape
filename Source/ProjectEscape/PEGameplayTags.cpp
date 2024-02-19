@@ -16,4 +16,5 @@ namespace PEGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_IsReload, "Status.IsReload", "장전중.")
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_IsDashing, "Status.IsDashing", "대시를 하고 있다.")
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_IsADS, "Status.IsADS", "조준사격을 하고 있다.")
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_CanShoot, "Status.CanShoot", "사격을 할 수 있다.")
 }

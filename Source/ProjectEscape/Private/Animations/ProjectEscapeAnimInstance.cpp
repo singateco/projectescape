@@ -7,7 +7,6 @@
 #include "PECharacterMovementComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Player/FireComponent.h"
-#include "Player/MoveComponent.h"
 #include "Player/ProjectEscapePlayer.h"
 #include "ProjectEscape/PEGameplayTags.h"
 
@@ -24,9 +23,7 @@ void UProjectEscapeAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	UPECharacterMovementComponent* CharMoveComp = CastChecked<UPECharacterMovementComponent>(Character->GetMovementComponent());
 	const FPECharacterGroundInfo& GroundInfo = CharMoveComp->GetGroundInfo();
 	GroundDistance = GroundInfo.GroundDistance;
-
-	//const AProjectEscapePlayer* Player = Cast<AProjectEscapePlayer>(GetOwningActor());
-	 Player = Cast<AProjectEscapePlayer>(GetOwningActor());
+	
 	if (!Player)
 	{
 		return;
@@ -47,5 +44,23 @@ void UProjectEscapeAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 void UProjectEscapeAnimInstance::AnimNotify_AN_Reload_C()
 {
 	//애니메이션이 끝난 후 함수 호출해주기 위해( 동작이 끝나고 재장전이 돼야한다.)
-	Player->FireComponent->InitBullets();
+	if (Player)
+	{
+		Player->FireComponent->InitBullets();
+	}
+}
+
+void UProjectEscapeAnimInstance::AnimNotify_SaveAttack()
+{
+	if (Player)
+	{
+		Player->AddGameplayTag(PEGameplayTags::Status_CanShoot);
+	}
+}
+
+void UProjectEscapeAnimInstance::NativeBeginPlay()
+{
+	Super::NativeBeginPlay();
+
+	Player = Cast<AProjectEscapePlayer>(GetOwningActor());
 }

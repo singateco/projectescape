@@ -106,8 +106,7 @@ public:
 	// 총 발사시 플레이되는 몽타주
 	UPROPERTY(EditAnywhere, Category="MyAnimSettings" )
 	UAnimMontage* FireMontage;
-
-
+	
 	//Normal Gun Reload
 	UPROPERTY( EditDefaultsOnly, Category="MyAnimSettings" )
 	UAnimMontage* ReloadMontage;
