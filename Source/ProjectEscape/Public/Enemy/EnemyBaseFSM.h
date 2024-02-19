@@ -36,19 +36,19 @@ public:
 
 	// --------------------- Variable ---------------------------
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		EEnemyState State;
+	EEnemyState State;
 
 	UPROPERTY()
-		class AEnemyBase* Enemy;
+	class AEnemyBase* Enemy;
 
 	UPROPERTY()
-		class AProjectEscapePlayer* Player;
+	class AProjectEscapePlayer* Player;
 
 	UPROPERTY()
-		class UEnemyAnimInstance* EnemyAnim;
+	class UEnemyAnimInstance* EnemyAnim;
 
 	UPROPERTY()
-		class AAIController* Ai;
+	class AAIController* Ai;
 
 	float CurrentTime = 0;
 
@@ -80,6 +80,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bCanSeePlayer = false;
 
+	UPROPERTY( EditAnywhere )
+	USoundBase* AttackSound;
 	// --------------------- Function ---------------------------
 
 	void SetState(EEnemyState Next);

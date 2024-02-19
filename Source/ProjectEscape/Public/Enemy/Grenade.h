@@ -38,5 +38,8 @@ public:
 	UPROPERTY( EditAnywhere )
 	float SphereRadius = 500.0f;
 
+	UPROPERTY( EditAnywhere )
+	class URadialForceComponent* RadialForce;
+
 	void Explosion();
 };

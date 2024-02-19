@@ -42,6 +42,7 @@ void AGrenade::BeginPlay()
 			Explosion();
 		} ), ExplosionTime, false );
 
+	
 }
 
 // Called every frame
