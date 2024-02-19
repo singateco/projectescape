@@ -59,7 +59,7 @@ void AGrenade::Explosion()
 	ActorsToIgnoreArray.Add( this );
 	TArray<AActor*> OutActorsArray;
 
-	DrawDebugSphere( GetWorld(), GrenadeMesh->GetComponentLocation(), SphereRadius, 100, FColor::Red, false, 3 );
+	//DrawDebugSphere( GetWorld(), GrenadeMesh->GetComponentLocation(), SphereRadius, 100, FColor::Red, false, 3 );
 
 	bool bSphereOverlapResult = UKismetSystemLibrary::SphereOverlapActors( GetWorld(), GrenadeMesh->GetComponentLocation(), SphereRadius, ObjectTypes, nullptr, ActorsToIgnoreArray, OutActorsArray );
 
@@ -67,15 +67,26 @@ void AGrenade::Explosion()
 	{
 		for ( AActor* HitActor : OutActorsArray )
 		{
-			auto OtherCharacter=Cast<AProjectEscapePlayer>( HitActor );
+			auto OtherCharacter = Cast<AProjectEscapePlayer>( HitActor );
 			if ( OtherCharacter )
 			{
-				OtherCharacter->ProcessDamage(10);
+				FVector StartLoc = GrenadeMesh->GetComponentLocation();
+				FVector EndLoc = OtherCharacter->GetActorLocation();
+				FHitResult HitResult;
+				FCollisionQueryParams Params;
+				Params.AddIgnoredActor( this );
+				Params.AddIgnoredActor( HitActor );
+
+				bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLoc, EndLoc, ECC_Visibility, Params);
+				// 라인 트레이스에서 플레이어가 충돌한 경우 데미지를 입힘
+				if ( !bHit )
+				{
+					OtherCharacter->ProcessDamage( 10 );
+				}
 			}
 		}
 
 		UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), ExplosionEffect, GrenadeMesh->GetComponentLocation(), FRotator(), FVector( 10 ), true, EPSCPoolMethod::None, true );
-		
 
 		this->Destroy();
 
