@@ -88,11 +88,24 @@ void AEnemyBase::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 	
-	FVector start = EnemyHPComponent->GetComponentLocation();
-	FVector end = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->GetCameraLocation();
-	FRotator newRoatation = UKismetMathLibrary::FindLookAtRotation(start, end);
+	FVector Start = EnemyHPComponent->GetComponentLocation();
+	FVector End = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->GetCameraLocation();
 
+	float DistanceToPlayer = FVector::Distance( Start, End );
+	float MaxDisplayDistance = 3000.0f;
+
+	if(DistanceToPlayer <= MaxDisplayDistance )
+	{
+		EnemyHPComponent->SetVisibility( true );
+	}
+	else
+	{
+		EnemyHPComponent->SetVisibility( false );
+	}
+
+	FRotator newRoatation = UKismetMathLibrary::FindLookAtRotation(Start, End);
 	EnemyHPComponent->SetWorldRotation(newRoatation);
+
 }
 
 void AEnemyBase::PreInitializeComponents()
