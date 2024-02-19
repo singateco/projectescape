@@ -190,11 +190,20 @@ void UFireComponent::NormalGunFire()
 			//DrawDebugBox(GetWorld(), HitInfo2.Location, FVector(5), FColor::Red, false, 5.f, 0, 3);
 			UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), GunEffect, HitInfo2.Location, FRotator() );
 			Enemy = Cast<AEnemyBase>(HitInfo2.GetActor());
+
+			if (AActor* Actor = HitInfo2.GetActor(); Actor && Actor->GetRootComponent()->IsSimulatingPhysics())
+			{
+				HitInfo2.Component->AddImpulse(HitInfo2.ImpactNormal * -1 * GunImpulseForce);
+			}
 			//UE_LOG(LogTemp, Warning, TEXT("hit actor: %s"), *HitInfo2.GetActor()->GetActorNameOrLabel())
 		}
 		else
 		{
 			UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), GunEffect, EndPos2, FRotator() );
+			if (AActor* Actor = HitInfo1.GetActor(); Actor && Actor->GetRootComponent()->IsSimulatingPhysics())
+			{
+				HitInfo1.Component->AddImpulse(HitInfo1.ImpactNormal * -1 * GunImpulseForce);
+			}
 		}
 		
 		if (Enemy)
