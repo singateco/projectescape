@@ -46,14 +46,14 @@ void UEnemyBaseFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
-	DrawDebugString(GetWorld(),
-		Enemy->GetActorLocation() + FVector(0, 0, 100),
-		UEnum::GetDisplayValueAsText(State).ToString(),
-		nullptr,
-		FColor::Orange,
-		0,
-		true,
-		0.9);
+	// DrawDebugString(GetWorld(),
+	// 	Enemy->GetActorLocation() + FVector(0, 0, 100),
+	// 	UEnum::GetDisplayValueAsText(State).ToString(),
+	// 	nullptr,
+	// 	FColor::Orange,
+	// 	0,
+	// 	true,
+	// 	0.9);
 		
 	switch (State)
 	{
