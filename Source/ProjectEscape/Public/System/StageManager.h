@@ -8,7 +8,7 @@
 
 class AEnemyBase;
 
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FStageFinished);
 
 USTRUCT(BlueprintType, Blueprintable)
 struct FWaveData: public FTableRowBase
@@ -49,6 +49,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 	FStageData StageData;
+
+	UPROPERTY(BlueprintAssignable)
+	FStageFinished OnStageFinished;
 
 	UPROPERTY(EditAnywhere)
 	TArray<AEnemyBase*> ThisWaveEnemy;

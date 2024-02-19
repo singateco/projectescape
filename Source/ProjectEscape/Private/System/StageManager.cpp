@@ -20,6 +20,7 @@ void AStageManager::HandleEnemyDestroyed(AActor* DestroyedActor)
 		{
 			// Do something
 			UE_LOG(LogTemp, Warning, TEXT("Stage Won!"))
+			OnStageFinished.Broadcast();
 			return;
 		}
 
