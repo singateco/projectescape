@@ -30,7 +30,7 @@ AEnemyBase::AEnemyBase(const FObjectInitializer& ObjectInitializer)
 	NavComponent = CreateDefaultSubobject<UNavigationInvokerComponent>(TEXT("NavComponent"));
 
 	WeakPoint = CreateDefaultSubobject<UBoxComponent>( TEXT( "WeakPoint" ) );
-	WeakPoint->SetupAttachment( GetMesh() );
+	WeakPoint->SetupAttachment( GetMesh(), TEXT("WeakPointSocket") );
 	WeakPoint->SetBoxExtent(FVector(16.f));
 	WeakPoint->SetCollisionObjectType(ECC_GameTraceChannel4);
 	WeakPoint->SetCollisionEnabled(ECollisionEnabled::QueryOnly);

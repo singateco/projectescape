@@ -60,6 +60,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Pistol")
 	UParticleSystem* GunEffect;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Pistol")
+	float GunImpulseForce {15000.f};
+
 
 	UPROPERTY()
 	UMainUI* MainUI;

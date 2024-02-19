@@ -57,8 +57,17 @@ void APickableActor::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+void APickableActor::GetExplosionRadius()
+{
+	if (Player)
+	{
+		SphereRadius = Player->PlayerStatsComponent->GrabExplosionRadius;
+		EmitterScaleValue = SphereRadius / 100.f;
+	}
+}
+
 void APickableActor::OnCompHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-	FVector NormalImpulse, const FHitResult& Hit)
+                               FVector NormalImpulse, const FHitResult& Hit)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("%.1f"), NormalImpulse.Length());
 
@@ -82,6 +91,8 @@ void APickableActor::OnCompHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 		ActorsToIgnoreArray.Add( this );
 		TArray<AActor*> OutActorsArray;
 
+		GetExplosionRadius();
+		
 		bool bSphereOverlapResult=UKismetSystemLibrary::SphereOverlapActors( GetWorld(), this->MeshComp->GetComponentLocation(), SphereRadius, ObjectTypes, nullptr, ActorsToIgnoreArray, OutActorsArray );
 		//bool bSphereOverlapResult=UKismetSystemLibrary::SphereOverlapActors( GetWorld(), this->GetActorLocation(), SphereRadius, ObjectTypes, AActor::StaticClass(), ActorsToIgnoreArray, OutActorsArray );
 

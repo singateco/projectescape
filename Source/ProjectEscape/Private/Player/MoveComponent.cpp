@@ -290,7 +290,7 @@ void UMoveComponent::HandleJump(const FInputActionInstance& InputActionInstance)
 		return;
 	}
 	
-	if (CharacterMovementComponent->MovementMode != MOVE_Flying)
+	if (CharacterMovementComponent->MovementMode != MOVE_Flying && Stamina >= 0.05)
 	{
 		FVector NowVelocity = Player->GetVelocity();
 		CharacterMovementComponent->Velocity = FVector(NowVelocity.X, NowVelocity.Y, 0);
