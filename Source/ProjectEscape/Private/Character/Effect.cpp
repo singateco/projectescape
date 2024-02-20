@@ -2,19 +2,19 @@
 
 
 #include "Character/Effect.h"
-
 #include "Character/StatsComponent.h"
+#include "CharacterBase.h"
 
 void UEffect::Initialize_Implementation()
 {
+	if (!OwningStatsComponent || !EffectOwner)
+	{
+		ConditionalBeginDestroy();
+		return;
+	}
+	
 	if (bIsUnique)
 	{
-		if (!OwningStatsComponent || !EffectOwner)
-		{
-			ConditionalBeginDestroy();
-			return;
-		}
-
 		if (OwningStatsComponent->Effects.ContainsByPredicate([this](const UEffect* E)->bool
 		{
 			return E != this && E->Name == this->Name;
@@ -24,7 +24,12 @@ void UEffect::Initialize_Implementation()
 			return;
 		}
 	}
-
+	
+	if (!CheckCondition())
+	{
+		return;
+	}
+	
 	
 	switch (DurationType) {
 	case EEffectDuration::Instant:
@@ -62,6 +67,11 @@ void UEffect::Activate()
 	ActivateEffect();
 }
 
+bool UEffect::CheckCondition_Implementation()
+{
+	return true;
+}
+
 void UEffect::EndEffect()
 {
 	if (AfterActivateDurationTimerHandle.IsValid())
@@ -70,6 +80,5 @@ void UEffect::EndEffect()
 		AfterActivateDurationTimerHandle.Invalidate();
 	}
 	OnEffectEnded.Broadcast(this);
-
 	EffectEnded();
 }

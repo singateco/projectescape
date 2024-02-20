@@ -48,6 +48,18 @@ void UStatsComponent::RemoveEffect(UEffect* EffectToRemove)
 	EffectToRemove = nullptr;
 }
 
+void UStatsComponent::AddTag(const FGameplayTag& TagToAdd)
+{
+	GameplayTagContainer.AddTag(TagToAdd);
+	OnGameplayTagAdded.Broadcast(TagToAdd);
+}
+
+void UStatsComponent::RemoveTag(const FGameplayTag& TagToRemove)
+{
+	GameplayTagContainer.RemoveTag(TagToRemove);
+	OnGameplayTagRemoved.Broadcast(TagToRemove);
+}
+
 void UStatsComponent::ProcessDamage(const float DamageValue)
 {
 	if (OwningChara->HasMatchingGameplayTag(PEGameplayTags::Status_IsDead))

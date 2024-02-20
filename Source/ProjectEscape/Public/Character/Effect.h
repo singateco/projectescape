@@ -55,7 +55,11 @@ public:
 	float ActivateDurationSeconds {1.0f};
 
 	// =============== 게임 플레이 태그 =============
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FGameplayTagContainer TagsToApply;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FGameplayTagContainer ConditionalTags;
 
 	// =============== 기본 정보 =============
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -71,6 +75,9 @@ public:
 	
 	UFUNCTION()
 	void Activate();
+
+	UFUNCTION(BlueprintNativeEvent)
+	bool CheckCondition();
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void ActivateEffect();

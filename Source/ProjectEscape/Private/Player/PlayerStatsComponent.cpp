@@ -1,15 +1,11 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Player/PlayerStatsComponent.h"
-
 #include "Character/Effect.h"
 #include "Components/BoxComponent.h"
 #include "Components/TextBlock.h"
 #include "Enemy/EnemyBase.h"
 #include "Enemy/EnemyStatsComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
-#include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Player/FireComponent.h"
 #include "Player/ProjectEscapePlayer.h"
@@ -26,7 +22,12 @@ UPlayerStatsComponent::UPlayerStatsComponent()
 
 float UPlayerStatsComponent::GetGunDamage(const bool bHitWeakPoint) const
 {
-	return GunDamage * GunDamageMultiplier * bHitWeakPoint ? GunWeakPointMultiplier : 1.f;
+	float Damage = GunDamage * GunDamageMultiplier;
+	if (bHitWeakPoint)
+	{
+		Damage *= GunWeakPointMultiplier;
+	}
+	return Damage;
 }
 
 void UPlayerStatsComponent::OnEnemyHitByPlayerGun(AEnemyBase* Enemy, FHitResult HitResult)
@@ -62,50 +63,37 @@ void UPlayerStatsComponent::OnEnemyHitByPlayerGun(AEnemyBase* Enemy, FHitResult 
 	}
 }
 
-void UPlayerStatsComponent::InitializeStat()
+
+void UPlayerStatsComponent::AddUpgrade(UUpgrade* Upgrade)
 {
-	GunDamage = InitialGunDamage;
-	GunDamageMultiplier = InitialGunDamageMultiplier;
-	//Initialize Bullet
-	CurrentBullets = MaxBullets;
-
-	auto PC=Cast<AProjectEscapePlayerController>( GetWorld()->GetFirstPlayerController() );
-	if ( PC == nullptr ) {
-		return;
-	}
-	PC->InGameWIdget->TXT_CurrentBullets->SetText( FText::AsNumber( MaxBullets ) );
-
-}
-
-
-void UPlayerStatsComponent::CalculateStat()
-{
-	
-	InitializeStat();
-	
-	for (UUpgrade* Upgrade : OwningUpgrades)
+	OwningUpgrades.Add(Upgrade);
+	if (const TArray<TSubclassOf<UEffect>> GunEffects = Upgrade->StaticData.GunEffects; !GunEffects.IsEmpty())
 	{
-		for (TTuple<FGameplayTag, float> Mod : Upgrade->StaticData.StatsToAlwaysModify)
-		{
-			if (Mod.Key.MatchesTagExact(PEGameplayTags::Stat_Gun_Damage))
-			{
-				GunDamage += Mod.Value;
-			}
+		EffectsToApplyWhenEnemyHitByPlayerGun.Append(GunEffects);
+	}
 
-			if (Mod.Key.MatchesTagExact(PEGameplayTags::Stat_Gun_DamageMultiplier))
-			{
-				GunDamageMultiplier += Mod.Value;
-			}
+	if (const TArray<TSubclassOf<UEffect>> PlayerEffects = Upgrade->StaticData.PlayerEffects; !PlayerEffects.IsEmpty())
+	{
+		for (TSubclassOf<UEffect> EffectClass : PlayerEffects)
+		{
+			AddEffect(NewObject<UEffect>(this, EffectClass));
 		}
 	}
 }
 
+
 void UPlayerStatsComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	InitialGunDamage = GunDamage;
-	InitialGunDamageMultiplier = GunDamageMultiplier;
+	
+	CurrentBullets = MaxBullets;
 
 	Player = GetOwner<AProjectEscapePlayer>();
 	Player->FireComponent->OnEnemyHitByPlayerGun.AddUniqueDynamic(this, &UPlayerStatsComponent::OnEnemyHitByPlayerGun);
+
+	AProjectEscapePlayerController* PC = Cast<AProjectEscapePlayerController>(GetWorld()->GetFirstPlayerController());
+	if ( nullptr != PC )
+	{
+		PC->InGameWIdget->TXT_CurrentBullets->SetText( FText::AsNumber( MaxBullets ) );
+	}
 }
