@@ -24,7 +24,7 @@ void AStageManager::HandleEnemyDestroyed(AActor* DestroyedActor)
 			return;
 		}
 
-		CurrentWaveIndex++;
+		OnWaveFinished.Broadcast(StageData.Waves[CurrentWaveIndex], StageData.Waves[++CurrentWaveIndex]);
 		if (StageData.Waves.Num() > CurrentWaveIndex)
 		{
 			SpawnWave(StageData.Waves[CurrentWaveIndex]);

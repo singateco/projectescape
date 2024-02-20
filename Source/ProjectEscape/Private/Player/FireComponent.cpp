@@ -135,7 +135,7 @@ void UFireComponent::NormalGunFire()
 		return;
 	}
 
-	if (!Player->HasMatchingGameplayTag(PEGameplayTags::Status_CanShoot))
+	if (!Player->HasMatchingGameplayTag(PEGameplayTags::Status_CanShoot) && Player->GetMesh()->IsPlaying())
 	{
 		return;
 	}

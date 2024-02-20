@@ -8,7 +8,7 @@
 
 class AEnemyBase;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FStageFinished);
+
 
 USTRUCT(BlueprintType, Blueprintable)
 struct FWaveData: public FTableRowBase
@@ -33,6 +33,8 @@ struct FStageData: public FTableRowBase
 	TArray<FWaveData> Waves;
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FStageFinished);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FWaveFinished, FWaveData, FinishedWaveData, FWaveData, NextWaveData);
 
 UCLASS()
 class PROJECTESCAPE_API AStageManager : public AActor
@@ -52,6 +54,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FStageFinished OnStageFinished;
+
+	UPROPERTY(BlueprintAssignable)
+	FWaveFinished OnWaveFinished;
 
 	UPROPERTY(EditAnywhere)
 	TArray<AEnemyBase*> ThisWaveEnemy;
