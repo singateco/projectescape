@@ -64,7 +64,7 @@ public:
 	APickableActor* ObjectInHand;
 
 	UPROPERTY( EditDefaultsOnly, Category="Throw" )
-	float ThrowingPower = 7000.0f;
+	float ThrowingPower = 10000.0f;
 
 	//UPROPERTY( EditDefaultsOnly, Category="Throw" )
 	//FVector EnemyLoc;
