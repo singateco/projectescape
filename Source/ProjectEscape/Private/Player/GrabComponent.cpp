@@ -15,6 +15,7 @@
 #include "Objects/PickableActor.h"
 #include "Components/PrimitiveComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "ProjectEscape/ProjectEscape.h"
 
 // Sets default values for this component's properties
 UGrabComponent::UGrabComponent()
@@ -111,7 +112,7 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 			for ( FHitResult& HitInfo : HitInfoArray )
 			{
 				auto PickUpActor=Cast<APickableActor>( HitInfo.GetActor() );
-				UE_LOG( LogTemp, Warning, TEXT( "%s" ), *PickUpActor->GetActorNameOrLabel() );
+				//UE_LOG( SYLog, Warning, TEXT( "%s" ), *PickUpActor->GetActorNameOrLabel() );
 				PickUpActor->MeshComp->SetRenderCustomDepth( true );
 
 			}
@@ -201,6 +202,7 @@ void UGrabComponent::ReleaseObject()
 		
 		if ( bTraceResult )
 		{
+			UE_LOG( SYLog, Warning, TEXT( "throw!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" ))
 			for ( FHitResult& HitInfo : HitInfoArray )
 			{
 				auto Enemy =Cast<ARifleEnemy>( HitInfo.GetActor() );
@@ -265,7 +267,7 @@ void UGrabComponent::SphereGrabObject()
 		for ( FHitResult& HitInfo : HitInfoArray )
 		{
 			auto PickUpActor=Cast<APickableActor>( HitInfo.GetActor() );
-			UE_LOG(LogTemp, Warning, TEXT("%s"), *PickUpActor->GetActorNameOrLabel());
+			UE_LOG(SYLog, Warning, TEXT("pick!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! : %s"), *PickUpActor->GetActorNameOrLabel());
 			PickUpActor->MeshComp->SetRenderCustomDepth(true);
 
 
