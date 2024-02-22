@@ -72,7 +72,7 @@ AEnemyBase::AEnemyBase(const FObjectInitializer& ObjectInitializer)
 	AIControllerClass = AEnemyAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
-	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
+	GetCharacterMovement()->MaxWalkSpeed=EnemyMaxSpeed;
 
 }
 
@@ -82,6 +82,7 @@ void AEnemyBase::BeginPlay()
 
 	check(DamageNumberWidgetClass);
 	StatsComponent->OnTakenDamage.AddUniqueDynamic(this, &AEnemyBase::DisplayDamageNumber);
+
 }
 
 void AEnemyBase::Tick(float DeltaSeconds)

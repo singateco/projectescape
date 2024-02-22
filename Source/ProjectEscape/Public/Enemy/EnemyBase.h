@@ -49,6 +49,9 @@ public:
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
 	class UNavigationInvokerComponent* NavComponent;
 
+	UPROPERTY( EditAnywhere )
+	float EnemyMaxSpeed = 300.0f;
+
 	// --------------------- Function ---------------------------
 
 	UFUNCTION()

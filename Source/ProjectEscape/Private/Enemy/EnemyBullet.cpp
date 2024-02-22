@@ -22,6 +22,7 @@ AEnemyBullet::AEnemyBullet()
 	SphereCollision->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	SphereCollision->SetCollisionResponseToChannel(ECC_GameTraceChannel3, ECR_Ignore);
 	SphereCollision->SetUseCCD(true);
+	//SphereCollision->SetNotifyRigidBodyCollision( true );
 
 	EnemyBulletMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("EnemyBulletMesh"));
 	EnemyBulletMesh->SetupAttachment(SphereCollision);
@@ -61,8 +62,7 @@ void AEnemyBullet::BeginPlay()
 
 }
 
-void AEnemyBullet::OnSphereComponentBeginHit( UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult )
+void AEnemyBullet::OnSphereComponentBeginHit( UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult )
 {
 
 	if (AProjectEscapePlayer* Player = Cast<AProjectEscapePlayer>(OtherActor))
@@ -72,21 +72,15 @@ void AEnemyBullet::OnSphereComponentBeginHit( UPrimitiveComponent* OverlappedCom
 			Player->ProcessDamage(1);
 			this->Destroy();
 		}
+		
 	}
-	else
+	if (Cast<AStaticMeshActor>(OtherActor))
 	{
 		UGameplayStatics::SpawnDecalAtLocation( GetWorld(), BulletDecal, FVector( 0.05 ), SweepResult.ImpactPoint, SweepResult.ImpactNormal.Rotation(), 10 );
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), BulletImpact, SweepResult.ImpactPoint, SweepResult.ImpactNormal.Rotation(), FVector( 1 ), true );
-
+		UGameplayStatics::PlaySoundAtLocation( GetWorld(), BulletHitSound, SweepResult.ImpactPoint );
 		this->Destroy();
 	}
-	/*if (Cast<AStaticMeshActor>(OtherActor))
-	{
-		UGameplayStatics::SpawnDecalAtLocation( GetWorld(), BulletDecal, FVector( 0.05 ), SweepResult.ImpactPoint, SweepResult.ImpactNormal.Rotation(), 10);
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), BulletImpact, SweepResult.ImpactPoint, SweepResult.ImpactNormal.Rotation(), FVector( 1 ), true );
-
-		this->Destroy();
-	}*/
 }
 
 // Called every frame

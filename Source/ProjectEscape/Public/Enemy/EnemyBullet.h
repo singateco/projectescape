@@ -21,8 +21,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	UFUNCTION()
-	void OnSphereComponentBeginHit( UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
-									   const FHitResult& SweepResult );
+	void OnSphereComponentBeginHit(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 public:	
 	// Called every frame
@@ -42,4 +41,7 @@ public:
 
 	UPROPERTY( EditAnywhere )
 	class UNiagaraSystem* BulletImpact;
+
+	UPROPERTY( EditAnywhere )
+	USoundBase* BulletHitSound;
 };

@@ -93,7 +93,7 @@ public:
 	virtual void TickMove();
 	virtual void TickAttack();
 	virtual void TickDamage();
-	void TickDie();
+	virtual void TickDie();
 
 	void OnChangeMoveState();
 

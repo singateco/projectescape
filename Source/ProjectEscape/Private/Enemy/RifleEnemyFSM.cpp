@@ -2,8 +2,6 @@
 
 
 #include "Enemy/RifleEnemyFSM.h"
-
-#include "NiagaraFunctionLibrary.h"
 #include "Enemy/EnemyAnimInstance.h"
 #include "Enemy/EnemyBullet.h"
 #include "Enemy/RifleEnemy.h"

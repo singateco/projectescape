@@ -32,6 +32,9 @@ public:
 	UPROPERTY( EditAnywhere, Category = Effect )
 	USoundBase* ExplosionSound;
 
+	UPROPERTY( EditAnywhere, Category = Effect )
+	UMaterialInterface* GrenadeDecal;
+
 	UPROPERTY( EditAnywhere )
 	float ExplosionTime = 4.0f;
 
