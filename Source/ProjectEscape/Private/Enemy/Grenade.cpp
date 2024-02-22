@@ -2,12 +2,11 @@
 
 
 #include "Enemy/Grenade.h"
-#include "Components/SphereComponent.h"
-#include "GameFramework/ProjectileMovementComponent.h"
+
+#include "NiagaraFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Player/ProjectEscapePlayer.h"
-#include "ProjectEscape/ProjectEscape.h"
 
 // Sets default values
 AGrenade::AGrenade()
@@ -20,8 +19,9 @@ AGrenade::AGrenade()
 	//GrenadeMesh->SetupAttachment( RootComponent );
 	GrenadeMesh->SetRelativeScale3D( FVector( 2.0f ) );
 	GrenadeMesh->SetSimulatePhysics( true );
+	GrenadeMesh->SetNotifyRigidBodyCollision( true );
 
-	ConstructorHelpers::FObjectFinder<UStaticMesh>TempGrenadeMesh( TEXT( "/Script/Engine.StaticMesh'/Game/Resources/KDE/FPS_Weapon_Bundle/Weapons/Meshes/G67_Grenade/SM_G67_Thrown.SM_G67_Thrown'" ) );
+	ConstructorHelpers::FObjectFinder<UStaticMesh>TempGrenadeMesh( TEXT( "/Script/Engine.StaticMesh'/Game/Resources/KDE/GunsAndGrenade/Modern/Weapons/Assets/Grenades/01/SM_Modern_Weapons_Grenade_01.SM_Modern_Weapons_Grenade_01'" ) );
 
 	if ( TempGrenadeMesh.Succeeded() )
 	{
@@ -42,7 +42,10 @@ void AGrenade::BeginPlay()
 			Explosion();
 		} ), ExplosionTime, false );
 
-	
+	if ( GrenadeMesh )
+	{
+		GrenadeMesh->OnComponentHit.AddDynamic( this, &AGrenade::OnMeshBeginHit );
+	}
 }
 
 // Called every frame
@@ -59,9 +62,11 @@ void AGrenade::Explosion()
 	ActorsToIgnoreArray.Add( this );
 	TArray<AActor*> OutActorsArray;
 
-	//DrawDebugSphere( GetWorld(), GrenadeMesh->GetComponentLocation(), SphereRadius, 100, FColor::Red, false, 3 );
+	FVector GrenadeLoc = GrenadeMesh->GetComponentLocation();
 
-	bool bSphereOverlapResult = UKismetSystemLibrary::SphereOverlapActors( GetWorld(), GrenadeMesh->GetComponentLocation(), SphereRadius, ObjectTypes, nullptr, ActorsToIgnoreArray, OutActorsArray );
+	//DrawDebugSphere( GetWorld(), GrenadeMesh->GetComponentLocation(), SphereRadius, 50, FColor::Red, false, 3 );
+
+	bool bSphereOverlapResult = UKismetSystemLibrary::SphereOverlapActors( GetWorld(), GrenadeLoc, SphereRadius, ObjectTypes, nullptr, ActorsToIgnoreArray, OutActorsArray );
 
 	if ( bSphereOverlapResult )
 	{
@@ -70,7 +75,7 @@ void AGrenade::Explosion()
 			auto OtherCharacter = Cast<AProjectEscapePlayer>( HitActor );
 			if ( OtherCharacter )
 			{
-				FVector StartLoc = GrenadeMesh->GetComponentLocation();
+				FVector StartLoc = GrenadeLoc;
 				FVector EndLoc = OtherCharacter->GetActorLocation();
 				FHitResult HitResult;
 				FCollisionQueryParams Params;
@@ -85,11 +90,20 @@ void AGrenade::Explosion()
 				}
 			}
 		}
-
-		UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), ExplosionEffect, GrenadeMesh->GetComponentLocation(), FRotator(), FVector( 10 ), true, EPSCPoolMethod::None, true );
-
-		this->Destroy();
-
 	}
+
+	//UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), ExplosionEffect, GrenadeLoc, FRotator(), FVector( 10 ), true, EPSCPoolMethod::None, true );
+
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, GrenadeLoc, FRotator(), FVector(2), true);
+	UGameplayStatics::PlaySoundAtLocation( GetWorld(), ExplosionSound, GrenadeLoc );
+
+	Destroy();
+
+}
+
+void AGrenade::OnMeshBeginHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+	FVector NormalImpulse, const FHitResult& Hit)
+{
+	/*GrenadeRange->SetVisibility( true );*/
 }
 

@@ -1,15 +1,14 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Enemy/GrenadeEnemy.h"
+#include "Enemy/RocketEnemy.h"
 
-AGrenadeEnemy::AGrenadeEnemy(const FObjectInitializer& ObjectInitializer)
+ARocketEnemy::ARocketEnemy( const FObjectInitializer& ObjectInitializer )
 	:
-	Super(ObjectInitializer)
+	Super( ObjectInitializer )
 {
 	PrimaryActorTick.bCanEverTick = true;
-
-	ConstructorHelpers::FObjectFinder<USkeletalMesh>TempEnemyMesh( TEXT( "/Script/Engine.SkeletalMesh'/Game/Resources/KDE/Mesh/Swat.Swat'" ) );
+	ConstructorHelpers::FObjectFinder<USkeletalMesh>TempEnemyMesh( TEXT( "/Script/Engine.SkeletalMesh'/Game/Resources/KDE/Mesh/Ch35_nonPBR.Ch35_nonPBR'" ) );
 
 	if ( TempEnemyMesh.Succeeded() )
 	{
@@ -17,7 +16,7 @@ AGrenadeEnemy::AGrenadeEnemy(const FObjectInitializer& ObjectInitializer)
 		GetMesh()->SetRelativeLocationAndRotation( FVector( 0, 0, -90 ), FRotator( 0, -90, 0 ) );
 	}
 
-	ConstructorHelpers::FObjectFinder<USkeletalMesh>TempGunMesh( TEXT( "/Script/Engine.SkeletalMesh'/Game/Resources/KDE/GunsAndGrenade/Modern/Weapons/Assets/Rifles/03_HQ/SKM_Modern_Weapons_Rifle_03_HQ.SKM_Modern_Weapons_Rifle_03_HQ'" ) );
+	ConstructorHelpers::FObjectFinder<USkeletalMesh>TempGunMesh( TEXT( "/Script/Engine.SkeletalMesh'/Game/Resources/KDE/GunsAndGrenade/Modern/Weapons/Assets/Launchers/02/SKM_Modern_Weapons_Launcher_02.SKM_Modern_Weapons_Launcher_02'" ) );
 
 	if ( TempGunMesh.Succeeded() )
 	{
@@ -27,5 +26,5 @@ AGrenadeEnemy::AGrenadeEnemy(const FObjectInitializer& ObjectInitializer)
 	}
 
 	MaxHP = 4;
-
 }
+

@@ -4,6 +4,8 @@
 #include "Enemy/GrenadeEnemyFSM.h"
 
 #include "AIController.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 #include "Enemy/EnemyAnimInstance.h"
 #include "Enemy/EnemyBase.h"
 #include "Enemy/EnemyBullet.h"
@@ -53,20 +55,21 @@ void UGrenadeEnemyFSM::TickAttack()
 	ChangeGrenadeTime += GetWorld()->GetDeltaSeconds();
 	AttackTime = FMath::RandRange( MinAttackTime, MaxAttackTime );
 
-	FVector DirectionToPlayer = (Player->GetActorLocation() - Enemy->GetActorLocation()).GetSafeNormal();
-	FRotator RotationToPlayer = DirectionToPlayer.Rotation();
+	FVector MuzzleLoc = Enemy->GunMesh->GetSocketLocation( FName( TEXT( "Muzzle" ) ) );
 
 	if ( CurrentTime > AttackTime && bCanShoot == true)
 	{
 		CurrentTime = 0;
 		//슛 몽타주가 문제있는듯
 		//EnemyAnim->PlayShootMontage();
+		FVector DirectionToPlayer = (Player->GetActorLocation() - Enemy->GetActorLocation()).GetSafeNormal();
+		FRotator RotationToPlayer = DirectionToPlayer.Rotation();
 		check( EnemyBulletFactory );
 
 		float RandAccuracy = FMath::RandRange( 0, 9 );
 		if ( RandAccuracy < Accuracy )
 		{
-			GetWorld()->SpawnActor<AEnemyBullet>( EnemyBulletFactory, Enemy->GunMesh->GetSocketLocation( FName( TEXT( "Muzzle" ) ) ), RotationToPlayer );
+			GetWorld()->SpawnActor<AEnemyBullet>( EnemyBulletFactory, MuzzleLoc, RotationToPlayer );
 		}
 		else
 		{
@@ -74,10 +77,11 @@ void UGrenadeEnemyFSM::TickAttack()
 			float Y=UKismetMathLibrary::RandomFloatInRange( Spread * -1, Spread );
 			float Z=UKismetMathLibrary::RandomFloatInRange( Spread * -1, Spread );
 
-			GetWorld()->SpawnActor<AEnemyBullet>( EnemyBulletFactory, Enemy->GunMesh->GetSocketLocation( FName( TEXT( "Muzzle" ) ) ), RotationToPlayer + FRotator( X, Y, Z ) );
+			GetWorld()->SpawnActor<AEnemyBullet>( EnemyBulletFactory, MuzzleLoc, RotationToPlayer + FRotator( X, Y, Z ) );
 		}
 
-		UGameplayStatics::PlaySoundAtLocation( GetWorld(), AttackSound, Enemy->GunMesh->GetSocketLocation( FName( TEXT( "Muzzle" ) ) ) );
+		UGameplayStatics::SpawnEmitterAttached( MuzzleFlash, Enemy->GunMesh, FName( TEXT( "Muzzle" ) ), FVector::ZeroVector, FRotator::ZeroRotator, FVector( 1 ), EAttachLocation::SnapToTarget, true );
+		UGameplayStatics::PlaySoundAtLocation( GetWorld(), AttackSound, MuzzleLoc );
 
 	}
 

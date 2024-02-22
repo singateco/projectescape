@@ -9,7 +9,7 @@ ARifleEnemy::ARifleEnemy(const FObjectInitializer& ObjectInitializer)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	ConstructorHelpers::FObjectFinder<USkeletalMesh>TempEnemyMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/Resources/KDE/Mesh/SWATGuy.SWATGuy'"));
+	ConstructorHelpers::FObjectFinder<USkeletalMesh>TempEnemyMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/Resources/KDE/Mesh/Swat.Swat'"));
 
 	if (TempEnemyMesh.Succeeded())
 	{
@@ -17,12 +17,12 @@ ARifleEnemy::ARifleEnemy(const FObjectInitializer& ObjectInitializer)
 		GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -90), FRotator(0, -90, 0));
 	}
 
-	ConstructorHelpers::FObjectFinder<USkeletalMesh>TempGunMesh( TEXT( "/Script/Engine.SkeletalMesh'/Game/Resources/KDE/FPS_Weapon_Bundle/Weapons/Meshes/AR4/SK_AR4_X.SK_AR4_X'" ) );
+	ConstructorHelpers::FObjectFinder<USkeletalMesh>TempGunMesh( TEXT( "/Script/Engine.SkeletalMesh'/Game/Resources/KDE/GunsAndGrenade/Modern/Weapons/Assets/Rifles/01_HQ/SKM_Modern_Weapons_Rifle_01_HQ.SKM_Modern_Weapons_Rifle_01_HQ'" ) );
 
 	if ( TempGunMesh.Succeeded() )
 	{
 		GunMesh->SetSkeletalMesh( TempGunMesh.Object );
-		GunMesh->SetRelativeLocationAndRotation( FVector( 0, -7.3, 2.75 ), FRotator(6.6,-97 ,90));
+		//GunMesh->SetRelativeLocationAndRotation( FVector( 0, -7.3, 2.75 ), FRotator(6.6,-97 ,90));
 		GunMesh->SetRelativeScale3D( FVector( 1.1f ) );
 	}
 

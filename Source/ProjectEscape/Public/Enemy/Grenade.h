@@ -27,7 +27,7 @@ public:
 	UStaticMeshComponent* GrenadeMesh;
 
 	UPROPERTY( EditAnywhere, Category = Effect )
-	UParticleSystem* ExplosionEffect;
+	class UNiagaraSystem* ExplosionEffect;
 
 	UPROPERTY( EditAnywhere, Category = Effect )
 	USoundBase* ExplosionSound;
@@ -38,8 +38,9 @@ public:
 	UPROPERTY( EditAnywhere )
 	float SphereRadius = 500.0f;
 
-	UPROPERTY( EditAnywhere )
-	class URadialForceComponent* RadialForce;
-
+	UFUNCTION(BlueprintCallable)
 	void Explosion();
+
+	UFUNCTION()
+	void OnMeshBeginHit( UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit );
 };

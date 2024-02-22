@@ -81,6 +81,9 @@ public:
 	bool bCanSeePlayer = false;
 
 	UPROPERTY( EditAnywhere )
+	UParticleSystem* MuzzleFlash;
+
+	UPROPERTY( EditAnywhere )
 	USoundBase* AttackSound;
 	// --------------------- Function ---------------------------
 

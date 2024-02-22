@@ -3,6 +3,7 @@
 
 #include "Enemy/RifleEnemyFSM.h"
 
+#include "NiagaraFunctionLibrary.h"
 #include "Enemy/EnemyAnimInstance.h"
 #include "Enemy/EnemyBullet.h"
 #include "Enemy/RifleEnemy.h"
@@ -44,6 +45,7 @@ void URifleEnemyFSM::TickAttack()
 {
 	CurrentTime += GetWorld()->GetDeltaSeconds();
 	AttackTime = FMath::RandRange( MinAttackTime, MaxAttackTime );
+	FVector MuzzleLoc = Enemy->GunMesh->GetSocketLocation( FName( TEXT( "Muzzle" ) ) );
 
 	if(CurrentTime > AttackTime)
 	{
@@ -58,7 +60,7 @@ void URifleEnemyFSM::TickAttack()
 		float RandAccuracy = FMath::RandRange( 0, 9 );
 		if(RandAccuracy < Accuracy )
 		{
-			GetWorld()->SpawnActor<AEnemyBullet>( EnemyBulletFactory, Enemy->GunMesh->GetSocketLocation( FName( TEXT( "Muzzle" ) ) ), RotationToPlayer );
+			GetWorld()->SpawnActor<AEnemyBullet>( EnemyBulletFactory, MuzzleLoc, RotationToPlayer );
 		}
 		else
 		{
@@ -66,9 +68,11 @@ void URifleEnemyFSM::TickAttack()
 			float Y=UKismetMathLibrary::RandomFloatInRange( Spread * -1, Spread );
 			float Z=UKismetMathLibrary::RandomFloatInRange( Spread * -1, Spread );
 
-			GetWorld()->SpawnActor<AEnemyBullet>( EnemyBulletFactory, Enemy->GunMesh->GetSocketLocation( FName( TEXT( "Muzzle" ) ) ), RotationToPlayer + FRotator( X, Y, Z ) );
+			GetWorld()->SpawnActor<AEnemyBullet>( EnemyBulletFactory, MuzzleLoc, RotationToPlayer + FRotator( X, Y, Z ) );
 		}
-		UGameplayStatics::PlaySoundAtLocation( GetWorld(), AttackSound, Enemy->GunMesh->GetSocketLocation( FName( TEXT( "Muzzle" ) ) ) );
+
+		UGameplayStatics::SpawnEmitterAttached( MuzzleFlash, Enemy->GunMesh, FName( TEXT( "Muzzle" ) ), FVector::ZeroVector, FRotator::ZeroRotator, FVector( 1 ), EAttachLocation::SnapToTarget, true );
+		UGameplayStatics::PlaySoundAtLocation( GetWorld(), AttackSound, MuzzleLoc );
 	}
 
 	float dist = FVector::Dist(Player->GetActorLocation(), Enemy->GetActorLocation());
