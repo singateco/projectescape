@@ -113,10 +113,11 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 			{
 				auto PickUpActor=Cast<APickableActor>( HitInfo.GetActor() );
 				//UE_LOG( SYLog, Warning, TEXT( "%s" ), *PickUpActor->GetActorNameOrLabel() );
-				PickUpActor->MeshComp->SetRenderCustomDepth( true );
-
+				if(PickUpActor )
+				{
+					PickUpActor->MeshComp->SetRenderCustomDepth( true );
+				}
 			}
-
 
 		}
 	}

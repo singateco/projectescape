@@ -29,12 +29,17 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(EditAnywhere)
-		class USphereComponent* SphereCollision;
+	class USphereComponent* SphereCollision;
 
 	UPROPERTY(EditAnywhere)
-		class UStaticMeshComponent* EnemyBulletMesh;
+	UStaticMeshComponent* EnemyBulletMesh;
 
 	UPROPERTY(EditAnywhere)
-		class UProjectileMovementComponent* MovementComponent;
+	class UProjectileMovementComponent* MovementComponent;
 
+	UPROPERTY( EditAnywhere )
+	UMaterialInterface* BulletDecal;
+
+	UPROPERTY( EditAnywhere )
+	class UNiagaraSystem* BulletImpact;
 };

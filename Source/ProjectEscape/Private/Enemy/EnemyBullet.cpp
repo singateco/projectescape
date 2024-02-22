@@ -3,9 +3,11 @@
 
 #include "Enemy/EnemyBullet.h"
 
+#include "NiagaraFunctionLibrary.h"
 #include "Components/SphereComponent.h"
 #include "Engine/StaticMeshActor.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Player/ProjectEscapePlayer.h"
 
 // Sets default values
@@ -71,11 +73,20 @@ void AEnemyBullet::OnSphereComponentBeginHit( UPrimitiveComponent* OverlappedCom
 			this->Destroy();
 		}
 	}
-	
-	if (Cast<AStaticMeshActor>(OtherActor))
+	else
 	{
+		UGameplayStatics::SpawnDecalAtLocation( GetWorld(), BulletDecal, FVector( 0.05 ), SweepResult.ImpactPoint, SweepResult.ImpactNormal.Rotation(), 10 );
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), BulletImpact, SweepResult.ImpactPoint, SweepResult.ImpactNormal.Rotation(), FVector( 1 ), true );
+
 		this->Destroy();
 	}
+	/*if (Cast<AStaticMeshActor>(OtherActor))
+	{
+		UGameplayStatics::SpawnDecalAtLocation( GetWorld(), BulletDecal, FVector( 0.05 ), SweepResult.ImpactPoint, SweepResult.ImpactNormal.Rotation(), 10);
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), BulletImpact, SweepResult.ImpactPoint, SweepResult.ImpactNormal.Rotation(), FVector( 1 ), true );
+
+		this->Destroy();
+	}*/
 }
 
 // Called every frame
