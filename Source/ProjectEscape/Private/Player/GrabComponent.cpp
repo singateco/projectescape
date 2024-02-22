@@ -2,6 +2,8 @@
 
 
 #include "Player/GrabComponent.h"
+
+#include "EngineUtils.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"
@@ -12,6 +14,8 @@
 #include "Math/UnrealMathUtility.h"
 #include "Objects/PickableActor.h"
 #include "Components/PrimitiveComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "ProjectEscape/ProjectEscape.h"
 
 // Sets default values for this component's properties
 UGrabComponent::UGrabComponent()
@@ -55,6 +59,20 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 	HandleObject->SetInterpolationSpeed( NewInterpolSpeed );
 
+
+	//TArray<AActor*> AllPickUpActors;
+	//UGameplayStatics::GetAllActorsOfClass( GetWorld(), APickableActor::StaticClass(), AllPickUpActors );
+
+
+	for ( TActorIterator<APickableActor> it( GetWorld() ); it; ++it ) {
+		AActor* OtherActor=*it;
+
+		it->MeshComp->SetRenderCustomDepth( false );
+	}
+
+
+
+
 	if(bIsGrabbing == true)
 	{
 		HandleObject->SetTargetLocation( Player->GetFollowCamera()->GetComponentLocation() + Player->GetFollowCamera()->GetForwardVector()*500 );
@@ -69,6 +87,38 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		//FVector NewLocation =Player->GetFollowCamera()->GetComponentLocation() + Player->GetFollowCamera()->GetForwardVector() * 500;
 		//FRotator NewRotation = FRotator( 10 * DeltaTime, 10 * DeltaTime, 10 * DeltaTime );
 		//HandleObject->SetTargetLocationAndRotation( NewLocation, NewRotation );
+	}else
+	{
+
+		TArray<FHitResult> HitInfoArray;
+		FVector Start=Player->GetFollowCamera()->GetComponentLocation();
+		FVector End=Player->GetFollowCamera()->GetComponentLocation() + Player->GetFollowCamera()->GetForwardVector() * MaxDistanceToGrab;
+
+
+		ETraceTypeQuery TraceTypeQuery=UEngineTypes::ConvertToTraceType( ECC_GameTraceChannel1 );
+
+		TArray<AActor*> SphereTraceIgnoreActorsArray;
+		// 체크하기전에 한 번 비워주기
+		SphereTraceIgnoreActorsArray.Empty();
+		// 자기 자신 캐릭터 무시
+		SphereTraceIgnoreActorsArray.Add( Player );
+
+		bool bTraceResult=UKismetSystemLibrary::SphereTraceMulti( GetWorld(), Start, End, RadiusDetection, TraceTypeQuery,
+			false, SphereTraceIgnoreActorsArray, EDrawDebugTrace::None, HitInfoArray, true );
+
+
+		if ( bTraceResult )
+		{
+			for ( FHitResult& HitInfo : HitInfoArray )
+			{
+				auto PickUpActor=Cast<APickableActor>( HitInfo.GetActor() );
+				//UE_LOG( SYLog, Warning, TEXT( "%s" ), *PickUpActor->GetActorNameOrLabel() );
+				PickUpActor->MeshComp->SetRenderCustomDepth( true );
+
+			}
+
+
+		}
 	}
 }
 
@@ -152,6 +202,7 @@ void UGrabComponent::ReleaseObject()
 		
 		if ( bTraceResult )
 		{
+			UE_LOG( SYLog, Warning, TEXT( "throw!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" ))
 			for ( FHitResult& HitInfo : HitInfoArray )
 			{
 				auto Enemy =Cast<ARifleEnemy>( HitInfo.GetActor() );
@@ -216,7 +267,8 @@ void UGrabComponent::SphereGrabObject()
 		for ( FHitResult& HitInfo : HitInfoArray )
 		{
 			auto PickUpActor=Cast<APickableActor>( HitInfo.GetActor() );
-			UE_LOG(LogTemp, Warning, TEXT("%s"), *PickUpActor->GetActorNameOrLabel())
+			UE_LOG(SYLog, Warning, TEXT("pick!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! : %s"), *PickUpActor->GetActorNameOrLabel());
+			PickUpActor->MeshComp->SetRenderCustomDepth(true);
 
 
 			if ( PickUpActor )

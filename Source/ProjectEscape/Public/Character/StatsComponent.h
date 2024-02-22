@@ -11,6 +11,8 @@ class UEffect;
 class ACharacterBase;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FHPChanged, float, ChangedMaxHP, float, ChangedHP);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTakenDamage, float, Damage);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGameplayTagAdded, const FGameplayTag&, Tag);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGameplayTagRemoved, const FGameplayTag&, Tag);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FHPReachedZero);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -67,12 +69,18 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	FGameplayTagContainer GameplayTagContainer;
 
-	UFUNCTION(BlueprintCallable)
-	void AddTag(const FGameplayTag& TagToAdd) { GameplayTagContainer.AddTag(TagToAdd); }
+	UPROPERTY(BlueprintAssignable)
+	FGameplayTagAdded OnGameplayTagAdded;
 
 	UFUNCTION(BlueprintCallable)
-	void RemoveTag(const FGameplayTag& TagToRemove) { GameplayTagContainer.RemoveTag(TagToRemove); }
+	void AddTag(const FGameplayTag& TagToAdd);
+
+	UPROPERTY(BlueprintAssignable)
+	FGameplayTagRemoved OnGameplayTagRemoved;
 	
+	UFUNCTION(BlueprintCallable)
+	void RemoveTag(const FGameplayTag& TagToRemove);
+
 	UFUNCTION()
 	void ProcessDamage(const float DamageValue);
 

@@ -35,8 +35,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TArray<UUpgrade*> OwningUpgrades;
 
-	UFUNCTION()
-	void CalculateStat();
+	UFUNCTION(BlueprintCallable)
+	void AddUpgrade(UUpgrade* Upgrade);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UDataTable* UpgradeDataTable;
@@ -59,22 +59,16 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category="Fire" )
 	float ReloadSpeedRate {1.f};
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
+	float GunDamage {1};
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
+	float GunDamageMultiplier {1};
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
+	float GunWeakPointMultiplier {2.f};
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-
-	void InitializeStat();
-	
-private:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage", meta = (AllowPrivateAccess))
-	float GunDamage {1};
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage", meta = (AllowPrivateAccess))
-	float GunDamageMultiplier {1};
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage", meta = (AllowPrivateAccess))
-	float GunWeakPointMultiplier {2.f};
-	
-	float InitialGunDamage;
-	float InitialGunDamageMultiplier;
 };

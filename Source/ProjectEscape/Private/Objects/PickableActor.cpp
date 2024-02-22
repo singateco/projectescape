@@ -23,16 +23,21 @@ APickableActor::APickableActor()
 
 	CollisionComp=CreateDefaultSubobject<USphereComponent>( TEXT( "CollisionComp" ) );
 	SetRootComponent( CollisionComp );
-	CollisionComp->SetCollisionProfileName( TEXT( "PickUpActor" ) );
+	//CollisionComp->SetCollisionProfileName( TEXT( "PickUpActor" ) );
+	CollisionComp->SetCollisionEnabled( ECollisionEnabled::NoCollision ); 
 	//CollisionComp->SetNotifyRigidBodyCollision( true ); // Simulation Generates Hit Events
-	CollisionComp->SetSimulatePhysics(true);
+	//CollisionComp->SetSimulatePhysics(true);
+	//CollisionComp->SetSphereRadius(10);
 
 	MeshComp=CreateDefaultSubobject<UStaticMeshComponent>( TEXT( "MeshComp" ) );
 	MeshComp->SetupAttachment( RootComponent );
 	MeshComp->SetCollisionProfileName( TEXT( "PickUpActor" ) );
-	//MeshComp->SetCollisionEnabled( ECollisionEnabled::NoCollision );
+	//MeshComp->SetCollisionEnabled( ECollisionEnabled::NoCollision ); 
 	MeshComp->SetNotifyRigidBodyCollision( true ); // Simulation Generates Hit Events
 	MeshComp->SetSimulatePhysics( true );
+
+
+	CollisionComp->SetRelativeScale3D( MeshComp->GetRelativeScale3D() );
 
 	static ConstructorHelpers::FObjectFinder<UParticleSystem> FireEffectFinder{ TEXT( "/Script/Engine.ParticleSystem'/Game/StarterContent/Particles/P_Explosion.P_Explosion'" ) };
 	if ( FireEffectFinder.Succeeded() )
@@ -79,9 +84,10 @@ void APickableActor::OnCompHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 
 
 
-	if( this->MeshComp->GetComponentVelocity().Length() > 2000) // 던질때만 체크
+	//if( this->MeshComp->GetComponentVelocity().Length() > 10000) // 던질때만 체크
+	if( this->MeshComp->GetComponentVelocity().Length() > 9000) // 던질때만 체크
 	{
-		//UE_LOG( SYLog, Warning, TEXT( "%.1f" ), this->MeshComp->GetComponentVelocity().Length() );
+		UE_LOG( SYLog, Warning, TEXT( "%.1f" ), this->MeshComp->GetComponentVelocity().Length() );
 		//txt1=(Player->GrabComponent->bIsGrabbing) ? "true" : "false";
 		//UE_LOG( SYLog, Warning, TEXT( "5000이상 bIsGrabbing : %s" ), *txt1 );
 

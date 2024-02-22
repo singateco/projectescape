@@ -101,6 +101,8 @@ void AProjectEscapePlayer::BeginPlay()
 	{
 		PlayerStatsComponent->OnHPReachedZero.AddUniqueDynamic(this, &AProjectEscapePlayer::Die);
 	}
+
+	
 }
 
 void AProjectEscapePlayer::Tick(float DeltaSeconds)
