@@ -12,6 +12,8 @@
 
 class UTextBlock;
 class AProjectEscapePlayer;
+class UProgressBar;
+class UImage;
 
 UCLASS()
 class UMainUI : public UUserWidget
@@ -29,8 +31,55 @@ public:
 	UPROPERTY( BlueprintReadWrite, meta=(BindWidget) )
 	UTextBlock* TXT_MaxBullets;
 
+	UPROPERTY( BlueprintReadWrite, meta=(BindWidget) )
+
+	UImage* IMG_QSkill;
+
+	UPROPERTY( BlueprintReadWrite, meta=(BindWidget) )
+
+	UImage* IMG_ESkill;
+
+
+	UPROPERTY( BlueprintReadWrite, meta=(BindWidget) )
+
+	UProgressBar* PRB_QSkill;
+
+	UPROPERTY( BlueprintReadWrite, meta=(BindWidget) )
+
+	UProgressBar* PRB_ESkill;
+
+
+
+	UPROPERTY( BlueprintReadWrite, meta=(BindWidget) )
+
+	UTextBlock* TXT_QSkill;
+
+	UPROPERTY( BlueprintReadWrite, meta=(BindWidget) )
+
+	UTextBlock* TXT_ESkill;
+
 	UFUNCTION()
 	void SetCurrentBullets();
+
+	UFUNCTION()
+	void SetQSkillCoolTimer(int32 CurrentTime, int32 MaxTime);
+
+	UFUNCTION()
+	void SetESkillCoolTimer( int32 CurrentTime, int32 MaxTime );
+
+	UFUNCTION()
+	void EndQSkillUI();
+
+	UFUNCTION()
+	void EndESkillUI();
+
+	UFUNCTION()
+	void StartQSkillUI();
+
+	UFUNCTION()
+	void StartESkillUI();
+
+
 
 protected:
 	virtual void NativeOnInitialized() override;

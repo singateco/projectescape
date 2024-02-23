@@ -16,6 +16,9 @@
 #include "Components/PrimitiveComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "ProjectEscape/ProjectEscape.h"
+#include "Particles/ParticleSystem.h"
+#include "System/ProjectEscapePlayerController.h"
+#include "UI/MainUI.h"
 
 // Sets default values for this component's properties
 UGrabComponent::UGrabComponent()
@@ -26,6 +29,15 @@ UGrabComponent::UGrabComponent()
 	bWantsInitializeComponent=true;
 
 	// ...
+
+
+
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> ExplosionEffectFinder{ TEXT( "/Script/Engine.ParticleSystem'/Game/StarterContent/Particles/P_Explosion.P_Explosion'" ) };
+	if ( ExplosionEffectFinder.Succeeded() )
+	{
+		QExplosionEffect = ExplosionEffectFinder.Object;
+	}
+
 }
 
 
@@ -45,6 +57,8 @@ void UGrabComponent::InitializeComponent()
 	Player=GetOwner<AProjectEscapePlayer>();
 	check( Player );
 	HandleObject = Player->PhysicsHandleComponent;
+
+	PC=Cast<AProjectEscapePlayerController>( GetWorld()->GetFirstPlayerController() );
 }
 
 // Called every frame
@@ -123,7 +137,6 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	}
 }
 
-
 void UGrabComponent::SetupPlayerInputComponent(UEnhancedInputComponent* PlayerInputComponent)
 {
 	EnhancedInputComponent = PlayerInputComponent;
@@ -131,6 +144,7 @@ void UGrabComponent::SetupPlayerInputComponent(UEnhancedInputComponent* PlayerIn
 	//PlayerInputComponent->BindAction(ActionGrab, ETriggerEvent::Started, this, &UGrabComponent::GrabObject);
 	PlayerInputComponent->BindAction(ActionGrab, ETriggerEvent::Started, this, &UGrabComponent::SphereGrabObject);
 	PlayerInputComponent->BindAction( ActionGrab, ETriggerEvent::Completed, this, &UGrabComponent::ReleaseObject );
+	PlayerInputComponent->BindAction( InputActionQSkill, ETriggerEvent::Completed, this, &UGrabComponent::ActionQSkill );
 }
 
 void UGrabComponent::GrabObject()
@@ -229,6 +243,18 @@ void UGrabComponent::ReleaseObject()
 	}
 }
 
+void UGrabComponent::ActionQSkill()
+{
+
+	if ( GetWorld()->GetTimerManager().IsTimerActive( QSkillCountDownHandle ) ) {
+		return;
+	}
+
+	GetWorld()->GetTimerManager().SetTimer( QSkillCountDownHandle, this, &UGrabComponent::QSkillAdvanceTimer, 1.0f, true );
+
+	UGameplayStatics::SpawnEmitterAtLocation( GetWorld(),QExplosionEffect, Player->GetActorLocation(), FRotator(), FVector( 100 ), true, EPSCPoolMethod::None, true );
+}
+
 void UGrabComponent::SphereGrabObject()
 {
 	if ( bIsGrabbing == true )
@@ -236,6 +262,9 @@ void UGrabComponent::SphereGrabObject()
 		return;
 	}
 
+	if(GetWorld()->GetTimerManager().IsTimerActive(ESkillCountDownHandle)){
+		return;
+	}
 	/********************************** Sphere Trace SingleByChannel **********************************/
 	/**************************************************************************************************/
 
@@ -268,12 +297,11 @@ void UGrabComponent::SphereGrabObject()
 		for ( FHitResult& HitInfo : HitInfoArray )
 		{
 			auto PickUpActor=Cast<APickableActor>( HitInfo.GetActor() );
-			UE_LOG(SYLog, Warning, TEXT("pick!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! : %s"), *PickUpActor->GetActorNameOrLabel());
-			PickUpActor->MeshComp->SetRenderCustomDepth(true);
-
 
 			if ( PickUpActor )
 			{
+				UE_LOG( SYLog, Warning, TEXT( "pick!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! : %s" ), *PickUpActor->GetActorNameOrLabel() );
+				PickUpActor->MeshComp->SetRenderCustomDepth( true );
 				HandleObject->GrabComponentAtLocation( HitInfo.GetComponent(), TEXT( "GrabObject" ), HitInfo.GetComponent()->GetComponentLocation() );
 
 				if ( HandleObject->GetGrabbedComponent() != nullptr )
@@ -286,6 +314,56 @@ void UGrabComponent::SphereGrabObject()
 
 
 	}
+
+	GetWorld()->GetTimerManager().SetTimer( ESkillCountDownHandle, this, &UGrabComponent::ESkillAdvanceTimer, 1.0f, true );
+}
+
+void UGrabComponent::QSkillAdvanceTimer()
+{
+	--QSkillCurrentCoolTime;
+
+	QSkillUpdateTimerDisplay();
+
+	if ( QSkillCurrentCoolTime < 1 ) {
+		// 카운트 다운이 완료 되었으니 타이머를 중지 시킨다.
+		GetWorld()->GetTimerManager().ClearTimer( QSkillCountDownHandle );
+
+		PC->InGameWIdget->EndQSkillUI();
+		QSkillCurrentCoolTime=QSkillMaxCoolTime;
+	}
+}
+
+void UGrabComponent::ESkillAdvanceTimer()
+{
+	--ESkillCurrentCoolTime;
+
+	ESkillUpdateTimerDisplay();
+
+	if(ESkillCurrentCoolTime<1){
+		// 카운트 다운이 완료 되었으니 타이머를 중지 시킨다.
+		GetWorld()->GetTimerManager().ClearTimer( ESkillCountDownHandle );
+
+		PC->InGameWIdget->EndESkillUI();
+		ESkillCurrentCoolTime = ESkillMaxCoolTime;
+	}
+}
+
+void UGrabComponent::ESkillUpdateTimerDisplay()
+{
+	if ( PC == nullptr ) {
+		return;
+	}
+	PC->InGameWIdget->StartESkillUI();
+	PC->InGameWIdget->SetESkillCoolTimer(ESkillCurrentCoolTime,ESkillMaxCoolTime);
+}
+
+void UGrabComponent::QSkillUpdateTimerDisplay()
+{
+	if ( PC == nullptr ) {
+		return;
+	}
+	PC->InGameWIdget->StartQSkillUI();
+	PC->InGameWIdget->SetQSkillCoolTimer( QSkillCurrentCoolTime, QSkillMaxCoolTime );
 }
 
 void UGrabComponent::Deactivate()
