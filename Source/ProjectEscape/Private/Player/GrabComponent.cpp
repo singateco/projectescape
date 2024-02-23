@@ -268,6 +268,11 @@ void UGrabComponent::SphereGrabObject()
 		for ( FHitResult& HitInfo : HitInfoArray )
 		{
 			auto PickUpActor=Cast<APickableActor>( HitInfo.GetActor() );
+
+			if (!PickUpActor)
+			{
+				continue;
+			}
 			UE_LOG(SYLog, Warning, TEXT("pick!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! : %s"), *PickUpActor->GetActorNameOrLabel());
 			PickUpActor->MeshComp->SetRenderCustomDepth(true);
 

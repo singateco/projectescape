@@ -96,7 +96,7 @@ void UBombEnemyFSM::Explosion()
 	{
 		for ( AActor* HitActor : OutActorsArray )
 		{
-			auto OtherCharacter=Cast<AProjectEscapePlayer>( HitActor );
+			auto OtherCharacter = Cast<ACharacterBase>( HitActor );
 			if ( OtherCharacter )
 			{
 				FVector StartLoc=EnemyLoc;

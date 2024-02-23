@@ -39,6 +39,9 @@ public:
 	UPROPERTY( EditAnywhere, Category = Effect )
 	USoundBase* FlyingSound;
 
+	/*UPROPERTY( EditAnywhere, Category=Effect )
+	UMaterialInterface* RocketDecal;*/
+
 	UPROPERTY( EditAnywhere )
 	float SphereRadius = 300.0f;
 
