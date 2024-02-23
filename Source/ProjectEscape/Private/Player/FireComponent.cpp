@@ -37,27 +37,37 @@ UFireComponent::UFireComponent()
 		NormalGunClass = NormalGunClassFinder.Class;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UInputAction> ActionFireFinder {TEXT("/Script/EnhancedInput.InputAction'/Game/ThirdPerson/Input/Actions/IA_Fire.IA_Fire'")};
+	static const ConstructorHelpers::FObjectFinder<UInputAction> ActionFireFinder {TEXT("/Script/EnhancedInput.InputAction'/Game/ThirdPerson/Input/Actions/IA_Fire.IA_Fire'")};
 	if (ActionFireFinder.Succeeded())
 	{
 		ActionFire = ActionFireFinder.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UParticleSystem> FireEffectFinder {TEXT("/Script/Engine.ParticleSystem'/Game/StarterContent/Particles/P_Explosion.P_Explosion'")};
+	static const ConstructorHelpers::FObjectFinder<UParticleSystem> FireEffectFinder {TEXT("/Script/Engine.ParticleSystem'/Game/StarterContent/Particles/P_Explosion.P_Explosion'")};
 	if (FireEffectFinder.Succeeded())
 	{
 		GunEffect = FireEffectFinder.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> FireMontageFinder {TEXT("/Script/Engine.AnimMontage'/Game/Animations/Actions/AM_MM_Pistol_DryFire.AM_MM_Pistol_DryFire'")};
+	static const ConstructorHelpers::FObjectFinder<UAnimMontage> FireMontageFinder {TEXT("/Script/Engine.AnimMontage'/Game/Animations/Actions/AM_MM_Pistol_DryFire.AM_MM_Pistol_DryFire'")};
 	if (FireMontageFinder.Succeeded())
 	{
 		FireMontage = FireMontageFinder.Object;
 	}
 
-
-
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> ReloadMontageFinder{ TEXT( "/Script/Engine.AnimMontage'/Game/Animations/Actions/AM_MM_Pistol_Reload.AM_MM_Pistol_Reload'" ) };
+	static const ConstructorHelpers::FObjectFinder<UInputAction> ReloadActionFinder {TEXT("/Script/EnhancedInput.InputAction'/Game/ThirdPerson/Input/Actions/IA_Reload.IA_Reload'")};
+	if (ReloadActionFinder.Succeeded())
+	{
+		ActionReload = ReloadActionFinder.Object;	
+	}
+	
+	static const ConstructorHelpers::FObjectFinder<UInputAction> AdsActionFinder {TEXT("/Script/EnhancedInput.InputAction'/Game/ThirdPerson/Input/Actions/IA_ADS.IA_ADS'")};
+	if (AdsActionFinder.Succeeded())
+	{
+		ActionAimDownSight = AdsActionFinder.Object;
+	}
+	
+	static const ConstructorHelpers::FObjectFinder<UAnimMontage> ReloadMontageFinder{ TEXT( "/Script/Engine.AnimMontage'/Game/Animations/Actions/AM_MM_Pistol_Reload.AM_MM_Pistol_Reload'" ) };
 	if ( ReloadMontageFinder.Succeeded() )
 	{
 		ReloadMontage=ReloadMontageFinder.Object;
