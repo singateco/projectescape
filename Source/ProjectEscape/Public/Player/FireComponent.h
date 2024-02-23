@@ -73,6 +73,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Settings|Recoil")
 	float RecoilValueMax {.4};
 
+	UPROPERTY(EditAnywhere, Category = "Settings|ADS")
+	FVector AdsOffset = FVector(-10, -60, 20);
+
 	virtual void InitializeComponent() override;
 
 	// Called every frame
