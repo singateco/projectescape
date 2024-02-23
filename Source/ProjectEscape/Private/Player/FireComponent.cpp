@@ -10,6 +10,7 @@
 #include "Components/TextBlock.h"
 #include "Enemy/EnemyBase.h"
 #include "Enemy/EnemyStatsComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystem.h"
 #include "Player/GrabComponent.h"
@@ -240,12 +241,18 @@ void UFireComponent::DetachPistol()
 
 void UFireComponent::StartAimDown(const FInputActionInstance& InputActionInstance)
 {
-	//Player->GetCameraBoom()->TargetArmLength = 100;
+	Player->GetCameraBoom()->TargetArmLength = 60;
+	Player->GetCameraBoom()->SetRelativeLocation(AdsOffset);
+	Player->GetCameraBoom()->bEnableCameraLag = false;
+	Player->GetFollowCamera()->FieldOfView = 85.f;
 }
 
 void UFireComponent::EndAimDown(const FInputActionInstance& InputActionInstance)
 {
-	//Player->GetCameraBoom()->TargetArmLength = 300;
+	Player->GetCameraBoom()->TargetArmLength = 275;
+	Player->GetCameraBoom()->SetRelativeLocation(FVector::ZeroVector);
+	Player->GetCameraBoom()->bEnableCameraLag = true;
+	Player->GetFollowCamera()->FieldOfView = 90.f;
 }
 
 void UFireComponent::BulletReload(){
