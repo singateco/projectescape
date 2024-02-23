@@ -63,6 +63,23 @@ void UPlayerStatsComponent::OnEnemyHitByPlayerGun(AEnemyBase* Enemy, FHitResult 
 	}
 }
 
+float UPlayerStatsComponent::GetStat(FGameplayTag GameplayTag)
+{
+	if (float** Found = StatMap.Find(GameplayTag))
+	{
+		return **Found;
+	}
+
+	return 0;
+}
+
+void UPlayerStatsComponent::UpdateStat(FGameplayTag GameplayTag, const float NewValue)
+{
+	if (float** Ptr = StatMap.Find(GameplayTag))
+	{
+		**Ptr = NewValue;
+	}
+}
 
 void UPlayerStatsComponent::AddUpgrade(UUpgrade* Upgrade)
 {

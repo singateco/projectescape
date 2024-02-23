@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Character/StatsComponent.h"
+#include "ProjectEscape/PEGameplayTags.h"
 #include "PlayerStatsComponent.generated.h"
 
 
@@ -34,41 +35,61 @@ public:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TArray<UUpgrade*> OwningUpgrades;
+	
+	TMap<FGameplayTag, float*> StatMap
+	{
+		{PEGameplayTags::Stat_Gun_Damage, &GunDamage},
+		{PEGameplayTags::Stat_Gun_DamageMultiplier, &GunDamageMultiplier},
+		{PEGameplayTags::Stat_Gun_WeakPointMultiplier, &GunWeakPointMultiplier},
+		{PEGameplayTags::Stat_Gun_FireRate, &FireRate},
+		{PEGameplayTags::Stat_Gun_ReloadSpeedRate, &ReloadSpeedRate},
+		{PEGameplayTags::Stat_Grab_DamageValue, &GrabDamageValue},
+		{PEGameplayTags::Stat_Grab_ExplosionRadius, &GrabExplosionRadius},
+	};
 
+	UFUNCTION(BlueprintCallable)
+	float GetStat(UPARAM(meta = (Categories = "Stat")) FGameplayTag GameplayTag);
+
+	UFUNCTION(BlueprintCallable)
+	void UpdateStat(UPARAM(meta = (Categories = "Stat")) FGameplayTag GameplayTag, const float NewValue);
+	
 	UFUNCTION(BlueprintCallable)
 	void AddUpgrade(UUpgrade* Upgrade);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UDataTable* UpgradeDataTable;
 
-	UPROPERTY(EditAnywhere, Category="Grab")
+	UPROPERTY(EditAnywhere, Category= "Grab")
 	float GrabDamageValue = 10.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Grab")
 	float GrabExplosionRadius = 300.f;
 
-	UPROPERTY( EditDefaultsOnly, Category="Fire" )
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gun|Bullets")
 	int MaxBullets = 13;
 
-	UPROPERTY( EditDefaultsOnly, Category="Fire" )
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gun|Bullets")
 	int CurrentBullets;
-
-	UPROPERTY( EditDefaultsOnly, Category="Fire" )
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gun|Bullets")
 	float FireRate {1.25f};
 
-	UPROPERTY( EditDefaultsOnly, Category="Fire" )
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gun|Bullets")
 	float ReloadSpeedRate {1.f};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gun|Damage")
 	float GunDamage {1};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gun|Damage")
 	float GunDamageMultiplier {1};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gun|Damage")
 	float GunWeakPointMultiplier {2.f};
+
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+
+private:
 };

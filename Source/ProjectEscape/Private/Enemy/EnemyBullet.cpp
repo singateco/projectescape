@@ -22,7 +22,7 @@ AEnemyBullet::AEnemyBullet()
 	SphereCollision->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	SphereCollision->SetCollisionResponseToChannel(ECC_GameTraceChannel3, ECR_Ignore);
 	SphereCollision->SetUseCCD(true);
-	//SphereCollision->SetNotifyRigidBodyCollision( true );
+	SphereCollision->SetNotifyRigidBodyCollision( true );
 
 	EnemyBulletMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("EnemyBulletMesh"));
 	EnemyBulletMesh->SetupAttachment(SphereCollision);
@@ -57,12 +57,12 @@ void AEnemyBullet::BeginPlay()
 	Super::BeginPlay();
 	if(SphereCollision)
 	{
-		SphereCollision->OnComponentBeginOverlap.AddDynamic( this, &AEnemyBullet::OnSphereComponentBeginHit );
+		SphereCollision->OnComponentHit.AddDynamic( this, &AEnemyBullet::OnSphereComponentBeginHit );
 	}
 
 }
 
-void AEnemyBullet::OnSphereComponentBeginHit( UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult )
+void AEnemyBullet::OnSphereComponentBeginHit( UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit )
 {
 
 	if (AProjectEscapePlayer* Player = Cast<AProjectEscapePlayer>(OtherActor))
@@ -71,16 +71,17 @@ void AEnemyBullet::OnSphereComponentBeginHit( UPrimitiveComponent* OverlappedCom
 		{
 			Player->ProcessDamage(1);
 			this->Destroy();
+			UGameplayStatics::SpawnDecalAtLocation( GetWorld(), BulletDecalBlood, FVector( 10 ), Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), 10 );
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), BulletImpactBlood, Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), FVector( 1 ), true );
+			UGameplayStatics::PlaySoundAtLocation( GetWorld(), BulletHitSoundBlood, Hit.ImpactPoint );
+			return;
 		}
-		
 	}
-	if (Cast<AStaticMeshActor>(OtherActor))
-	{
-		UGameplayStatics::SpawnDecalAtLocation( GetWorld(), BulletDecal, FVector( 0.05 ), SweepResult.ImpactPoint, SweepResult.ImpactNormal.Rotation(), 10 );
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), BulletImpact, SweepResult.ImpactPoint, SweepResult.ImpactNormal.Rotation(), FVector( 1 ), true );
-		UGameplayStatics::PlaySoundAtLocation( GetWorld(), BulletHitSound, SweepResult.ImpactPoint );
-		this->Destroy();
-	}
+	
+	UGameplayStatics::SpawnDecalAtLocation( GetWorld(), BulletDecalWall, FVector( 10 ), Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), 10 );
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), BulletImpactWall, Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), FVector( 1 ), true );
+	UGameplayStatics::PlaySoundAtLocation( GetWorld(), BulletHitSoundWall, Hit.ImpactPoint );
+	this->Destroy();
 }
 
 // Called every frame

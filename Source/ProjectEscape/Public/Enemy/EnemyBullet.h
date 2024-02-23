@@ -21,7 +21,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	UFUNCTION()
-	void OnSphereComponentBeginHit(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	void OnSphereComponentBeginHit( UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit );
 
 public:	
 	// Called every frame
@@ -36,12 +36,21 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UProjectileMovementComponent* MovementComponent;
 
-	UPROPERTY( EditAnywhere )
-	UMaterialInterface* BulletDecal;
+	UPROPERTY( EditAnywhere, Category = Effect)
+	UMaterialInterface* BulletDecalWall;
 
-	UPROPERTY( EditAnywhere )
-	class UNiagaraSystem* BulletImpact;
+	UPROPERTY( EditAnywhere, Category=Effect )
+	UMaterialInterface* BulletDecalBlood;
 
-	UPROPERTY( EditAnywhere )
-	USoundBase* BulletHitSound;
+	UPROPERTY( EditAnywhere, Category=Effect )
+	class UNiagaraSystem* BulletImpactWall;
+
+	UPROPERTY( EditAnywhere, Category=Effect )
+	UNiagaraSystem* BulletImpactBlood;
+
+	UPROPERTY( EditAnywhere, Category=Effect )
+	USoundBase* BulletHitSoundWall;
+
+	UPROPERTY( EditAnywhere, Category=Effect )
+	USoundBase* BulletHitSoundBlood;
 };
