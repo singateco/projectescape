@@ -72,7 +72,7 @@ public:
 	int CurrentBullets;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gun|Bullets")
-	float FireRate {1.25f};
+	float FireRate {1.1f};
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gun|Bullets")
 	float ReloadSpeedRate {1.f};

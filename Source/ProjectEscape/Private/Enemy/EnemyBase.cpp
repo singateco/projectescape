@@ -81,8 +81,8 @@ void AEnemyBase::BeginPlay()
 	Super::BeginPlay();
 
 	check(DamageNumberWidgetClass);
+	StatsComponent->OnHPReachedZero.AddUniqueDynamic(this, &AEnemyBase::BroadcastDied);
 	StatsComponent->OnTakenDamage.AddUniqueDynamic(this, &AEnemyBase::DisplayDamageNumber);
-
 }
 
 void AEnemyBase::Tick(float DeltaSeconds)
@@ -120,6 +120,11 @@ void AEnemyBase::PreInitializeComponents()
 		EnemyHealthBarWidget->OwnedEnemy = this;
 		EnemyHPComponent->SetWidget(EnemyHealthBarWidget);
 	}
+}
+
+void AEnemyBase::BroadcastDied()
+{
+	OnEnemyDied.Broadcast(this);
 }
 
 void AEnemyBase::DisplayDamageNumber(const float DamageToDisplay)

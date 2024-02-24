@@ -67,8 +67,11 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	int32 CurrentWaveIndex {0};
 
+	UPROPERTY(EditAnywhere)
+	float BetweenWavesDelaySeconds {7.0f};
+
 	UFUNCTION()
-	void HandleEnemyDestroyed(AActor* DestroyedActor);
+	void HandleEnemyDestroyed(AEnemyBase* DestroyedActor);
 
 	UFUNCTION()
 	void SpawnWave(const FWaveData& WaveData);
