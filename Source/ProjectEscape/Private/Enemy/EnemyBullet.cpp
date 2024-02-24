@@ -5,7 +5,6 @@
 
 #include "NiagaraFunctionLibrary.h"
 #include "Components/SphereComponent.h"
-#include "Engine/StaticMeshActor.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/ProjectEscapePlayer.h"
@@ -26,7 +25,7 @@ AEnemyBullet::AEnemyBullet()
 
 	EnemyBulletMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("EnemyBulletMesh"));
 	EnemyBulletMesh->SetupAttachment(SphereCollision);
-	EnemyBulletMesh->SetRelativeScale3D(FVector(1.0f, 0.01f, 0.03f));
+	EnemyBulletMesh->SetRelativeScale3D(FVector(1.0f, 0.03f, 0.03f));
 	EnemyBulletMesh->SetCollisionEnabled( ECollisionEnabled::NoCollision );
 
 	ConstructorHelpers::FObjectFinder<UStaticMesh>BulletMesh(TEXT("/Script/Engine.StaticMesh'/Game/Material/TracerRound.TracerRound'"));
@@ -69,7 +68,7 @@ void AEnemyBullet::OnSphereComponentBeginHit( UPrimitiveComponent* HitComponent,
 	{
 		if (Cast<USkeletalMeshComponent>(OtherComp))
 		{
-			Player->ProcessDamage(1);
+			Player->ProcessDamage( BulletDamage );
 			this->Destroy();
 			UGameplayStatics::SpawnDecalAtLocation( GetWorld(), BulletDecalBlood, FVector( 10 ), Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), 10 );
 			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), BulletImpactBlood, Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), FVector( 1 ), true );

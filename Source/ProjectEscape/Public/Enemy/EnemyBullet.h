@@ -36,6 +36,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UProjectileMovementComponent* MovementComponent;
 
+	UPROPERTY( EditAnywhere )
+	float BulletDamage = 1.0f;
+
 	UPROPERTY( EditAnywhere, Category = Effect)
 	UMaterialInterface* BulletDecalWall;
 
