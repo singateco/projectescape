@@ -68,7 +68,7 @@ public:
 	int32 CurrentWaveIndex {0};
 
 	UFUNCTION()
-	void HandleEnemyDestroyed(AActor* DestroyedActor);
+	void HandleEnemyDestroyed(AEnemyBase* DestroyedActor);
 
 	UFUNCTION()
 	void SpawnWave(const FWaveData& WaveData);

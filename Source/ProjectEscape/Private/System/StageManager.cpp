@@ -9,10 +9,9 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "System/EnemySpawnableArea.h"
 
-void AStageManager::HandleEnemyDestroyed(AActor* DestroyedActor)
+void AStageManager::HandleEnemyDestroyed(AEnemyBase* DestroyedActor)
 {
-	AEnemyBase* CastedActor = Cast<AEnemyBase>(DestroyedActor);
-	ThisWaveEnemy.RemoveSwap(CastedActor);
+	ThisWaveEnemy.RemoveSwap(DestroyedActor);
 	
 	if (ThisWaveEnemy.IsEmpty())
 	{
@@ -68,7 +67,7 @@ void AStageManager::SpawnWave(const FWaveData& WaveData)
 				FRotator::ZeroRotator,
 				Params);
 			ThisWaveEnemy.Add(SpawnedEnemy);
-			SpawnedEnemy->OnDestroyed.AddDynamic(this, &AStageManager::HandleEnemyDestroyed);
+			SpawnedEnemy->OnEnemyDied.AddUniqueDynamic(this, &AStageManager::HandleEnemyDestroyed);
 		}
 	}
 

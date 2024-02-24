@@ -6,6 +6,8 @@
 #include "CharacterBase.h"
 #include "EnemyBase.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FEnemyDied, class AEnemyBase*, Enemy);
+
 /**
  * 
  */
@@ -24,6 +26,12 @@ public:
 	virtual void PreInitializeComponents() override;
 
 	// --------------------- Variable ---------------------------
+
+	UPROPERTY()
+	FEnemyDied OnEnemyDied;
+
+	UFUNCTION()
+	void BroadcastDied();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UEnemyStatsComponent* EnemyStatsComponent;
