@@ -246,7 +246,7 @@ void UGrabComponent::ReleaseObject()
 void UGrabComponent::ActionQSkill()
 {
 
-	if ( GetWorld()->GetTimerManager().IsTimerActive( QSkillCountDownHandle ) ) {
+	if ( GetWorld()->GetTimerManager().IsTimerActive( QSkillCountDownHandle )) {
 		return;
 	}
 
