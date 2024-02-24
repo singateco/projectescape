@@ -94,7 +94,7 @@ AProjectEscapePlayer::AProjectEscapePlayer(const FObjectInitializer& ObjectIniti
 	MaxHP = 10;
 }
 
-void AProjectE	scapePlayer::BeginPlay()
+void AProjectEscapePlayer::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
