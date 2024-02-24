@@ -59,7 +59,7 @@ void UBombEnemyFSM::TickMove()
 
 void UBombEnemyFSM::TickAttack()
 {
-	CurrentTime+=GetWorld()->GetDeltaSeconds();
+	CurrentTime += GetWorld()->GetDeltaSeconds();
 	if(CurrentTime > AttackTime )
 	{
 		Explosion();
