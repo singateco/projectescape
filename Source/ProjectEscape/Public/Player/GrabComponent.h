@@ -13,6 +13,8 @@ class UInputAction;
 class AProjectEscapePlayer;
 class UPhysicsHandleComp;
 class APickableActor;
+class UParticleSystem;
+class AProjectEscapePlayerController;
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -26,6 +28,10 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* ActionGrab;
+
+
+	UPROPERTY( EditDefaultsOnly, Category="Input" )
+	UInputAction* InputActionQSkill;
 
 	UPROPERTY()
 	AProjectEscapePlayer* Player;
@@ -72,6 +78,29 @@ public:
 
 	UPROPERTY( EditDefaultsOnly, Category="Throw" )
 	FVector ThrowingLoc;
+
+
+	UPROPERTY( EditDefaultsOnly )
+	int32 QSkillMaxCoolTime = 6;
+
+	UPROPERTY( EditDefaultsOnly )
+	int32 ESkillMaxCoolTime = 5;
+
+
+	UPROPERTY( EditDefaultsOnly )
+	int32 QSkillCurrentCoolTime=6;
+
+	UPROPERTY( EditDefaultsOnly )
+	int32 ESkillCurrentCoolTime=5;
+
+	UPROPERTY( EditDefaultsOnly, Category="QSkill" )
+	UParticleSystem* QExplosionEffect;
+
+	UPROPERTY( EditAnywhere )
+	AProjectEscapePlayerController* PC;
+
+	FTimerHandle ESkillCountDownHandle;
+	FTimerHandle QSkillCountDownHandle;
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -88,7 +117,15 @@ public:
 
 	void ReleaseObject();
 
+	void ActionQSkill();
+
 	void SphereGrabObject();
-	
+
+	void QSkillAdvanceTimer();
+	void ESkillAdvanceTimer();
+
+	void ESkillUpdateTimerDisplay();
+
+	void QSkillUpdateTimerDisplay();
 	virtual void Deactivate() override;
 };
