@@ -53,6 +53,9 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
 	class UPlayerStatsComponent* PlayerStatsComponent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UUserWidget> GameOverUIClass;
 	
 	// #################################
 	// ########### FUNCTIONS ###########

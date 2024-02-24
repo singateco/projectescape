@@ -9,6 +9,8 @@
 #include "GameFramework/Controller.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Blueprint/UserWidget.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
 #include "Player/MoveComponent.h"
 #include "Player/FireComponent.h"
 #include "Player/GrabComponent.h"
@@ -32,6 +34,14 @@ AProjectEscapePlayer::AProjectEscapePlayer(const FObjectInitializer& ObjectIniti
 	{
 		LookAction = LookActionObjectFinder.Object;
 	}
+
+	const static ConstructorHelpers::FClassFinder<UUserWidget> GameOverUIWidgetClassFinder
+	{TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/UI/WBP_GameOver.WBP_GameOver_C'")};
+	if (GameOverUIWidgetClassFinder.Class)
+	{
+		GameOverUIClass = GameOverUIWidgetClassFinder.Class;
+	}
+	
 	
 	PrimaryActorTick.bCanEverTick = true;
 	
@@ -81,10 +91,10 @@ AProjectEscapePlayer::AProjectEscapePlayer(const FObjectInitializer& ObjectIniti
 	PlayerStatsComponent = Cast<UPlayerStatsComponent>(StatsComponent);
 
 	// Set MaxHP
-	MaxHP = 30;
+	MaxHP = 10;
 }
 
-void AProjectEscapePlayer::BeginPlay()
+void AProjectE	scapePlayer::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
@@ -135,8 +145,50 @@ void AProjectEscapePlayer::Die()
 	FireComponent->Deactivate();
 	GrabComponent->Deactivate();
 	
+	
+
+	if (GameOverUIClass)
+	{
+		UUserWidget* Gameoverui = CreateWidget(GetWorld(), GameOverUIClass, TEXT("Game Over UI"));
+		UWidgetLayoutLibrary::RemoveAllWidgets(GetWorld());
+		Gameoverui->AddToViewport();
+		APlayerController* PC = GetController<APlayerController>();
+		PC->SetInputMode(FInputModeUIOnly());
+		PC->bShowMouseCursor = true;
+	}
+
+	GetCameraBoom()->bDoCollisionTest = false;
 	UAnimInstance* AnimInst = GetMesh()->GetAnimInstance();
 	AnimInst->Montage_Play(DyingAnimMontage);
+	const float DyingTimerLength = DyingAnimMontage->GetPlayLength();
+	
+	TWeakObjectPtr<AProjectEscapePlayer> WeakThis = this;
+	FTimerHandle RagdollHandle;
+	GetWorld()->GetTimerManager().SetTimer(RagdollHandle,
+		FTimerDelegate::CreateLambda([WeakThis]
+		{
+			if (WeakThis.IsValid())
+			{
+				WeakThis->GetCharacterMovement()->DisableMovement();
+				WeakThis->GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
+				WeakThis->GetMesh()->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+				WeakThis->GetMesh()->SetAllBodiesSimulatePhysics(true);
+			}
+		}),
+		DyingTimerLength - .1f,
+		false);
+	
+	FTimerHandle DieHandle;
+	GetWorld()->GetTimerManager().SetTimer(DieHandle,
+		FTimerDelegate::CreateLambda([WeakThis]
+		{
+			if (WeakThis.IsValid())
+			{
+				WeakThis->AddControllerYawInput(.3f);
+			}
+		}),
+		.025f,
+		true);
 }
 
 void AProjectEscapePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

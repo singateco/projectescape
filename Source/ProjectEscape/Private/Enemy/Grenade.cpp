@@ -37,10 +37,7 @@ void AGrenade::BeginPlay()
 	Super::BeginPlay();
 
 	FTimerHandle Handle;
-	GetWorld()->GetTimerManager().SetTimer( Handle, FTimerDelegate::CreateLambda( [&]
-		{
-			Explosion();
-		} ), ExplosionTime, false );
+	GetWorld()->GetTimerManager().SetTimer( Handle, FTimerDelegate::CreateUObject(this, &AGrenade::Explosion), ExplosionTime, false );
 
 	if ( GrenadeMesh )
 	{
