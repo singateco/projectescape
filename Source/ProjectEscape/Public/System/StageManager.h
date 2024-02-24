@@ -67,6 +67,9 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	int32 CurrentWaveIndex {0};
 
+	UPROPERTY(EditAnywhere)
+	float BetweenWavesDelaySeconds {7.0f};
+
 	UFUNCTION()
 	void HandleEnemyDestroyed(AEnemyBase* DestroyedActor);
 

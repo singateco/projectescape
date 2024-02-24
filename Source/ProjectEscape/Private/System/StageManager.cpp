@@ -24,9 +24,20 @@ void AStageManager::HandleEnemyDestroyed(AEnemyBase* DestroyedActor)
 		}
 
 		OnWaveFinished.Broadcast(StageData.Waves[CurrentWaveIndex], StageData.Waves[++CurrentWaveIndex]);
+		TWeakObjectPtr<AStageManager> WeakThis = this;
 		if (StageData.Waves.Num() > CurrentWaveIndex)
 		{
-			SpawnWave(StageData.Waves[CurrentWaveIndex]);
+			FTimerHandle NextWaveHandle;
+			GetWorld()->GetTimerManager().SetTimer(NextWaveHandle,
+				FTimerDelegate::CreateLambda([WeakThis] {
+				if (WeakThis.IsValid())
+				{
+					WeakThis->SpawnWave(WeakThis->StageData.Waves[WeakThis->CurrentWaveIndex]);
+				}
+			}),
+			BetweenWavesDelaySeconds,
+			false
+			);
 		}
 	}
 }
