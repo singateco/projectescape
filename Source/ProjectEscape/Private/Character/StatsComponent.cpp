@@ -77,6 +77,17 @@ void UStatsComponent::ProcessDamage(const float DamageValue)
 	}
 }
 
+void UStatsComponent::ProcessHealing(const float HealValue)
+{
+	if (OwningChara->HasMatchingGameplayTag(PEGameplayTags::Status_IsDead))
+	{
+		return;
+	}
+
+	HP = FMath::Min(HP + HealValue, MaxHP);
+	OnHPChanged.Broadcast(MaxHP, HP);
+}
+
 void UStatsComponent::ProcessDying()
 {
 	AddTag(PEGameplayTags::Status_IsDead);

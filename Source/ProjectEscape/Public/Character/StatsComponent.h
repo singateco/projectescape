@@ -81,8 +81,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void RemoveTag(const FGameplayTag& TagToRemove);
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void ProcessDamage(const float DamageValue);
+
+	UFUNCTION(BlueprintCallable)
+	void ProcessHealing(const float HealValue);
 
 	UPROPERTY(BlueprintAssignable)
 	FTakenDamage OnTakenDamage;

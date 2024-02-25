@@ -9,9 +9,9 @@
 #include "Components/WidgetComponent.h"
 #include "Enemy/EnemyAIController.h"
 #include "Enemy/EnemyBaseFSM.h"
-
 #include "Enemy/EnemyHealthBar.h"
 #include "Enemy/EnemyStatsComponent.h"
+#include "Objects/HealthPickup.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -61,6 +61,13 @@ AEnemyBase::AEnemyBase(const FObjectInitializer& ObjectInitializer)
 		DamageNumberWidgetClass = DamageNumberWidgetFinder.Class;
 	}
 
+	ConstructorHelpers::FClassFinder<AHealthPickup> HealthPickupBPFinder {TEXT("/Script/Engine.Blueprint'/Game/Blueprints/BP_HealthPickup.BP_HealthPickup_C'")};
+
+	if (HealthPickupBPFinder.Succeeded())
+	{
+		HealthPickupActorClass = HealthPickupBPFinder.Class;
+	}
+
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	UCapsuleComponent* cap = GetCapsuleComponent();
@@ -81,7 +88,7 @@ void AEnemyBase::BeginPlay()
 	Super::BeginPlay();
 
 	check(DamageNumberWidgetClass);
-	StatsComponent->OnHPReachedZero.AddUniqueDynamic(this, &AEnemyBase::BroadcastDied);
+	StatsComponent->OnHPReachedZero.AddUniqueDynamic(this, &AEnemyBase::ProcessDying);
 	StatsComponent->OnTakenDamage.AddUniqueDynamic(this, &AEnemyBase::DisplayDamageNumber);
 }
 
@@ -122,9 +129,16 @@ void AEnemyBase::PreInitializeComponents()
 	}
 }
 
-void AEnemyBase::BroadcastDied()
+void AEnemyBase::ProcessDying()
 {
 	OnEnemyDied.Broadcast(this);
+
+	if (HealthPickupActorClass)
+	{
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+		GetWorld()->SpawnActor<AHealthPickup>(HealthPickupActorClass, GetActorLocation(), FRotator::ZeroRotator, SpawnParams);
+	}
 }
 
 void AEnemyBase::DisplayDamageNumber(const float DamageToDisplay)

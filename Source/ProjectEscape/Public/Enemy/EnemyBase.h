@@ -6,6 +6,7 @@
 #include "CharacterBase.h"
 #include "EnemyBase.generated.h"
 
+class AHealthPickup;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FEnemyDied, class AEnemyBase*, Enemy);
 
 /**
@@ -31,7 +32,10 @@ public:
 	FEnemyDied OnEnemyDied;
 
 	UFUNCTION()
-	void BroadcastDied();
+	void ProcessDying();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TSubclassOf<AHealthPickup> HealthPickupActorClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UEnemyStatsComponent* EnemyStatsComponent;
