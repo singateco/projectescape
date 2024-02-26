@@ -4,6 +4,7 @@
 #include "Enemy/BossEnemy.h"
 
 #include "Components/WidgetComponent.h"
+#include "Enemy/BossAIController.h"
 #include "Enemy/EnemyBaseFSM.h"
 
 ABossEnemy::ABossEnemy( const FObjectInitializer& ObjectInitializer )
@@ -23,6 +24,9 @@ ABossEnemy::ABossEnemy( const FObjectInitializer& ObjectInitializer )
 	{
 		EnemyHPComponent->SetHiddenInGame(true);
 	}
+
+	AIControllerClass = ABossAIController::StaticClass();
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
 void ABossEnemy::BeginPlay()

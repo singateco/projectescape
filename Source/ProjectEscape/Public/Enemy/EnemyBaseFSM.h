@@ -96,6 +96,7 @@ public:
 	virtual void TickDie();
 
 	void OnChangeMoveState();
+	void OnChangeIdleState();
 
 	UFUNCTION()
 	virtual void OnTakeDamage(float Damage_Unused);

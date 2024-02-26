@@ -164,6 +164,11 @@ void UEnemyBaseFSM::OnChangeMoveState()
 	SetState( EEnemyState::Move );
 }
 
+void UEnemyBaseFSM::OnChangeIdleState()
+{
+	SetState( EEnemyState::Idle );
+}
+
 void UEnemyBaseFSM::OnTakeDamage(float Damage_Unused)
 {
 	SetState( EEnemyState::Damage );
