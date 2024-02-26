@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -17,7 +17,7 @@ class PROJECTESCAPE_API UEnemyHealthBar : public UUserWidget
 public:
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void UpdateHP(float MaxHP, float HP);
 
 	UFUNCTION()
@@ -34,7 +34,7 @@ public:
 	UPROPERTY(EditInstanceOnly, meta = (BindWidget))
 		class UProgressBar* HPBarGuide;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class AEnemyBase* OwnedEnemy;
 
 	float TargetPercent = 1;

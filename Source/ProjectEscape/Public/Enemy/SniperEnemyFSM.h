@@ -21,4 +21,6 @@ public:
 	TSubclassOf<class AEnemyBullet> EnemyBulletFactory;
 
 	void TickAttack() override;
+
+	void TickDie() override;
 };

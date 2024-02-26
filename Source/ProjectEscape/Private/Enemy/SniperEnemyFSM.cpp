@@ -59,3 +59,10 @@ void USniperEnemyFSM::TickAttack()
 	}
 
 }
+
+void USniperEnemyFSM::TickDie()
+{
+	Super::TickDie();
+	auto SniperEnemy=Cast<ASniperEnemy>( Enemy );
+	SniperEnemy->LaserBeam->SetHiddenInGame( true );
+}

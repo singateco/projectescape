@@ -10,7 +10,7 @@
  * 
  */
 UCLASS()
-class PROJECTESCAPE_API ABossEnemy : public AEnemyBase
+class PROJECTESCAPE_API ABossEnemy : public ACharacterBase
 {
 	GENERATED_BODY()
 

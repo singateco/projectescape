@@ -3,11 +3,14 @@
 
 #include "Enemy/BossEnemy.h"
 
-ABossEnemy::ABossEnemy(const FObjectInitializer& ObjectInitializer)
+#include "Components/WidgetComponent.h"
+
+ABossEnemy::ABossEnemy( const FObjectInitializer& ObjectInitializer )
 	:
 	Super( ObjectInitializer )
 
 {
 	PrimaryActorTick.bCanEverTick=true;
+
 
 }
