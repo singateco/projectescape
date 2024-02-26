@@ -17,7 +17,6 @@ void AStageManager::HandleEnemyDestroyed(AEnemyBase* DestroyedActor)
 	{
 		if (bIsFinalWave)
 		{
-			// Do something
 			UE_LOG(LogTemp, Warning, TEXT("Stage Won!"))
 			OnStageFinished.Broadcast();
 			return;

@@ -19,6 +19,7 @@ ANormalGun::ANormalGun()
 	NormalGunMesh->SetupAttachment(GunComp);
 	NormalGunMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
+	/*
 	auto NormalGunFinder = ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/Models/SniperGun/sniper1.sniper1'"));
 	if (NormalGunFinder.Succeeded()) {
 		NormalGunMesh->SetStaticMesh(NormalGunFinder.Object);
@@ -26,6 +27,7 @@ ANormalGun::ANormalGun()
 		NormalGunMesh->SetRelativeScale3D(FVector(0.15f));
 		NormalGunMesh->SetRelativeLocationAndRotation(FVector(-38.f, -7.f, 3.f), FRotator(-2.f, 100.f, 0));
 	}
+	*/
 
 }
 

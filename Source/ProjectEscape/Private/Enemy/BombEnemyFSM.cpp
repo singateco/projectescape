@@ -125,5 +125,6 @@ void UBombEnemyFSM::Explosion()
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, EnemyLoc, FRotator(), FVector( 1 ), true );
 	UGameplayStatics::PlaySoundAtLocation( GetWorld(), ExplosionSound, EnemyLoc );
 
+	Enemy->OnEnemyDied.Broadcast(Enemy);
 	Enemy->Destroy();
 }

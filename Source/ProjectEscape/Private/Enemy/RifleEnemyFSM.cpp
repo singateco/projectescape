@@ -16,6 +16,12 @@ URifleEnemyFSM::URifleEnemyFSM()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
+	static ConstructorHelpers::FClassFinder<AEnemyBullet> BulletClassFinder {TEXT("/Script/Engine.Blueprint'/Game/Blueprints/BP_EnemyBullet.BP_EnemyBullet_C'")};
+	if (BulletClassFinder.Succeeded())
+	{
+		EnemyBulletFactory = BulletClassFinder.Class;
+	}
+	
 	AttackDistance = 3000;
 
 	MinAttackTime = 0.5f;
