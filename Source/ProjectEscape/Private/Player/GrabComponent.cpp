@@ -104,6 +104,11 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	}else
 	{
 
+		if(ESkillCurrentCoolTime<ESkillMaxCoolTime)
+		{
+			return;
+		}
+
 		TArray<FHitResult> HitInfoArray;
 		FVector Start=Player->GetFollowCamera()->GetComponentLocation();
 		FVector End=Player->GetFollowCamera()->GetComponentLocation() + Player->GetFollowCamera()->GetForwardVector() * MaxDistanceToGrab;
@@ -220,7 +225,7 @@ void UGrabComponent::ReleaseObject()
 			UE_LOG( SYLog, Warning, TEXT( "throw!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" ))
 			for ( FHitResult& HitInfo : HitInfoArray )
 			{
-				auto Enemy =Cast<ARifleEnemy>( HitInfo.GetActor() );
+				auto Enemy =Cast<AEnemyBase>( HitInfo.GetActor() );
 
 				//UE_LOG( LogTemp, Warning, TEXT( "%s" ), *Enemies->GetActorNameOrLabel() )
 
@@ -312,10 +317,8 @@ void UGrabComponent::SphereGrabObject()
 
 		}
 
-
+		GetWorld()->GetTimerManager().SetTimer( ESkillCountDownHandle, this, &UGrabComponent::ESkillAdvanceTimer, 1.0f, true );
 	}
-
-	GetWorld()->GetTimerManager().SetTimer( ESkillCountDownHandle, this, &UGrabComponent::ESkillAdvanceTimer, 1.0f, true );
 }
 
 void UGrabComponent::QSkillAdvanceTimer()
