@@ -19,11 +19,26 @@ public:
 	class USphereComponent* HitBox;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USphereComponent* MagnetBox;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float HealValue {1.0f};
+
+	UPROPERTY()
+	class UFCTweenUObject* MagnetTweenObj;
+
+	UPROPERTY()
+	FVector MagnetStartVector;
+
+	UPROPERTY()
+	class AProjectEscapePlayer* PlayerTarget;
 	
 protected:
 	UFUNCTION()
 	void OnHitBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnMagnetBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
