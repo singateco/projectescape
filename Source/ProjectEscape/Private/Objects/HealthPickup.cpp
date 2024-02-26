@@ -18,7 +18,7 @@ AHealthPickup::AHealthPickup()
 
 	SetRootComponent(HitBox);
 	
-	SetLifeSpan(10.f);
+	SetLifeSpan(30.f);
 }
 
 void AHealthPickup::OnHitBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -26,6 +26,10 @@ void AHealthPickup::OnHitBoxOverlap(UPrimitiveComponent* OverlappedComponent, AA
 {
 	AProjectEscapePlayer* Player = Cast<AProjectEscapePlayer>(OtherActor);
 	if (!Player)
+	{
+		return;
+	}
+	if (Player->PlayerStatsComponent->GetHP() >= Player->PlayerStatsComponent->GetMaxHP())
 	{
 		return;
 	}
