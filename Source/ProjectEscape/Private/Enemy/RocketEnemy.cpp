@@ -25,6 +25,6 @@ ARocketEnemy::ARocketEnemy( const FObjectInitializer& ObjectInitializer )
 		GunMesh->SetRelativeScale3D( FVector( 1.1f ) );
 	}
 
-	MaxHP = 4;
+	MaxHP = 8;
 }
 

@@ -16,8 +16,8 @@ URocketEnemyFSM::URocketEnemyFSM()
 
 	AttackDistance = 3000;
 
-	MinAttackTime = 6.0f;
-	MaxAttackTime = 8.0f;
+	MinAttackTime = 4.0f;
+	MaxAttackTime = 6.0f;
 
 }
 
@@ -50,6 +50,12 @@ void URocketEnemyFSM::TickAttack()
 		//EnemyAnim->IsAttack = false;
 	}
 }
+
+void URocketEnemyFSM::OnTakeDamage(float Damage_Unused)
+{
+	
+}
+
 
 void URocketEnemyFSM::FireRocket()
 {

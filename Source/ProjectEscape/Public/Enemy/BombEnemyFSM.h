@@ -33,6 +33,8 @@ public:
 
 	void TickDie() override;
 
+	void OnTakeDamage(float Damage_Unused) override;
+
 	UFUNCTION( BlueprintCallable )
 	void Explosion();
 };

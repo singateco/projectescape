@@ -98,7 +98,7 @@ public:
 	void OnChangeMoveState();
 
 	UFUNCTION()
-	void OnTakeDamage(float Damage_Unused);
+	virtual void OnTakeDamage(float Damage_Unused);
 
 	UFUNCTION()
 	void OnDying();

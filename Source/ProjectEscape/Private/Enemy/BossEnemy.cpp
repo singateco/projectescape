@@ -3,11 +3,31 @@
 
 #include "Enemy/BossEnemy.h"
 
-ABossEnemy::ABossEnemy(const FObjectInitializer& ObjectInitializer)
+#include "Components/WidgetComponent.h"
+#include "Enemy/EnemyBaseFSM.h"
+
+ABossEnemy::ABossEnemy( const FObjectInitializer& ObjectInitializer )
 	:
 	Super( ObjectInitializer )
 
 {
 	PrimaryActorTick.bCanEverTick=true;
 
+	if (EnemyBaseFSM)
+	{
+		EnemyBaseFSM->DestroyComponent();
+		EnemyBaseFSM->SetActive( false );
+	}
+
+	if(EnemyHPComponent)
+	{
+		EnemyHPComponent->SetHiddenInGame(true);
+	}
+}
+
+void ABossEnemy::BeginPlay()
+{
+	Super::BeginPlay();
+
+	
 }

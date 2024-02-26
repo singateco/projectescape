@@ -79,6 +79,11 @@ void UBombEnemyFSM::TickDie()
 	Explosion();
 }
 
+void UBombEnemyFSM::OnTakeDamage(float Damage_Unused)
+{
+	
+}
+
 void UBombEnemyFSM::Explosion()
 {
 	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
@@ -120,5 +125,6 @@ void UBombEnemyFSM::Explosion()
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, EnemyLoc, FRotator(), FVector( 1 ), true );
 	UGameplayStatics::PlaySoundAtLocation( GetWorld(), ExplosionSound, EnemyLoc );
 
+	Enemy->OnEnemyDied.Broadcast(Enemy);
 	Enemy->Destroy();
 }

@@ -40,5 +40,5 @@ ASniperEnemy::ASniperEnemy(const FObjectInitializer& ObjectInitializer)
 		LaserBeam->SetStaticMesh( TempLaserMesh.Object );
 	}
 
-	MaxHP = 4;
+	MaxHP = 8;
 }

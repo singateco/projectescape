@@ -33,13 +33,14 @@ ARocket::ARocket()
 
 	MovementComponent=CreateDefaultSubobject<UProjectileMovementComponent>( TEXT( "MovementComponent" ) );
 
-	MovementComponent->InitialSpeed=1500;
-	MovementComponent->MaxSpeed=1500;
-	MovementComponent->Bounciness=0;
-	MovementComponent->bShouldBounce=false;
-	MovementComponent->Friction=0;
-	MovementComponent->InterpLocationTime=0.05f;
-	MovementComponent->ProjectileGravityScale=0;
+	MovementComponent->InitialSpeed = 1500;
+	MovementComponent->MaxSpeed = 1500;
+	MovementComponent->Bounciness = 0;
+	MovementComponent->bShouldBounce = false;
+	MovementComponent->Friction = 0;
+	MovementComponent->InterpLocationTime = 0.05f;
+	MovementComponent->ProjectileGravityScale = 0;
+	MovementComponent->bRotationFollowsVelocity = true;
 
 	SetLifeSpan( 10.0f );
 

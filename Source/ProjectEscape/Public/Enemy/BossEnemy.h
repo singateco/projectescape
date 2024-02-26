@@ -17,5 +17,5 @@ class PROJECTESCAPE_API ABossEnemy : public AEnemyBase
 public:
 	ABossEnemy( const FObjectInitializer& ObjectInitializer );
 
-
+	virtual void BeginPlay() override;
 };

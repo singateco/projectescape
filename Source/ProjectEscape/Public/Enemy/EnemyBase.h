@@ -43,7 +43,7 @@ public:
 	UPROPERTY( EditAnywhere, BlueprintReadOnly )
 	class UWidgetComponent* EnemyHPComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UEnemyHealthBar* EnemyHealthBarWidget;
 
 	UPROPERTY(EditDefaultsOnly, meta = (Class))

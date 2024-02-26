@@ -246,6 +246,8 @@ void UGrabComponent::ReleaseObject()
 
 		bIsGrabbing=false;
 	}
+	GetWorld()->GetTimerManager().SetTimer( ESkillCountDownHandle, this, &UGrabComponent::ESkillAdvanceTimer, 1.0f, true );
+
 }
 
 void UGrabComponent::ActionQSkill()
@@ -317,7 +319,7 @@ void UGrabComponent::SphereGrabObject()
 
 		}
 
-		GetWorld()->GetTimerManager().SetTimer( ESkillCountDownHandle, this, &UGrabComponent::ESkillAdvanceTimer, 1.0f, true );
+		//GetWorld()->GetTimerManager().SetTimer( ESkillCountDownHandle, this, &UGrabComponent::ESkillAdvanceTimer, 1.0f, true );
 	}
 }
 
@@ -338,9 +340,9 @@ void UGrabComponent::QSkillAdvanceTimer()
 
 void UGrabComponent::ESkillAdvanceTimer()
 {
+	ESkillUpdateTimerDisplay();
 	--ESkillCurrentCoolTime;
 
-	ESkillUpdateTimerDisplay();
 
 	if(ESkillCurrentCoolTime<1){
 		// 카운트 다운이 완료 되었으니 타이머를 중지 시킨다.
