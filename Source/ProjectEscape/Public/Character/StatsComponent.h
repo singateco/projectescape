@@ -33,14 +33,20 @@ public:
 	// Sets default values for this component's properties
 	UStatsComponent();
 
+	UFUNCTION(BlueprintCallable)
 	float GetHP() const { return HP; }
+
+	UFUNCTION(BlueprintCallable)
 	void SetHP(const float NewHP)
 	{
 		HP = NewHP;
 		OnHPChanged.Broadcast(MaxHP, HP);
 	}
 
+	UFUNCTION(BlueprintCallable)
 	float GetMaxHP() const { return MaxHP; }
+
+	UFUNCTION(BlueprintCallable)
 	void SetMaxHP(const float NewMaxHP)
 	{
 		MaxHP = NewMaxHP;
