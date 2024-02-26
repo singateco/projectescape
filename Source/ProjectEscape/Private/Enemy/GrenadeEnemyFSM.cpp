@@ -18,6 +18,12 @@ UGrenadeEnemyFSM::UGrenadeEnemyFSM()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 
+	static ConstructorHelpers::FClassFinder<AEnemyBullet> BulletClassFinder {TEXT("/Script/Engine.Blueprint'/Game/Blueprints/BP_EnemyBullet.BP_EnemyBullet_C'")};
+	if (BulletClassFinder.Succeeded())
+	{
+		EnemyBulletFactory = BulletClassFinder.Class;
+	}
+	
 	AttackDistance = 3000;
 
 	MinAttackTime = 0.5f;
@@ -110,11 +116,15 @@ void UGrenadeEnemyFSM::ThrowGrenade()
 	FVector Impulse = DirectionToPlayer * GrenadeSpeed;
 	Impulse.Z += AddVertical;
 
-	EnemyGrenade = GetWorld()->SpawnActor<AGrenade>( EnemyGrenadeFactory, Enemy->GetMesh()->GetSocketTransform( FName( TEXT( "RightHandSocket" ) ) ) );
+	FActorSpawnParameters Params;
+	Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	EnemyGrenade = GetWorld()->SpawnActor<AGrenade>( EnemyGrenadeFactory, Enemy->GetMesh()->GetSocketTransform( FName( TEXT( "RightHandSocket" ) ) ), Params);
 
-	EnemyGrenade->GrenadeMesh->SetPhysicsLinearVelocity( FVector::ZeroVector );
-	EnemyGrenade->GrenadeMesh->AddImpulse(Impulse);
-
+	if (EnemyGrenade)
+	{
+		EnemyGrenade->GrenadeMesh->SetPhysicsLinearVelocity( FVector::ZeroVector );
+		EnemyGrenade->GrenadeMesh->AddImpulse(Impulse);
+	}
 }
 
 
