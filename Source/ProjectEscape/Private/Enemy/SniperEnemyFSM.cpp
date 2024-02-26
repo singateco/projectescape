@@ -27,7 +27,7 @@ void USniperEnemyFSM::TickAttack()
 	Ai->StopMovement();
 	auto SniperEnemy=Cast<ASniperEnemy>( Enemy );
 
-	FVector DirectionToPlayer=(Player->GetActorLocation() - SniperEnemy->LaserBeam->GetComponentLocation()).GetSafeNormal();
+	FVector DirectionToPlayer=(Player->GetMesh()->GetBoneLocation(TEXT("Head")) - SniperEnemy->LaserBeam->GetComponentLocation()).GetSafeNormal();
 	FRotator RotationToPlayer = DirectionToPlayer.Rotation();
 
 	//FRotator RotationToPlayer=UKismetMathLibrary::FindLookAtRotation( SniperEnemy->LaserBeam->GetComponentLocation(), Player->GetActorLocation() );
