@@ -51,6 +51,12 @@ void URocketEnemyFSM::TickAttack()
 	}
 }
 
+void URocketEnemyFSM::OnTakeDamage(float Damage_Unused)
+{
+	
+}
+
+
 void URocketEnemyFSM::FireRocket()
 {
 

@@ -18,7 +18,7 @@ USniperEnemyFSM::USniperEnemyFSM()
 
 	AttackDistance = 4000;
 
-	AttackTime = 4.0f;
+	AttackTime = 3.0f;
 
 }
 
@@ -58,6 +58,11 @@ void USniperEnemyFSM::TickAttack()
 		
 	}
 
+}
+
+void USniperEnemyFSM::OnTakeDamage(float Damage_Unused)
+{
+	
 }
 
 void USniperEnemyFSM::TickDie()

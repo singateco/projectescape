@@ -79,6 +79,11 @@ void UBombEnemyFSM::TickDie()
 	Explosion();
 }
 
+void UBombEnemyFSM::OnTakeDamage(float Damage_Unused)
+{
+	
+}
+
 void UBombEnemyFSM::Explosion()
 {
 	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;

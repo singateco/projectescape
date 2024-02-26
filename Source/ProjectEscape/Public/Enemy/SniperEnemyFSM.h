@@ -22,5 +22,7 @@ public:
 
 	void TickAttack() override;
 
+	void OnTakeDamage( float Damage_Unused ) override;
+
 	void TickDie() override;
 };

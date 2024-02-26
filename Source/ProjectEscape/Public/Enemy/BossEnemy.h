@@ -10,12 +10,12 @@
  * 
  */
 UCLASS()
-class PROJECTESCAPE_API ABossEnemy : public ACharacterBase
+class PROJECTESCAPE_API ABossEnemy : public AEnemyBase
 {
 	GENERATED_BODY()
 
 public:
 	ABossEnemy( const FObjectInitializer& ObjectInitializer );
 
-
+	virtual void BeginPlay() override;
 };
