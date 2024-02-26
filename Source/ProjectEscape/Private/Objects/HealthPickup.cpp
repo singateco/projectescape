@@ -64,6 +64,10 @@ void AHealthPickup::OnMagnetBoxOverlap(UPrimitiveComponent* OverlappedComponent,
 								SetActorLocation(FMath::Lerp(MagnetStartVector, PlayerTarget->GetActorLocation(), v));
 							},
 							1.5f)
+							->SetOnComplete([&]
+							{
+								MagnetTweenObj = nullptr;
+							})
 							->CreateUObject();
 	}
 }
