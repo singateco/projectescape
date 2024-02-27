@@ -48,9 +48,9 @@ AEnemyBase::AEnemyBase(const FObjectInitializer& ObjectInitializer)
 	if (tempHP.Succeeded())
 	{
 		EnemyHPComponent->SetWidgetClass(tempHP.Class);
-		EnemyHPComponent->SetWidgetSpace(EWidgetSpace::Screen);
-		EnemyHPComponent->SetDrawSize(FVector2D(80, 10));
-		EnemyHPComponent->SetRelativeLocation(FVector(0, 0, 110));
+		EnemyHPComponent->SetWidgetSpace(EWidgetSpace::World);
+		EnemyHPComponent->SetDrawSize(FVector2D(70, 10));
+		EnemyHPComponent->SetRelativeLocation(FVector(0, 0, 100));
 		EnemyHPComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 
@@ -102,14 +102,14 @@ void AEnemyBase::Tick(float DeltaSeconds)
 	float DistanceToPlayer = FVector::Distance( Start, End );
 	float MaxDisplayDistance = 3000.0f;
 
-	if(DistanceToPlayer <= MaxDisplayDistance )
-	{
-		EnemyHPComponent->SetVisibility( true );
-	}
-	else
-	{
-		EnemyHPComponent->SetVisibility( false );
-	}
+	//if(DistanceToPlayer <= MaxDisplayDistance )
+	//{
+	//	EnemyHPComponent->SetVisibility( true );
+	//}
+	//else
+	//{
+	//	EnemyHPComponent->SetVisibility( false );
+	//}
 
 	FRotator newRoatation = UKismetMathLibrary::FindLookAtRotation(Start, End);
 	EnemyHPComponent->SetWorldRotation(newRoatation);
@@ -148,3 +148,4 @@ void AEnemyBase::DisplayDamageNumber(const float DamageToDisplay)
 	DamageWidget->DamageToDisplay = DamageToDisplay;
 	DamageWidget->AddToViewport(0);
 }
+

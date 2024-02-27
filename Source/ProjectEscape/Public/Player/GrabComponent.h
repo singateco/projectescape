@@ -61,7 +61,7 @@ public:
 	float NewAngle = 1.0f;
 
 	UPROPERTY( EditDefaultsOnly, Category="Grab" )
-	float RadiusDetection = 330.f;
+	float RadiusDetection = 1000.f;
 
 	UPROPERTY( EditDefaultsOnly, Category="Grab" )
 	float RotSpeed = 10000.0f;
@@ -98,6 +98,10 @@ public:
 
 	UPROPERTY( EditAnywhere )
 	AProjectEscapePlayerController* PC;
+
+
+	UPROPERTY( EditAnywhere )
+	TArray<AActor*> OtherEnemies;
 
 	FTimerHandle ESkillCountDownHandle;
 	FTimerHandle QSkillCountDownHandle;

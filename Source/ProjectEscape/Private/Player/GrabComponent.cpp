@@ -14,6 +14,9 @@
 #include "Math/UnrealMathUtility.h"
 #include "Objects/PickableActor.h"
 #include "Components/PrimitiveComponent.h"
+#include "Components/WidgetComponent.h"
+#include "Enemy/EnemyBullet.h"
+#include "Enemy/GrenadeEnemy.h"
 #include "Kismet/GameplayStatics.h"
 #include "ProjectEscape/ProjectEscape.h"
 #include "Particles/ParticleSystem.h"
@@ -47,7 +50,15 @@ void UGrabComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	
+
+	//OtherEnemies.Empty();
+	//
+	//for ( TActorIterator<AEnemyBase> it( GetWorld() ); it; ++it ) {
+	//	
+	//	OtherEnemies.Add(*it);
+	//	it->EnemyHPComponent->SetVisibility(false);
+	//}
+
 }
 
 void UGrabComponent::InitializeComponent()
@@ -84,6 +95,13 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		it->MeshComp->SetRenderCustomDepth( false );
 	}
 
+	OtherEnemies.Empty();
+	
+	for ( TActorIterator<AEnemyBase> it( GetWorld() ); it; ++it ) {
+		
+		OtherEnemies.Add(*it);
+		it->EnemyHPComponent->SetVisibility(false);
+	}
 
 
 
@@ -101,9 +119,9 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		//FVector NewLocation =Player->GetFollowCamera()->GetComponentLocation() + Player->GetFollowCamera()->GetForwardVector() * 500;
 		//FRotator NewRotation = FRotator( 10 * DeltaTime, 10 * DeltaTime, 10 * DeltaTime );
 		//HandleObject->SetTargetLocationAndRotation( NewLocation, NewRotation );
-	}else
+	}else if( bIsGrabbing == false || OtherEnemies.Num() > 0) // 물체 안잡고 있거나 적들이 있을 때
 	{
-
+		//UE_LOG( SYLog, Warning, TEXT( "OtherEnemies %d" ), OtherEnemies.Num() );
 		if(ESkillCurrentCoolTime<ESkillMaxCoolTime)
 		{
 			return;
@@ -111,7 +129,7 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 		TArray<FHitResult> HitInfoArray;
 		FVector Start=Player->GetFollowCamera()->GetComponentLocation();
-		FVector End=Player->GetFollowCamera()->GetComponentLocation() + Player->GetFollowCamera()->GetForwardVector() * MaxDistanceToGrab;
+		FVector End=Player->GetFollowCamera()->GetComponentLocation() + Player->GetFollowCamera()->GetForwardVector() * 30000;
 
 
 		ETraceTypeQuery TraceTypeQuery=UEngineTypes::ConvertToTraceType( ECC_GameTraceChannel1 );
@@ -122,6 +140,7 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		// 자기 자신 캐릭터 무시
 		SphereTraceIgnoreActorsArray.Add( Player );
 
+		//bool bTraceResult=UKismetSystemLibrary::SphereTraceMulti( GetWorld(), Start, End, RadiusDetection, TraceTypeQuery,false, SphereTraceIgnoreActorsArray, EDrawDebugTrace::None, HitInfoArray, true);
 		bool bTraceResult=UKismetSystemLibrary::SphereTraceMulti( GetWorld(), Start, End, RadiusDetection, TraceTypeQuery,
 			false, SphereTraceIgnoreActorsArray, EDrawDebugTrace::None, HitInfoArray, true );
 
@@ -130,14 +149,52 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		{
 			for ( FHitResult& HitInfo : HitInfoArray )
 			{
-				auto PickUpActor=Cast<APickableActor>( HitInfo.GetActor() );
-				//UE_LOG( SYLog, Warning, TEXT( "%s" ), *PickUpActor->GetActorNameOrLabel() );
-				if(PickUpActor )
+				//auto PickUpActor=Cast<APickableActor>( HitInfo.GetActor() );
+				////UE_LOG( SYLog, Warning, TEXT( "%s" ), *PickUpActor->GetActorNameOrLabel() );
+				//if(PickUpActor )
+				//{
+				//	PickUpActor->MeshComp->SetRenderCustomDepth( true );
+				//}
+
+				if(HitInfo.GetActor()->IsA<APickableActor>())
 				{
-					PickUpActor->MeshComp->SetRenderCustomDepth( true );
+					auto PickUpActor=Cast<APickableActor>( HitInfo.GetActor() );
+					//UE_LOG( SYLog, Warning, TEXT( "PickUpActor %s" ), *PickUpActor->GetActorNameOrLabel() );
+					if ( PickUpActor )
+					{
+						PickUpActor->MeshComp->SetRenderCustomDepth( true );
+					}
+				
+				}
+				//if( HitInfo.GetActor()->IsA<ARifleEnemy>() || HitInfo.GetActor()->IsA<AGrenadeEnemy>() )
+				if( HitInfo.GetActor()->IsA<AEnemyBase>() )
+				{
+					auto TargetEnemy = Cast<AEnemyBase>( HitInfo.GetActor() );
+					UE_LOG( SYLog, Warning, TEXT( "TargetEnemy %s" ), *TargetEnemy->GetActorNameOrLabel() );
+					if(TargetEnemy )
+					{
+						TargetEnemy->EnemyHPComponent->SetVisibility( true );
+
+					}
+					
 				}
 			}
 
+			//시야에 없는 에너미 HP바 지우기
+			if( OtherEnemies.Num()>HitInfoArray.Num() )
+			{
+				for(auto a : OtherEnemies )
+				{
+					for(auto b: HitInfoArray )
+					{
+						if(b.GetActor()->GetActorNameOrLabel() != a->GetActorNameOrLabel() )
+						{
+							auto aa = Cast<AEnemyBase>(a);
+							aa->EnemyHPComponent->SetVisibility(false);
+						}
+					}
+				}
+			}
 		}
 	}
 }
