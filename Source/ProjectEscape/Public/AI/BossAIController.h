@@ -16,7 +16,8 @@ class PROJECTESCAPE_API ABossAIController : public AAIController
 
 
 public:
-	ABossAIController();
+	explicit ABossAIController(FObjectInitializer const& ObjectInitializer);
 
-
+	virtual void OnPossess( APawn* InPawn ) override;
+	
 };
