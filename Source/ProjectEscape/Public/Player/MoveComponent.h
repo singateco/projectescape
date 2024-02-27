@@ -32,6 +32,8 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 
+	void FlyButton(const FInputActionInstance& InputActionInstance);
+
 	void SetupPlayerInputComponent(UEnhancedInputComponent* PlayerInputComponent);
 
 	/** Called for movement input */
@@ -85,11 +87,17 @@ public:
 
 	// 떠다닐시 밑으로 떨어지는 힘
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|Flying")
-	float DownwardForce {5000.f};
+	float DownwardForce {37500.f};
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|Flying")
+	float UpwardForce {20000.f};
 
 	// 비행시 1초당 사용하는 스태미나.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|Flying")
 	float FlyingStaminaPerSecond {10.f};
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|Flying")
+	float UpwardStaminaPerSecond {5.f};
 
 	// =============== 대시 ===============
 	
@@ -163,10 +171,12 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* MoveAction;
 	
-	
 	/** 대시 Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* DashAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* FlyAction;	
 
 protected:
 	// Called when the game starts

@@ -7,7 +7,6 @@
 #include "NiagaraComponent.h"
 #include "PECharacterMovementComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Player/PlayerStatsComponent.h"
 #include "ProjectEscape/PEGameplayTags.h"
 #include "ProjectEscape/Public/Player/ProjectEscapePlayer.h"
 #include "UI/PlayerStaminaUI.h"
@@ -44,6 +43,14 @@ UMoveComponent::UMoveComponent()
 	if (DashActionObjectFinder.Succeeded())
 	{
 		DashAction = DashActionObjectFinder.Object;
+	}
+
+	const static ConstructorHelpers::FObjectFinder<UInputAction> FlyActionObjectFinder
+		{TEXT("/Script/EnhancedInput.InputAction'/Game/ThirdPerson/Input/Actions/IA_Fly.IA_Fly'")};
+
+	if (FlyActionObjectFinder.Succeeded())
+	{
+		FlyAction = FlyActionObjectFinder.Object;
 	}
 	
 	PrimaryComponentTick.bCanEverTick = true;
@@ -200,6 +207,20 @@ void UMoveComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	}
 }
 
+void UMoveComponent::FlyButton(const FInputActionInstance& InputActionInstance)
+{
+	if (CharacterMovementComponent->MovementMode != MOVE_Flying && Stamina >= 0.02)
+	{
+		CharacterMovementComponent->SetMovementMode(MOVE_Flying);
+	}
+
+	if (Stamina >= 0)
+	{
+		CharacterMovementComponent->AddForce(FVector(0, 0, UpwardForce));
+		Stamina = FMath::Max(0, Stamina - UpwardStaminaPerSecond * GetWorld()->GetDeltaSeconds());
+	}
+}
+
 void UMoveComponent::CheckForGroundWhileFlying()
 {
 	FVector End = Player->GetActorLocation() + Player->GetActorUpVector() * GroundCheckDistance;
@@ -247,8 +268,11 @@ void UMoveComponent::SetupPlayerInputComponent(UEnhancedInputComponent* PlayerIn
 	// Moving
 	PlayerInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &UMoveComponent::Move);
 
-	// 대시
+	// Dashing
 	PlayerInputComponent->BindAction(DashAction, ETriggerEvent::Started, this, &UMoveComponent::Dash);
+
+	// Flying
+	PlayerInputComponent->BindAction(FlyAction, ETriggerEvent::Triggered, this, &UMoveComponent::FlyButton);
 }
 
 
@@ -316,7 +340,7 @@ void UMoveComponent::Dash(const FInputActionInstance& InputActionInstance)
 		return;
 	}
 
-	Stamina -= DashStamina;
+	Stamina = FMath::Max(0, Stamina - DashStamina);
 	Player->AddGameplayTag(PEGameplayTags::Status_IsDashing);
 
 	if (CharacterMovementComponent->MovementMode == MOVE_Falling)
@@ -354,14 +378,12 @@ void UMoveComponent::ManageFlying(const float DeltaTime)
 	}
 
 	bCanRecoverStamina = false;
-	Stamina -= StaminaRecoveryPerSecond * DeltaTime;
+	Stamina = FMath::Max(0, Stamina - FlyingStaminaPerSecond * DeltaTime);
 
 	if (Stamina <= 0.f)
 	{
-		CharacterMovementComponent->SetMovementMode(MOVE_Falling);
-		return;
+		FallDownWhileFlying();
 	}
-		
+	
 	CheckForGroundWhileFlying();
-	FallDownWhileFlying();
 }
