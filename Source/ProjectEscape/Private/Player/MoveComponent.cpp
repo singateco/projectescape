@@ -227,7 +227,7 @@ void UMoveComponent::FlyButton(const FInputActionInstance& InputActionInstance)
 	{
 		
 		Player->AddMovementInput(FVector::UpVector, UpwardForce);
-		Stamina = FMath::Max(0, Stamina - MovementStaminaPerSecond * GetWorld()->GetDeltaSeconds());
+		Stamina = FMath::Max(0, Stamina - MovementStaminaPerSecond * GetWorld()->GetDeltaSeconds() * 2);
 	}
 }
 
