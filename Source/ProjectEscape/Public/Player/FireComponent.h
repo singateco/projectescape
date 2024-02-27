@@ -85,6 +85,9 @@ public:
 
 	//void Fire();
 
+	UFUNCTION(BlueprintCallable)
+	void SetGunVisibility(const bool ShowGun);
+
 	void NormalGunFire();
 
 	void AttachPistol();

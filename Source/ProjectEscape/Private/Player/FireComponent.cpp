@@ -140,6 +140,14 @@ void UFireComponent::SetupPlayerInputComponent(UEnhancedInputComponent* PlayerIn
 	PlayerInputComponent->BindAction(ActionAimDownSight, ETriggerEvent::Completed, this, &UFireComponent::EndAimDown);
 }
 
+void UFireComponent::SetGunVisibility(const bool ShowGun)
+{
+	if (NormalGun)
+	{
+		NormalGun->NormalGunMesh->SetVisibility(ShowGun);
+	}
+}
+
 void UFireComponent::NormalGunFire()
 {
 	if (bHasPistol == false || Player->IsReloading == true || Player->HasMatchingGameplayTag(PEGameplayTags::Status_IsDashing)) {
