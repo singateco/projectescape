@@ -208,18 +208,24 @@ void UFireComponent::NormalGunFire()
 			UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), GunEffect, HitInfo2.Location, FRotator() );
 			Enemy = Cast<AEnemyBase>(HitInfo2.GetActor());
 
-			if (AActor* Actor = HitInfo2.GetActor(); Actor && Actor->GetRootComponent()->IsSimulatingPhysics())
+			if (AActor* Actor = HitInfo2.GetActor(); Actor && Actor->GetComponentByClass(UStaticMeshComponent::StaticClass()))
 			{
-				HitInfo2.Component->AddImpulse(HitInfo2.ImpactNormal * -1 * GunImpulseForce);
+				if (Cast<UStaticMeshComponent>(Actor->GetComponentByClass(UStaticMeshComponent::StaticClass()))->IsSimulatingPhysics())
+				{
+					HitInfo2.Component->AddImpulse(HitInfo2.ImpactNormal * -1 * GunImpulseForce);
+				}
 			}
 			//UE_LOG(LogTemp, Warning, TEXT("hit actor: %s"), *HitInfo2.GetActor()->GetActorNameOrLabel())
 		}
 		else
 		{
 			UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), GunEffect, EndPos2, FRotator() );
-			if (AActor* Actor = HitInfo1.GetActor(); Actor && Actor->GetRootComponent()->IsSimulatingPhysics())
+			if (AActor* Actor = HitInfo1.GetActor(); Actor && Actor->GetComponentByClass(UStaticMeshComponent::StaticClass()))
 			{
-				HitInfo1.Component->AddImpulse(HitInfo1.ImpactNormal * -1 * GunImpulseForce);
+				if (Cast<UStaticMeshComponent>(Actor->GetComponentByClass(UStaticMeshComponent::StaticClass()))->IsSimulatingPhysics())
+				{
+					HitInfo2.Component->AddImpulse(HitInfo2.ImpactNormal * -1 * GunImpulseForce);
+				}
 			}
 		}
 		
