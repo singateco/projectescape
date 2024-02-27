@@ -11,6 +11,7 @@
 
 void AStageManager::HandleEnemyDestroyed(AEnemyBase* DestroyedActor)
 {
+	DestroyedActor->OnEnemyDied.RemoveDynamic(this, &AStageManager::HandleEnemyDestroyed);
 	ThisWaveEnemy.RemoveSwap(DestroyedActor);
 	
 	if (ThisWaveEnemy.IsEmpty())
