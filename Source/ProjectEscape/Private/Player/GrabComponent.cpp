@@ -41,6 +41,29 @@ UGrabComponent::UGrabComponent()
 		QExplosionEffect = ExplosionEffectFinder.Object;
 	}
 
+	static const ConstructorHelpers::FObjectFinder<UInputAction> GrabActionFinder {TEXT("/Script/EnhancedInput.InputAction'/Game/ThirdPerson/Input/Actions/IA_Grab.IA_Grab'")};
+	if (GrabActionFinder.Succeeded())
+	{
+		ActionGrab = GrabActionFinder.Object;
+	}
+
+	static const ConstructorHelpers::FObjectFinder<UInputAction> QSkillActionFinder {TEXT("/Script/EnhancedInput.InputAction'/Game/ThirdPerson/Input/Actions/IA_QUltimateSkill.IA_QUltimateSkill'")};
+	if (QSkillActionFinder.Succeeded())
+	{
+		InputActionQSkill = QSkillActionFinder.Object;
+	}
+
+	static const ConstructorHelpers::FObjectFinder<UAnimMontage> GrabMontageFinder {TEXT("/Script/Engine.AnimMontage'/Game/Animations/Grab/GrabMontage.GrabMontage'")};
+	if (GrabMontageFinder.Succeeded())
+	{
+		GrabbingMontage = GrabMontageFinder.Object;
+	}
+
+	static const ConstructorHelpers::FObjectFinder<UAnimMontage> ThrowMontageFinder {TEXT("/Script/Engine.AnimMontage'/Game/Animations/Grab/Throwing.Throwing'")};
+	if (ThrowMontageFinder.Succeeded())
+	{
+		ThrowingMontage = ThrowMontageFinder.Object;
+	}
 }
 
 
