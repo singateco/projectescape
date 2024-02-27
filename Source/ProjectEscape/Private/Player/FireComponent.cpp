@@ -140,6 +140,14 @@ void UFireComponent::SetupPlayerInputComponent(UEnhancedInputComponent* PlayerIn
 	PlayerInputComponent->BindAction(ActionAimDownSight, ETriggerEvent::Completed, this, &UFireComponent::EndAimDown);
 }
 
+void UFireComponent::SetGunVisibility(const bool ShowGun)
+{
+	if (NormalGun)
+	{
+		NormalGun->NormalGunMesh->SetVisibility(ShowGun);
+	}
+}
+
 void UFireComponent::NormalGunFire()
 {
 	if (bHasPistol == false || Player->IsReloading == true || Player->HasMatchingGameplayTag(PEGameplayTags::Status_IsDashing)) {
@@ -208,18 +216,24 @@ void UFireComponent::NormalGunFire()
 			UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), GunEffect, HitInfo2.Location, FRotator() );
 			Enemy = Cast<AEnemyBase>(HitInfo2.GetActor());
 
-			if (AActor* Actor = HitInfo2.GetActor(); Actor && Actor->GetRootComponent()->IsSimulatingPhysics())
+			if (AActor* Actor = HitInfo2.GetActor(); Actor && Actor->GetComponentByClass(UStaticMeshComponent::StaticClass()))
 			{
-				HitInfo2.Component->AddImpulse(HitInfo2.ImpactNormal * -1 * GunImpulseForce);
+				if (Cast<UStaticMeshComponent>(Actor->GetComponentByClass(UStaticMeshComponent::StaticClass()))->IsSimulatingPhysics())
+				{
+					HitInfo2.Component->AddImpulse(HitInfo2.ImpactNormal * -1 * GunImpulseForce);
+				}
 			}
 			//UE_LOG(LogTemp, Warning, TEXT("hit actor: %s"), *HitInfo2.GetActor()->GetActorNameOrLabel())
 		}
 		else
 		{
 			UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), GunEffect, EndPos2, FRotator() );
-			if (AActor* Actor = HitInfo1.GetActor(); Actor && Actor->GetRootComponent()->IsSimulatingPhysics())
+			if (AActor* Actor = HitInfo1.GetActor(); Actor && Actor->GetComponentByClass(UStaticMeshComponent::StaticClass()))
 			{
-				HitInfo1.Component->AddImpulse(HitInfo1.ImpactNormal * -1 * GunImpulseForce);
+				if (Cast<UStaticMeshComponent>(Actor->GetComponentByClass(UStaticMeshComponent::StaticClass()))->IsSimulatingPhysics())
+				{
+					HitInfo2.Component->AddImpulse(HitInfo2.ImpactNormal * -1 * GunImpulseForce);
+				}
 			}
 		}
 		
@@ -265,12 +279,17 @@ void UFireComponent::EndAimDown(const FInputActionInstance& InputActionInstance)
 	Player->GetFollowCamera()->FieldOfView = 90.f;
 }
 
-void UFireComponent::BulletReload(){
-
+void UFireComponent::BulletReload()
+{
 	//GameTag로 변경하기
 	// 장전하고 있으면 장전 못함, 염력 사용중이면 장전 못함
-	if ( Player->IsReloading == true || Player->GrabComponent->bIsGrabbing == true
-		||Player->GetCurrentMontage() == ReloadMontage) {
+	if (
+			Player->IsReloading == true
+		||	Player->GrabComponent->bIsGrabbing == true
+		||	Player->GetCurrentMontage() == ReloadMontage
+		||	Player->PlayerStatsComponent->CurrentBullets >= Player->PlayerStatsComponent->MaxBullets
+		)
+	{
 		return;
 	}
 

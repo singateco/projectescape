@@ -218,16 +218,16 @@ void UMoveComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 void UMoveComponent::FlyButton(const FInputActionInstance& InputActionInstance)
 {
-	if (CharacterMovementComponent->MovementMode != MOVE_Flying && Stamina >= 0.02)
+	if (CharacterMovementComponent->MovementMode != MOVE_Flying && Stamina >= 5 && !CharacterMovementComponent->IsMovingOnGround())
 	{
 		CharacterMovementComponent->SetMovementMode(MOVE_Flying);
 	}
 
-	if (Stamina >= 0)
+	const float StaminaToUse = MovementStaminaPerSecond * GetWorld()->GetDeltaSeconds() * 2;
+	if (CharacterMovementComponent->MovementMode == MOVE_Flying && Stamina > StaminaToUse)
 	{
-		
 		Player->AddMovementInput(FVector::UpVector, UpwardForce);
-		Stamina = FMath::Max(0, Stamina - MovementStaminaPerSecond * GetWorld()->GetDeltaSeconds() * 2);
+		Stamina = FMath::Max(0, Stamina - StaminaToUse);
 	}
 }
 
@@ -266,7 +266,7 @@ void UMoveComponent::FallDownWhileFlying()
 
 void UMoveComponent::RecoverStamina(const float DeltaTime)
 {
-	if (!bCanRecoverStamina)
+	if (!bCanRecoverStamina || Player->HasMatchingGameplayTag(PEGameplayTags::Status_IsDashing))
 	{
 		return;
 	}
