@@ -53,6 +53,15 @@ UMoveComponent::UMoveComponent()
 		FlyAction = FlyActionObjectFinder.Object;
 	}
 	
+	const static ConstructorHelpers::FObjectFinder<UInputAction> FlyDownActionObjectFinder
+		{TEXT("/Script/EnhancedInput.InputAction'/Game/ThirdPerson/Input/Actions/IA_FlyDown.IA_FlyDown'")};
+
+	if (FlyDownActionObjectFinder.Succeeded())
+	{
+		FlyDownAction = FlyDownActionObjectFinder.Object;
+	}
+
+	
 	PrimaryComponentTick.bCanEverTick = true;
 	bWantsInitializeComponent = true;
 }
@@ -216,8 +225,17 @@ void UMoveComponent::FlyButton(const FInputActionInstance& InputActionInstance)
 
 	if (Stamina >= 0)
 	{
-		CharacterMovementComponent->AddForce(FVector(0, 0, UpwardForce));
-		Stamina = FMath::Max(0, Stamina - UpwardStaminaPerSecond * GetWorld()->GetDeltaSeconds());
+		
+		Player->AddMovementInput(FVector::UpVector, UpwardForce);
+		Stamina = FMath::Max(0, Stamina - MovementStaminaPerSecond * GetWorld()->GetDeltaSeconds());
+	}
+}
+
+void UMoveComponent::FlyDownButton(const FInputActionInstance& InputActionInstance)
+{
+	if (CharacterMovementComponent->MovementMode == MOVE_Flying)
+	{
+		Player->AddMovementInput(FVector::UpVector, -1 * UpwardForce);
 	}
 }
 
@@ -243,7 +261,7 @@ void UMoveComponent::CheckForGroundWhileFlying()
 
 void UMoveComponent::FallDownWhileFlying()
 {
-	CharacterMovementComponent->AddForce(FVector(0, 0, -1) * DownwardForce);
+	Player->AddMovementInput(FVector::UpVector, -1 * DownwardForce);
 }
 
 void UMoveComponent::RecoverStamina(const float DeltaTime)
@@ -273,6 +291,9 @@ void UMoveComponent::SetupPlayerInputComponent(UEnhancedInputComponent* PlayerIn
 
 	// Flying
 	PlayerInputComponent->BindAction(FlyAction, ETriggerEvent::Triggered, this, &UMoveComponent::FlyButton);
+
+	// Fly Down
+	PlayerInputComponent->BindAction(FlyDownAction, ETriggerEvent::Triggered, this, &UMoveComponent::FlyDownButton);
 }
 
 
@@ -300,6 +321,11 @@ void UMoveComponent::Move(const FInputActionValue& Value)
 
 		MoveVector = ForwardDirection * MovementVector.Y + RightDirection * MovementVector.X;
 		MoveVector.Normalize();
+
+		if (CharacterMovementComponent->MovementMode == MOVE_Flying)
+		{
+			Stamina = FMath::Max(0, Stamina - MovementStaminaPerSecond * GetWorld()->GetDeltaSeconds());
+		}
 	}
 }
 

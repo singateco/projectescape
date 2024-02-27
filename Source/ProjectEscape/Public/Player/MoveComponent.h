@@ -34,6 +34,8 @@ public:
 
 	void FlyButton(const FInputActionInstance& InputActionInstance);
 
+	void FlyDownButton(const FInputActionInstance& InputActionInstance);
+
 	void SetupPlayerInputComponent(UEnhancedInputComponent* PlayerInputComponent);
 
 	/** Called for movement input */
@@ -86,18 +88,18 @@ public:
 	float GroundCheckDistance {-145.f};
 
 	// 떠다닐시 밑으로 떨어지는 힘
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|Flying")
-	float DownwardForce {37500.f};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|Flying", meta = (ClampMin = 0, UIMin = 0))
+	float DownwardForce {1.f};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|Flying")
-	float UpwardForce {20000.f};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|Flying", meta = (ClampMin = 0,	UIMin = 0))
+	float UpwardForce {0.9f};
 
 	// 비행시 1초당 사용하는 스태미나.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|Flying")
-	float FlyingStaminaPerSecond {10.f};
+	float FlyingStaminaPerSecond {5.f};
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|Flying")
-	float UpwardStaminaPerSecond {5.f};
+	float MovementStaminaPerSecond {7.f};
 
 	// =============== 대시 ===============
 	
@@ -178,6 +180,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* FlyAction;	
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* FlyDownAction;
+	
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
