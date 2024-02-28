@@ -72,7 +72,6 @@ UGrabComponent::UGrabComponent()
 	{
 		ThrowingMontage = ThrowMontageFinder.Object;
 	}
->>>>>>> 2458226cbdc63c0df0dae3b19940482ff8629aae
 }
 
 
@@ -237,18 +236,15 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		//FVector NewLocation =Player->GetFollowCamera()->GetComponentLocation() + Player->GetFollowCamera()->GetForwardVector() * 500;
 		//FRotator NewRotation = FRotator( 10 * DeltaTime, 10 * DeltaTime, 10 * DeltaTime );
 		//HandleObject->SetTargetLocationAndRotation( NewLocation, NewRotation );
-<<<<<<< HEAD
-	}else if( bIsGrabbing == false) // 물체 안잡고 있으면
-=======
-		
-		if (AnimInstance && GrabbingMontage && !AnimInstance->Montage_IsPlaying(nullptr))
-		{
-			AnimInstance->Montage_Play(GrabbingMontage);
-		}
+
 		
 	}else if( bIsGrabbing == false || OtherEnemies.Num() > 0) // 물체 안잡고 있거나 적들이 있을 때
->>>>>>> 2458226cbdc63c0df0dae3b19940482ff8629aae
 	{
+
+		if ( AnimInstance && GrabbingMontage && !AnimInstance->Montage_IsPlaying( nullptr ) )
+		{
+			AnimInstance->Montage_Play( GrabbingMontage );
+		}
 
 		//bool bTracePickUpActorSphereMulti = UKismetSystemLibrary::SphereTraceMulti( GetWorld(), Start, End, RadiusDetection, TraceTypeQuery, false, SphereTraceIgnoreActorsArray, EDrawDebugTrace::None, HitInfoArrayPickUpActors, true );
 		bool bTracePickUpActorSphereSingle = UKismetSystemLibrary::SphereTraceSingle(GetWorld(), Start, End , RadiusDetection, TraceTypeQuery , false, SphereTraceIgnoreActorsArray, EDrawDebugTrace::None, HitInfoPickUpActor, true );

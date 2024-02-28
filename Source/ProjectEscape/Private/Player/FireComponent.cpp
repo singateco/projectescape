@@ -295,6 +295,7 @@ void UFireComponent::NormalGunFire()
 				UdecalEffect->SetFadeScreenSize(0.f);
 				UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), GunEffectNoActor, EndPos2, FRotator(), FireEffectScale, true );
 				UGameplayStatics::PlaySoundAtLocation( GetWorld(), GunSoundClass, HitInfo2.Location );
+			}
 		}
 		else
 		{
