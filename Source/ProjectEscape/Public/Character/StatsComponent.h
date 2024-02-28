@@ -94,7 +94,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ProcessDamageFromLoc(const float DamageValue, const FHitResult& HitResult);
 	
-	
 	UFUNCTION(BlueprintCallable)
 	void ProcessHealing(const float HealValue);
 
