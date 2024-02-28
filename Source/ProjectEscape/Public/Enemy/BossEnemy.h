@@ -22,6 +22,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UBehaviorTree* Tree;
 
+	UPROPERTY( EditAnywhere ,BlueprintReadWrite)
+	USceneComponent* ThrowRef;
+
 	UBehaviorTree* GetBehaviorTree();
 	void AttachPistol();
 

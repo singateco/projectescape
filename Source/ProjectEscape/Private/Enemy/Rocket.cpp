@@ -16,6 +16,7 @@ ARocket::ARocket()
 	CollisionComp=CreateDefaultSubobject<USphereComponent>( TEXT( "CollisionComp" ) );
 	SetRootComponent( CollisionComp );
 	CollisionComp->SetSphereRadius( 10 );
+	CollisionComp->SetCollisionProfileName( TEXT( "Projectile" ) );
 	CollisionComp->SetNotifyRigidBodyCollision( true );
 
 	RocketMesh=CreateDefaultSubobject<UStaticMeshComponent>( TEXT( "RocketMesh" ) );
@@ -101,7 +102,7 @@ void ARocket::Explosion()
 	}
 
 	//UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), ExplosionEffect, RocketLoc, FRotator(), FVector( 10 ), true, EPSCPoolMethod::None, true );
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, RocketLoc, FRotator(), FVector( 1.4 ), true );
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, RocketLoc, FRotator(), FVector( ExplosionEffectSize ), true );
 	UGameplayStatics::PlaySoundAtLocation( GetWorld(), ExplosionSound, RocketLoc );
 
 	this->Destroy();

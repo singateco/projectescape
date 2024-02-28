@@ -21,7 +21,9 @@ EBTNodeResult::Type UBTTask_Focus::ExecuteTask(UBehaviorTreeComponent& OwnerComp
 		auto Player = Cast<AProjectEscapePlayer>( GetWorld()->GetFirstPlayerController()->GetPawn() );
 		Cont->SetFocus( Player );
 
+		FinishLatentTask( OwnerComp, EBTNodeResult::Succeeded );
+		return EBTNodeResult::Succeeded;
 	}
-	FinishLatentTask( OwnerComp, EBTNodeResult::Succeeded );
-	return EBTNodeResult::Succeeded;
+	return EBTNodeResult::Failed;
+
 }

@@ -4,26 +4,23 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/Tasks/BTTask_BlackboardBase.h"
-#include "BTTask_Shooting.generated.h"
+#include "BTTask_SpawnThrowActor.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECTESCAPE_API UBTTask_Shooting : public UBTTask_BlackboardBase
+class PROJECTESCAPE_API UBTTask_SpawnThrowActor : public UBTTask_BlackboardBase
 {
 	GENERATED_BODY()
 
-	UBTTask_Shooting();
+	UBTTask_SpawnThrowActor();
 
 	UPROPERTY( EditDefaultsOnly )
-	TSubclassOf<class AEnemyBullet> EnemyBulletFactory;
+	TSubclassOf<class AEnemyThrowActor> ThrowActorFactory;
 
 	UPROPERTY( EditDefaultsOnly )
-	USoundBase* ShootingSound;
-
-	UPROPERTY( EditAnywhere )
-	UParticleSystem* MuzzleFlash;
+	AEnemyThrowActor* ThrowActor;
 
 	virtual EBTNodeResult::Type ExecuteTask( UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory ) override;
 };

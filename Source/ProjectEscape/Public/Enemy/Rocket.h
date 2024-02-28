@@ -24,7 +24,7 @@ public:
 	UPROPERTY( EditDefaultsOnly )
 	class USphereComponent* CollisionComp;
 
-	UPROPERTY( EditDefaultsOnly )
+	UPROPERTY( EditAnywhere, BlueprintReadWrite )
 	UStaticMeshComponent* RocketMesh;
 
 	UPROPERTY( EditAnywhere, BlueprintReadWrite )
@@ -43,10 +43,10 @@ public:
 	UMaterialInterface* RocketDecal;*/
 
 	UPROPERTY( EditAnywhere )
-	float SphereRadius = 300.0f;
+	float ExplosionEffectSize = 1.0f;
 
 	UPROPERTY( EditAnywhere )
-	float ExplosionTime = 7.0f;
+	float SphereRadius = 300.0f;
 
 	UFUNCTION(BlueprintCallable)
 	void Explosion();

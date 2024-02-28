@@ -11,7 +11,6 @@ ABossEnemy::ABossEnemy( const FObjectInitializer& ObjectInitializer )
 	:
 	Super( ObjectInitializer )
 {
-
 	PrimaryActorTick.bCanEverTick=true;
 
 	if (EnemyBaseFSM)
@@ -22,22 +21,24 @@ ABossEnemy::ABossEnemy( const FObjectInitializer& ObjectInitializer )
 
 	if(EnemyHPComponent)
 	{
-		EnemyHPComponent->SetHiddenInGame(true);
+		EnemyHPComponent->SetHiddenInGame( true );
+
 	}
+
+	ThrowRef = CreateDefaultSubobject<USceneComponent>( TEXT( "ThrowRef" ) );
+	ThrowRef->SetupAttachment( RootComponent );
 
 	MaxHP = 100;
 
 	AIControllerClass = ABossAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
-
-
 }
 
 void ABossEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	AttachPistol();
-	
+	EnemyMaxSpeed = 500.f;
 }
 
 UBehaviorTree* ABossEnemy::GetBehaviorTree()
