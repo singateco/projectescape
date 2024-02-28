@@ -38,6 +38,6 @@ EBTNodeResult::Type UBTTask_Shooting::ExecuteTask(UBehaviorTreeComponent& OwnerC
         GetWorld()->SpawnActor<AEnemyBullet>( EnemyBulletFactory, MuzzleLocation, MuzzleRotation );
 
     }
-
+    FinishLatentTask( OwnerComp, EBTNodeResult::Succeeded );
     return EBTNodeResult::Succeeded;
 }

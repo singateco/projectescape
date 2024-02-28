@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -21,7 +21,7 @@ public:
 	AProjectEscapePlayer* Player;
 
 	UPROPERTY(EditAnywhere)
-	class UStaticMeshComponent* NormalGunMesh;
+	USkeletalMeshComponent* NormalGunMesh;
 
 
 	/* Normal Gun */

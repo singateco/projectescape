@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Weapon/NormalGun.h"
@@ -15,7 +15,7 @@ ANormalGun::ANormalGun()
 	SetRootComponent(GunComp); // Socket Name
 
 	// Create Normal Gun
-	NormalGunMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("NormalGunMesh"));
+	NormalGunMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("NormalGunMesh"));
 	NormalGunMesh->SetupAttachment(GunComp);
 	NormalGunMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 

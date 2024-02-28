@@ -22,7 +22,6 @@ EBTNodeResult::Type UBTTask_Focus::ExecuteTask(UBehaviorTreeComponent& OwnerComp
 		Cont->SetFocus( Player );
 
 	}
-
+	FinishLatentTask( OwnerComp, EBTNodeResult::Succeeded );
 	return EBTNodeResult::Succeeded;
-
 }

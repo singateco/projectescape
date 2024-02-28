@@ -36,13 +36,20 @@ ABossEnemy::ABossEnemy( const FObjectInitializer& ObjectInitializer )
 void ABossEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-
+	AttachPistol();
 	
 }
 
 UBehaviorTree* ABossEnemy::GetBehaviorTree()
 {
 	return Tree;
+}
+
+void ABossEnemy::AttachPistol()
+{
+	TArray<UActorComponent*> Comp = this->GetComponentsByTag( USkeletalMeshComponent::StaticClass(), TEXT( "Body" ) );
+	USceneComponent* BodyComp = Cast<USceneComponent>( Comp[0] );
+	GunMesh->AttachToComponent( BodyComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT( "GunPosition" ) );
 }
 
 

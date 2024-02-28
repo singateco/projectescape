@@ -23,6 +23,6 @@ public:
 	class UBehaviorTree* Tree;
 
 	UBehaviorTree* GetBehaviorTree();
-
+	void AttachPistol();
 
 };
