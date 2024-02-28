@@ -14,6 +14,7 @@ class AProjectEscapePlayer;
 class UPhysicsHandleComp;
 class APickableActor;
 class UParticleSystem;
+class AEnemyBase;
 class AProjectEscapePlayerController;
 
 
@@ -61,16 +62,31 @@ public:
 	float NewAngle = 1.0f;
 
 	UPROPERTY( EditDefaultsOnly, Category="Grab" )
-	float RadiusDetection = 1000.f;
+	float RadiusDetection = 330.f;
+
+	UPROPERTY( EditDefaultsOnly, Category="Grab" )
+	float RadiusDetectionEnemy=1000.f;
+
+	UPROPERTY( EditDefaultsOnly )
+	float EnemyHPMaxDistance = 100000.f;
+
+	UPROPERTY( EditDefaultsOnly, Category="Grab" )
+	float RadiusDetectionHPBar = 1000.f;
 
 	UPROPERTY( EditDefaultsOnly, Category="Grab" )
 	float RotSpeed = 10000.0f;
+
+	//UPROPERTY( EditDefaultsOnly, Category="Grab" )
+	FHitResult PickUpActorResult;
 
 	UPROPERTY( EditDefaultsOnly, Category="Grab" )
 	APickableActor* ObjectInHand;
 
 	UPROPERTY( EditDefaultsOnly, Category="Throw" )
-	float ThrowingPower = 20000.0;
+	float ThrowingPower = 20000.0f;
+
+	UPROPERTY( EditAnywhere, Category="QSkill" )
+	class UNiagaraSystem* QExplosionEffect;
 
 	//UPROPERTY( EditDefaultsOnly, Category="Throw" )
 	//FVector EnemyLoc;
@@ -93,15 +109,16 @@ public:
 	UPROPERTY( EditDefaultsOnly )
 	int32 ESkillCurrentCoolTime=5;
 
-	UPROPERTY( EditDefaultsOnly, Category="QSkill" )
-	UParticleSystem* QExplosionEffect;
+	//UPROPERTY( EditDefaultsOnly, Category="QSkill" )
+	//UParticleSystem* QExplosionEffect;
 
 	UPROPERTY( EditAnywhere )
 	AProjectEscapePlayerController* PC;
 
 
 	UPROPERTY( EditAnywhere )
-	TArray<AActor*> OtherEnemies;
+	//TArray<AActor*> OtherEnemies;
+	TArray<AEnemyBase*> OtherEnemies;
 
 	FTimerHandle ESkillCountDownHandle;
 	FTimerHandle QSkillCountDownHandle;

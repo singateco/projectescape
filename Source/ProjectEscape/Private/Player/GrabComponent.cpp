@@ -22,6 +22,8 @@
 #include "Particles/ParticleSystem.h"
 #include "System/ProjectEscapePlayerController.h"
 #include "UI/MainUI.h"
+#include "NiagaraFunctionLibrary.h"
+#include "Enemy/EnemyBase.h"
 
 // Sets default values for this component's properties
 UGrabComponent::UGrabComponent()
@@ -35,7 +37,13 @@ UGrabComponent::UGrabComponent()
 
 
 
-	static ConstructorHelpers::FObjectFinder<UParticleSystem> ExplosionEffectFinder{ TEXT( "/Script/Engine.ParticleSystem'/Game/StarterContent/Particles/P_Explosion.P_Explosion'" ) };
+	//static ConstructorHelpers::FObjectFinder<UParticleSystem> ExplosionEffectFinder{ TEXT( "/Script/Engine.ParticleSystem'/Game/StarterContent/Particles/P_Explosion.P_Explosion'" ) };
+	//static ConstructorHelpers::FObjectFinder<UParticleSystem> ExplosionEffectFinder{ TEXT( "/Script/Engine.ParticleSystem'/Game/Resources/KDE/BulletImpactVFX/BulletHitVFX_SFX/AParticleSystem/PS_BulletHit_Tinplate.PS_BulletHit_Tinplate'" ) };
+	
+
+	//static ConstructorHelpers::FObjectFinder<UNiagaraSystem> ExplosionEffectFinder{ TEXT( "/Script/Niagara.NiagaraSystem'/Game/Resources/KDE/ExplosionsMegaPack/Niagara/Snow/NS_Explosion_Snow_4.NS_Explosion_Snow_4'" ) };
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> ExplosionEffectFinder{ TEXT( "/Script/Niagara.NiagaraSystem'/Game/Resources/KDE/Blood_VFX/VFX/Performance_Versions/Bullet_Hits/One_Shot/OS_NS_Bullet_Hit_Medium.OS_NS_Bullet_Hit_Medium'" ) };
+
 	if ( ExplosionEffectFinder.Succeeded() )
 	{
 		QExplosionEffect = ExplosionEffectFinder.Object;
@@ -64,6 +72,7 @@ UGrabComponent::UGrabComponent()
 	{
 		ThrowingMontage = ThrowMontageFinder.Object;
 	}
+>>>>>>> 2458226cbdc63c0df0dae3b19940482ff8629aae
 }
 
 
@@ -128,6 +137,93 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 
 
+	TArray<FHitResult> HitInfoArrayPickUpActors;
+	TArray<FHitResult> HitInfoArrayEnemies;
+	FHitResult HitInfoPickUpActor;
+	FVector Start=Player->GetFollowCamera()->GetComponentLocation();
+	FVector End=Player->GetFollowCamera()->GetComponentLocation() + Player->GetFollowCamera()->GetForwardVector() * EnemyHPMaxDistance;
+
+
+	ETraceTypeQuery TraceTypeQuery=UEngineTypes::ConvertToTraceType( ECC_GameTraceChannel1 );
+	ETraceTypeQuery TraceTypeQueryEnemy=UEngineTypes::ConvertToTraceType( ECC_GameTraceChannel2 );
+
+	TArray<AActor*> SphereTraceIgnoreActorsArray;
+	// 체크하기전에 한 번 비워주기
+	SphereTraceIgnoreActorsArray.Empty();
+	// 자기 자신 캐릭터 무시
+	SphereTraceIgnoreActorsArray.Add( Player );
+
+
+
+	if( OtherEnemies.Num() > 0 )
+	{
+		/*bool bTraceResultEnemies=UKismetSystemLibrary::SphereTraceMulti( GetWorld(), Start, End, RadiusDetectionHPBar, TraceTypeQueryEnemy,
+			false, SphereTraceIgnoreActorsArray, EDrawDebugTrace::ForDuration, HitInfoArrayEnemies, true, FColor::Green, FColor::Red, 2.0f );*/
+		bool bTraceResultEnemies=UKismetSystemLibrary::SphereTraceMulti( GetWorld(), Start, End, RadiusDetectionHPBar, TraceTypeQueryEnemy,
+			false, SphereTraceIgnoreActorsArray, EDrawDebugTrace::None, HitInfoArrayEnemies, true);
+		if ( bTraceResultEnemies )
+		{
+			for ( FHitResult& HitInfo : HitInfoArrayEnemies )
+			{
+				if ( HitInfo.GetActor()->IsA<AEnemyBase>() )
+				{
+					auto TargetEnemy=Cast<AEnemyBase>( HitInfo.GetActor() );
+					//UE_LOG( SYLog, Warning, TEXT( "TargetEnemy %s" ), *TargetEnemy->GetActorNameOrLabel() );
+					if ( TargetEnemy )
+					{
+						TargetEnemy->EnemyHPComponent->SetVisibility( true );
+					}
+				}
+			}
+			TArray<AActor*> ResultEnemies;
+			for(auto temp : HitInfoArrayEnemies )
+			{
+				ResultEnemies.Add( temp .GetActor());
+			}
+
+			//시야에 없는 에너미 HP바 지우기
+			//if ( OtherEnemies.Num() > HitInfoArrayPickUpActors.Num() )
+			//{
+			//	for ( auto anyEnemy : OtherEnemies )
+			//	{
+			//		//if( !ResultEnemies.Contains(a) ) //맵에 있는 전체 에너미 중에서 레이더에 잡힌 에너미들에 포함되지않는다면 
+			//		//{
+			//		//	a->EnemyHPComponent->SetVisibility( false );
+			//		//
+			//		//}
+			//
+			//		for ( auto b : HitInfoArrayPickUpActors )
+			//		{
+			//			if ( b.GetActor()->GetActorNameOrLabel() != anyEnemy->GetActorNameOrLabel() )
+			//			{
+			//				auto tempEnemy=Cast<AEnemyBase>( anyEnemy );
+			//				tempEnemy->EnemyHPComponent->SetVisibility( false );
+			//			}
+			//		}
+			//	}
+			//}
+
+			//시야에 없는 에너미 HP바 지우기
+			if ( OtherEnemies.Num() > HitInfoArrayEnemies.Num() )
+			{
+				for ( auto a : OtherEnemies )
+				{
+					for ( auto b : HitInfoArrayEnemies )
+					{
+						if ( b.GetActor()->GetActorNameOrLabel() != a->GetActorNameOrLabel() )
+						{
+							auto aa=Cast<AEnemyBase>( a );
+							aa->EnemyHPComponent->SetVisibility( false );
+						}
+					}
+				}
+			}
+
+
+
+		}
+	}
+
 	if(bIsGrabbing == true)
 	{
 		HandleObject->SetTargetLocation( Player->GetFollowCamera()->GetComponentLocation() + Player->GetFollowCamera()->GetForwardVector()*500 );
@@ -141,6 +237,9 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		//FVector NewLocation =Player->GetFollowCamera()->GetComponentLocation() + Player->GetFollowCamera()->GetForwardVector() * 500;
 		//FRotator NewRotation = FRotator( 10 * DeltaTime, 10 * DeltaTime, 10 * DeltaTime );
 		//HandleObject->SetTargetLocationAndRotation( NewLocation, NewRotation );
+<<<<<<< HEAD
+	}else if( bIsGrabbing == false) // 물체 안잡고 있으면
+=======
 		
 		if (AnimInstance && GrabbingMontage && !AnimInstance->Montage_IsPlaying(nullptr))
 		{
@@ -148,34 +247,39 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		}
 		
 	}else if( bIsGrabbing == false || OtherEnemies.Num() > 0) // 물체 안잡고 있거나 적들이 있을 때
+>>>>>>> 2458226cbdc63c0df0dae3b19940482ff8629aae
 	{
-		//UE_LOG( SYLog, Warning, TEXT( "OtherEnemies %d" ), OtherEnemies.Num() );
-		if(ESkillCurrentCoolTime<ESkillMaxCoolTime)
+
+		//bool bTracePickUpActorSphereMulti = UKismetSystemLibrary::SphereTraceMulti( GetWorld(), Start, End, RadiusDetection, TraceTypeQuery, false, SphereTraceIgnoreActorsArray, EDrawDebugTrace::None, HitInfoArrayPickUpActors, true );
+		bool bTracePickUpActorSphereSingle = UKismetSystemLibrary::SphereTraceSingle(GetWorld(), Start, End , RadiusDetection, TraceTypeQuery , false, SphereTraceIgnoreActorsArray, EDrawDebugTrace::None, HitInfoPickUpActor, true );
+
+		if ( ESkillCurrentCoolTime < ESkillMaxCoolTime )
 		{
 			return;
 		}
 
-		TArray<FHitResult> HitInfoArray;
-		FVector Start=Player->GetFollowCamera()->GetComponentLocation();
-		FVector End=Player->GetFollowCamera()->GetComponentLocation() + Player->GetFollowCamera()->GetForwardVector() * 30000;
-
-
-		ETraceTypeQuery TraceTypeQuery=UEngineTypes::ConvertToTraceType( ECC_GameTraceChannel1 );
-
-		TArray<AActor*> SphereTraceIgnoreActorsArray;
-		// 체크하기전에 한 번 비워주기
-		SphereTraceIgnoreActorsArray.Empty();
-		// 자기 자신 캐릭터 무시
-		SphereTraceIgnoreActorsArray.Add( Player );
-
-		//bool bTraceResult=UKismetSystemLibrary::SphereTraceMulti( GetWorld(), Start, End, RadiusDetection, TraceTypeQuery,false, SphereTraceIgnoreActorsArray, EDrawDebugTrace::None, HitInfoArray, true);
-		bool bTraceResult=UKismetSystemLibrary::SphereTraceMulti( GetWorld(), Start, End, RadiusDetection, TraceTypeQuery,
-			false, SphereTraceIgnoreActorsArray, EDrawDebugTrace::None, HitInfoArray, true );
-
-
-		if ( bTraceResult )
+		if ( bTracePickUpActorSphereSingle )
 		{
-			for ( FHitResult& HitInfo : HitInfoArray )
+			APickableActor* OutlineObject =  Cast<APickableActor>( HitInfoPickUpActor.GetActor() );
+			if( OutlineObject )
+			{
+				PickUpActorResult = HitInfoPickUpActor;
+				OutlineObject->MeshComp->SetRenderCustomDepth( true );
+				ObjectInHand = OutlineObject;
+			}
+			else // if(OutlineObject == nullptr)
+			{
+				//잡을 물건 없음
+				//Spawn Actor Fracture
+			}
+		}
+
+		/*
+		if ( bTracePickUpActorSphereSingle )
+		{
+			//UE_LOG( SYLog, Warning, TEXT( "OtherEnemies %d" ), OtherEnemies.Num() );
+		
+			for ( FHitResult& HitInfo : HitInfoArrayPickUpActors )
 			{
 				//auto PickUpActor=Cast<APickableActor>( HitInfo.GetActor() );
 				////UE_LOG( SYLog, Warning, TEXT( "%s" ), *PickUpActor->GetActorNameOrLabel() );
@@ -195,35 +299,36 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 				
 				}
 				//if( HitInfo.GetActor()->IsA<ARifleEnemy>() || HitInfo.GetActor()->IsA<AGrenadeEnemy>() )
-				if( HitInfo.GetActor()->IsA<AEnemyBase>() )
-				{
-					auto TargetEnemy = Cast<AEnemyBase>( HitInfo.GetActor() );
-					UE_LOG( SYLog, Warning, TEXT( "TargetEnemy %s" ), *TargetEnemy->GetActorNameOrLabel() );
-					if(TargetEnemy )
-					{
-						TargetEnemy->EnemyHPComponent->SetVisibility( true );
-
-					}
-					
-				}
+				//if( HitInfo.GetActor()->IsA<AEnemyBase>() )
+				//{
+				//	auto TargetEnemy = Cast<AEnemyBase>( HitInfo.GetActor() );
+				//	UE_LOG( SYLog, Warning, TEXT( "TargetEnemy %s" ), *TargetEnemy->GetActorNameOrLabel() );
+				//	if(TargetEnemy )
+				//	{
+				//		TargetEnemy->EnemyHPComponent->SetVisibility( true );
+				//
+				//	}
+				//	
+				//}
 			}
 
 			//시야에 없는 에너미 HP바 지우기
-			if( OtherEnemies.Num()>HitInfoArray.Num() )
-			{
-				for(auto a : OtherEnemies )
-				{
-					for(auto b: HitInfoArray )
-					{
-						if(b.GetActor()->GetActorNameOrLabel() != a->GetActorNameOrLabel() )
-						{
-							auto aa = Cast<AEnemyBase>(a);
-							aa->EnemyHPComponent->SetVisibility(false);
-						}
-					}
-				}
-			}
+			//if( OtherEnemies.Num()> HitInfoArrayPickUpActors.Num() )
+			//{
+			//	for(auto a : OtherEnemies )
+			//	{
+			//		for(auto b: HitInfoArrayPickUpActors )
+			//		{
+			//			if(b.GetActor()->GetActorNameOrLabel() != a->GetActorNameOrLabel() )
+			//			{
+			//				auto aa = Cast<AEnemyBase>(a);
+			//				aa->EnemyHPComponent->SetVisibility(false);
+			//			}
+			//		}
+			//	}
+			//}
 		}
+*/
 	}
 }
 
@@ -231,8 +336,8 @@ void UGrabComponent::SetupPlayerInputComponent(UEnhancedInputComponent* PlayerIn
 {
 	EnhancedInputComponent = PlayerInputComponent;
 	
-	//PlayerInputComponent->BindAction(ActionGrab, ETriggerEvent::Started, this, &UGrabComponent::GrabObject);
-	PlayerInputComponent->BindAction(ActionGrab, ETriggerEvent::Started, this, &UGrabComponent::SphereGrabObject);
+	PlayerInputComponent->BindAction(ActionGrab, ETriggerEvent::Started, this, &UGrabComponent::GrabObject);
+	//PlayerInputComponent->BindAction(ActionGrab, ETriggerEvent::Started, this, &UGrabComponent::SphereGrabObject);
 	PlayerInputComponent->BindAction( ActionGrab, ETriggerEvent::Completed, this, &UGrabComponent::ReleaseObject );
 	PlayerInputComponent->BindAction( InputActionQSkill, ETriggerEvent::Completed, this, &UGrabComponent::ActionQSkill );
 }
@@ -247,28 +352,36 @@ void UGrabComponent::GrabObject()
 	bIsPulling = true;
 	bIsPushing = false;
 
-	// 1. Collision Check - LineTrace 1st
-	FHitResult HitInfo;
-	// 1) From Crosshair
-	FVector StartPos=Player->GetFollowCamera()->GetComponentLocation();
-	// 2) To End Point(Max Distance)
-	FVector EndPos=Player->GetFollowCamera()->GetComponentLocation() + Player->GetFollowCamera()->GetForwardVector() * MaxDistanceToGrab;
 
-	FCollisionQueryParams Params;
-	Params.AddIgnoredActor( Player );
-
-	bool bHit=GetWorld()->LineTraceSingleByChannel( HitInfo, StartPos, EndPos, ECC_Visibility, Params );
-	DrawDebugLine( GetWorld(), StartPos, EndPos, FColor::Red, true );
-	if( bHit )
+	if ( ESkillCurrentCoolTime < ESkillMaxCoolTime )
 	{
-		//HandleObject->GrabComponentAtLocationWithRotation( HitInfo.GetComponent(), TEXT("GrabObject"),HitInfo.GetComponent()->GetComponentLocation(), HitInfo.GetComponent()->GetComponentRotation());
-		HandleObject->GrabComponentAtLocation( HitInfo.GetComponent(), TEXT("GrabObject"),HitInfo.GetComponent()->GetComponentLocation());
+		return;
+	}
 
-		//HandleObject->SetAngularDamping( 0 );
-		if(HandleObject->GetGrabbedComponent() != nullptr )
+	if ( ObjectInHand )
+	{
+
+		UE_LOG( SYLog, Warning, TEXT( "pick!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! : %s" ), *ObjectInHand->GetActorNameOrLabel() );
+		if(PickUpActorResult.GetActor() == nullptr || PickUpActorResult.GetComponent() == nullptr || !PickUpActorResult.HasValidHitObjectHandle() )
 		{
-			bIsGrabbing = true;
+			return;
 		}
+		if( PickUpActorResult.HasValidHitObjectHandle())
+		{
+
+			HandleObject->GrabComponentAtLocation( PickUpActorResult.GetComponent(), TEXT( "GrabObject" ), PickUpActorResult.GetComponent()->GetComponentLocation() );
+			//HandleObject->SetAngularDamping( 0 );
+			if ( HandleObject->GetGrabbedComponent() != nullptr )
+			{
+				bIsGrabbing=true;
+			}
+		}
+	}
+	else // if(OutlineObject == nullptr)
+	{
+		UE_LOG( SYLog, Warning, TEXT( "There is no pickable actor!"));
+		//잡을 물건 없음
+		//Spawn Actor Fracture
 	}
 }
 
@@ -297,17 +410,16 @@ void UGrabComponent::ReleaseObject()
 		// 자기 자신 캐릭터 무시
 		SphereTraceIgnoreActorsArray.Add( Player );
 
-		bool bTraceResult=UKismetSystemLibrary::SphereTraceMulti( GetWorld(), Start, End, RadiusDetection, TraceTypeQuery,
+		bool bTraceResult=UKismetSystemLibrary::SphereTraceMulti( GetWorld(), Start, End, RadiusDetectionEnemy, TraceTypeQuery,
 			false, SphereTraceIgnoreActorsArray, EDrawDebugTrace::None, HitInfoArray, true );
 
 
 		/**************************************************************************************************/
 		/**************************************************************************************************/
 		ThrowingLoc = Player->GetFollowCamera()->GetForwardVector() * MaxDistanceToGrab;
-		
+
 		if ( bTraceResult )
 		{
-			UE_LOG( SYLog, Warning, TEXT( "throw!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" ))
 			for ( FHitResult& HitInfo : HitInfoArray )
 			{
 				auto Enemy =Cast<AEnemyBase>( HitInfo.GetActor() );
@@ -316,11 +428,15 @@ void UGrabComponent::ReleaseObject()
 
 					if ( Enemy )
 					{
+						UE_LOG( SYLog, Warning, TEXT( "EnemyLoc throw!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" ) )
 						FVector EnemyLoc = Enemy->GetActorLocation();
 						ThrowingLoc = EnemyLoc;
 						break;
 					}
 			}
+		}else
+		{
+			UE_LOG( SYLog, Warning, TEXT( "CenterLoc throw!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" ) )
 		}
 
 		//FVector ThrowingDirection = HandleObject->GetGrabbedComponent()->GetComponentLocation() - ThrowingLoc;
@@ -353,7 +469,8 @@ void UGrabComponent::ActionQSkill()
 
 	GetWorld()->GetTimerManager().SetTimer( QSkillCountDownHandle, this, &UGrabComponent::QSkillAdvanceTimer, 1.0f, true );
 
-	UGameplayStatics::SpawnEmitterAtLocation( GetWorld(),QExplosionEffect, Player->GetActorLocation(), FRotator(), FVector( 100 ), true, EPSCPoolMethod::None, true );
+	//UGameplayStatics::SpawnEmitterAtLocation( GetWorld(),QExplosionEffect, Player->GetActorLocation(), FRotator(), FVector( 100 ), true, EPSCPoolMethod::None, true );
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), QExplosionEffect, Player->GetActorLocation(), FRotator(), FVector( 5 ), true);
 }
 
 void UGrabComponent::SphereGrabObject()
@@ -369,6 +486,7 @@ void UGrabComponent::SphereGrabObject()
 	/********************************** Sphere Trace SingleByChannel **********************************/
 	/**************************************************************************************************/
 
+	UE_LOG( SYLog, Warning, TEXT( "pick!!!!!!!!!!!!!!! " ) );
 	TArray<FHitResult> HitInfoArray;
 	FVector Start=Player->GetFollowCamera()->GetComponentLocation();
 	FVector End=Player->GetFollowCamera()->GetComponentLocation() + Player->GetFollowCamera()->GetForwardVector() * MaxDistanceToGrab;
@@ -383,7 +501,7 @@ void UGrabComponent::SphereGrabObject()
 	SphereTraceIgnoreActorsArray.Add( Player );
 
 	bool bTraceResult = UKismetSystemLibrary::SphereTraceMulti( GetWorld(), Start, End, RadiusDetection, TraceTypeQuery,
-		false, SphereTraceIgnoreActorsArray, EDrawDebugTrace::None, HitInfoArray, true );
+		false, SphereTraceIgnoreActorsArray, EDrawDebugTrace::ForDuration, HitInfoArray, true, FColor::Purple, FColor::Red, 2.0f );
 
 
 	/**************************************************************************************************/
@@ -410,9 +528,7 @@ void UGrabComponent::SphereGrabObject()
 					bIsGrabbing=true;
 				}
 			}
-
 		}
-
 		//GetWorld()->GetTimerManager().SetTimer( ESkillCountDownHandle, this, &UGrabComponent::ESkillAdvanceTimer, 1.0f, true );
 	}
 }

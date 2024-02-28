@@ -20,7 +20,11 @@
 #include "System/ProjectEscapePlayerController.h"
 #include "UI/MainUI.h"
 #include "Weapon/NormalGun.h"
+#include "NiagaraFunctionLibrary.h"
+#include "Components/DecalComponent.h"
 #include "System/ProjectEscapePlayerController.h"
+#include "Kismet/GameplayStatics.h"
+#include "ProfilingDebugging/CookStats.h"
 
 // Sets default values for this component's properties
 UFireComponent::UFireComponent()
@@ -43,10 +47,52 @@ UFireComponent::UFireComponent()
 		ActionFire = ActionFireFinder.Object;
 	}
 
-	static const ConstructorHelpers::FObjectFinder<UParticleSystem> FireEffectFinder {TEXT("/Script/Engine.ParticleSystem'/Game/StarterContent/Particles/P_Explosion.P_Explosion'")};
-	if (FireEffectFinder.Succeeded())
+	//static const ConstructorHelpers::FObjectFinder<UParticleSystem> FireEffectFinder {TEXT("/Script/Engine.ParticleSystem'/Game/StarterContent/Particles/P_Explosion.P_Explosion'")};
+
+	//Upgrade Gun Effect
+	static const ConstructorHelpers::FObjectFinder<UNiagaraSystem> FireUpgradeEffectFinder {TEXT("/Script/Niagara.NiagaraSystem'/Game/Resources/KDE/ExplosionsMegaPack/Niagara/Flak/NS_Explosion_Flak_2.NS_Explosion_Flak_2'")};
+	if ( FireUpgradeEffectFinder.Succeeded() )
 	{
-		GunEffect = FireEffectFinder.Object;
+		GunUpgradeEffect=FireUpgradeEffectFinder.Object;
+	}
+
+
+	// Blood VFX
+	static const ConstructorHelpers::FObjectFinder<UNiagaraSystem> BloodEffectFinder{ TEXT( "/Script/Niagara.NiagaraSystem'/Game/Resources/KDE/Blood_VFX/VFX/Performance_Versions/Bullet_Hits/One_Shot/OS_NS_Bullet_Hit_Medium.OS_NS_Bullet_Hit_Medium'" ) };
+	if ( BloodEffectFinder.Succeeded())
+	{
+		BloodEffect =BloodEffectFinder.Object;
+	}
+
+	static const ConstructorHelpers::FObjectFinder<UNiagaraSystem> FireEffectNoActorFinder{ TEXT( "/Script/Niagara.NiagaraSystem'/Game/Resources/KDE/BulletImpactVFX/BulletHitVFX_SFX/AParticleSystem_Niagara/PS_BulletHit_Concrete_N.PS_BulletHit_Concrete_N'") };
+
+	if ( FireEffectNoActorFinder.Succeeded() )
+	{
+		GunEffectNoActor=FireEffectNoActorFinder.Object;
+	}
+
+
+	static const ConstructorHelpers::FObjectFinder<UMaterialInterface> UMaterialInterfaceFinder{ TEXT( "/Script/Engine.MaterialInstanceConstant'/Game/Resources/KDE/BulletImpactVFX/BulletHoleDecals/Material_Instances/Inst_BulletDecal_Concrete_01.Inst_BulletDecal_Concrete_01'" ) };
+
+	if ( UMaterialInterfaceFinder.Succeeded() )
+	{
+		WallDecalEffect=UMaterialInterfaceFinder.Object;
+	}
+
+
+
+
+	static ConstructorHelpers::FObjectFinder<USoundBase> GunSoundFinder{ TEXT( "/Script/Engine.SoundWave'/Game/Resources/KDE/Sound/S_LPAMG_WEP_RC425_Fire.S_LPAMG_WEP_RC425_Fire'" ) };
+	if ( GunSoundFinder.Succeeded() )
+	{
+		GunSoundClass = GunSoundFinder.Object;
+	}
+
+
+	static const ConstructorHelpers::FObjectFinder<UParticleSystem> MuzzleEffectFinder{ TEXT( "/Script/Engine.ParticleSystem'/Game/Resources/KDE/GunsAndGrenade/Modern/Weapons/Assets/VFX/P_MuzzleFlash_02.P_MuzzleFlash_02'" ) }; 
+	if ( MuzzleEffectFinder.Succeeded() )
+	{
+		MuzzleEffect=MuzzleEffectFinder.Object;
 	}
 
 	static const ConstructorHelpers::FObjectFinder<UAnimMontage> FireMontageFinder {TEXT("/Script/Engine.AnimMontage'/Game/Animations/Actions/AM_MM_Pistol_DryFire.AM_MM_Pistol_DryFire'")};
@@ -176,8 +222,16 @@ void UFireComponent::NormalGunFire()
 	const float RecoilValue = FMath::RandRange(RecoilValueMin,RecoilValueMax);
 	Player->AddControllerPitchInput(-RecoilValue);
 
+
+
 	//FRotator GazeRotation = UKismetMathLibrary::FindLookAtRotation(Player->GetActorLocation(), Player->GetCameraBoom()->GetForwardVector() * MaxDistanceToGun);
 	//Player->SetActorRotation(GazeRotation);
+
+	FVector MuzzleLoc =NormalGun->NormalGunMesh->GetSocketLocation( FName( TEXT( "Muzzle" ) ) );
+	UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), MuzzleEffect, MuzzleLoc, FRotator(), FVector( 1 ), true, EPSCPoolMethod::None, true );
+
+	UGameplayStatics::PlaySoundAtLocation( GetWorld(), GunSoundClass, MuzzleLoc );
+
 
 	// 1. Collision Check - LineTrace 1st
 	FHitResult HitInfo1;
@@ -213,22 +267,42 @@ void UFireComponent::NormalGunFire()
 		{
 			//DrawDebugLine( GetWorld(), StartPos2, EndPos2, FColor::Red, true );
 			//DrawDebugBox(GetWorld(), HitInfo2.Location, FVector(5), FColor::Red, false, 5.f, 0, 3);
-			UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), GunEffect, HitInfo2.Location, FRotator() );
-			Enemy = Cast<AEnemyBase>(HitInfo2.GetActor());
 
-			if (AActor* Actor = HitInfo2.GetActor(); Actor && Actor->GetComponentByClass(UStaticMeshComponent::StaticClass()))
+			if(HitInfo2.GetActor()->IsA<AEnemyBase>() )
 			{
-				if (Cast<UStaticMeshComponent>(Actor->GetComponentByClass(UStaticMeshComponent::StaticClass()))->IsSimulatingPhysics())
+
+				//UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), GunEffect, HitInfo2.Location, FRotator() );
+				UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), BloodEffect, HitInfo2.Location, FRotator(), FireEffectScale, true );
+				UGameplayStatics::PlaySoundAtLocation( GetWorld(), GunSoundClass, HitInfo2.Location );
+				Enemy=Cast<AEnemyBase>( HitInfo2.GetActor() );
+
+				AActor* Actor=HitInfo2.GetActor();
+
+				if ( Actor && Actor->GetRootComponent()->IsSimulatingPhysics() )
 				{
-					HitInfo2.Component->AddImpulse(HitInfo2.ImpactNormal * -1 * GunImpulseForce);
+					HitInfo2.Component->AddImpulse( HitInfo2.ImpactNormal * -1 * GunImpulseForce );
+
+					if ( Cast<UStaticMeshComponent>( Actor->GetComponentByClass( UStaticMeshComponent::StaticClass() ) )->IsSimulatingPhysics() )
+					{
+						HitInfo2.Component->AddImpulse( HitInfo2.ImpactNormal * -1 * GunImpulseForce );
+					}
 				}
-			}
-			//UE_LOG(LogTemp, Warning, TEXT("hit actor: %s"), *HitInfo2.GetActor()->GetActorNameOrLabel())
+				//UE_LOG(LogTemp, Warning, TEXT("hit actor: %s"), *HitInfo2.GetActor()->GetActorNameOrLabel())
+			}else
+			{
+				UE_LOG( LogTemp, Warning, TEXT( "hit actor: %s" ), *HitInfo2.GetActor()->GetActorNameOrLabel() )
+				UDecalComponent* UdecalEffect = UGameplayStatics::SpawnDecalAtLocation( GetWorld(), WallDecalEffect, WallDecalScale, /*HitInfo2.GetComponent()->GetComponentLocation()*/ HitInfo2.ImpactPoint, HitInfo2.ImpactNormal.Rotation(), 10 );
+				UdecalEffect->SetFadeScreenSize(0.f);
+				UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), GunEffectNoActor, EndPos2, FRotator(), FireEffectScale, true );
+				UGameplayStatics::PlaySoundAtLocation( GetWorld(), GunSoundClass, HitInfo2.Location );
 		}
 		else
 		{
-			UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), GunEffect, EndPos2, FRotator() );
-			if (AActor* Actor = HitInfo1.GetActor(); Actor && Actor->GetComponentByClass(UStaticMeshComponent::StaticClass()))
+			//UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), GunEffect, EndPos2, FRotator() );
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), GunEffectNoActor, EndPos2, FRotator(), FireEffectScale, true );
+			UGameplayStatics::PlaySoundAtLocation( GetWorld(), GunSoundClass, HitInfo2.Location );
+			AActor* Actor=HitInfo1.GetActor();
+			if (Actor && Actor->GetComponentByClass(UStaticMeshComponent::StaticClass()))
 			{
 				if (Cast<UStaticMeshComponent>(Actor->GetComponentByClass(UStaticMeshComponent::StaticClass()))->IsSimulatingPhysics())
 				{
