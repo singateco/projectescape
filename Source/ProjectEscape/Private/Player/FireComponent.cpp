@@ -302,12 +302,8 @@ void UFireComponent::BulletReload()
 
 void UFireComponent::InitBullets()
 {
-	Player->PlayerStatsComponent->CurrentBullets=Player->PlayerStatsComponent->MaxBullets;
-
-	PC->InGameWIdget->TXT_CurrentBullets->SetText( FText::AsNumber( Player->PlayerStatsComponent->MaxBullets ) );
-	PC->InGameWIdget->TXT_MaxBullets->SetText( FText::AsNumber( Player->PlayerStatsComponent->MaxBullets ) );
-
+	Player->PlayerStatsComponent->CurrentBullets = Player->PlayerStatsComponent->MaxBullets;
+	PC->InGameWIdget->SetCurrentBullets();
 	Player->IsReloading = false;
-
 	Player->AddGameplayTag(PEGameplayTags::Status_CanShoot);
 }

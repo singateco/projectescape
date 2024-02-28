@@ -16,18 +16,12 @@ class PROJECTESCAPE_API UPlayerHP : public UUserWidget
 public:
 
 	virtual void NativeConstruct() override;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
+	class UProgressBar* HPProgress;
 	
 	UFUNCTION()
 	void UpdateHP(float MaxHP, float HP);
-	
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, meta = (BindWidget))
-	class URadialSlider* HPBar;
-
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, meta = (BindWidget))
-	URadialSlider* HPBarGuide;
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void PlayGuideAnim();
 	
 	UPROPERTY(BlueprintReadWrite)
 	float HPPercent;

@@ -107,10 +107,4 @@ void UPlayerStatsComponent::BeginPlay()
 
 	Player = GetOwner<AProjectEscapePlayer>();
 	Player->FireComponent->OnEnemyHitByPlayerGun.AddUniqueDynamic(this, &UPlayerStatsComponent::OnEnemyHitByPlayerGun);
-
-	AProjectEscapePlayerController* PC = Cast<AProjectEscapePlayerController>(GetWorld()->GetFirstPlayerController());
-	if ( nullptr != PC )
-	{
-		PC->InGameWIdget->TXT_CurrentBullets->SetText( FText::AsNumber( MaxBullets ) );
-	}
 }

@@ -5,6 +5,7 @@
 
 #include "FCTween.h"
 #include "Components/SphereComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Player/PlayerStatsComponent.h"
 #include "Player/ProjectEscapePlayer.h"
 
@@ -61,9 +62,14 @@ void AHealthPickup::OnMagnetBoxOverlap(UPrimitiveComponent* OverlappedComponent,
 		MagnetTweenObj = FCTween::Play(0.0f, 1.f,
 							[&](const float v)
 							{
-								SetActorLocation(FMath::Lerp(MagnetStartVector, PlayerTarget->GetActorLocation(), v));
+								FVector PlayerTargetLocation = PlayerTarget->GetActorLocation();
+								SetActorLocation(FMath::Lerp(MagnetStartVector, PlayerTargetLocation, v));
+								SetActorRotation(FMath::RInterpTo(GetActorRotation(), UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), PlayerTargetLocation),
+									GetWorld()->GetDeltaSeconds(), 4.f));
 							},
-							1.5f)
+							MagnetDuration,
+							EFCEase::InExpo
+							)
 							->SetOnComplete([&]
 							{
 								MagnetTweenObj = nullptr;
