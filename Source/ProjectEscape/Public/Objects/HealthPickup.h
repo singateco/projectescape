@@ -24,6 +24,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float HealValue {1.0f};
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float MagnetDuration {1.0f};
+
 	UPROPERTY()
 	class UFCTweenUObject* MagnetTweenObj;
 

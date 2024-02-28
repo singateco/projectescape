@@ -49,19 +49,30 @@ UGrabComponent::UGrabComponent()
 		QExplosionEffect = ExplosionEffectFinder.Object;
 	}
 
-
-	static const ConstructorHelpers::FObjectFinder<UInputAction> ActionGrabFinder{ TEXT( "/Script/EnhancedInput.InputAction'/Game/ThirdPerson/Input/Actions/IA_Grab.IA_Grab'" ) };
-	if ( ActionGrabFinder.Succeeded() )
+	static const ConstructorHelpers::FObjectFinder<UInputAction> GrabActionFinder {TEXT("/Script/EnhancedInput.InputAction'/Game/ThirdPerson/Input/Actions/IA_Grab.IA_Grab'")};
+	if (GrabActionFinder.Succeeded())
 	{
-		ActionGrab=ActionGrabFinder.Object;
+		ActionGrab = GrabActionFinder.Object;
 	}
 
-	static const ConstructorHelpers::FObjectFinder<UInputAction> ActionUltiFinder{ TEXT( "/Script/EnhancedInput.InputAction'/Game/ThirdPerson/Input/Actions/IA_QUltimateSkill.IA_QUltimateSkill'" ) };
-	if ( ActionUltiFinder.Succeeded() )
+	static const ConstructorHelpers::FObjectFinder<UInputAction> QSkillActionFinder {TEXT("/Script/EnhancedInput.InputAction'/Game/ThirdPerson/Input/Actions/IA_QUltimateSkill.IA_QUltimateSkill'")};
+	if (QSkillActionFinder.Succeeded())
 	{
-		InputActionQSkill=ActionUltiFinder.Object;
+		InputActionQSkill = QSkillActionFinder.Object;
 	}
 
+	static const ConstructorHelpers::FObjectFinder<UAnimMontage> GrabMontageFinder {TEXT("/Script/Engine.AnimMontage'/Game/Animations/Grab/GrabMontage.GrabMontage'")};
+	if (GrabMontageFinder.Succeeded())
+	{
+		GrabbingMontage = GrabMontageFinder.Object;
+	}
+
+	static const ConstructorHelpers::FObjectFinder<UAnimMontage> ThrowMontageFinder {TEXT("/Script/Engine.AnimMontage'/Game/Animations/Grab/Throwing.Throwing'")};
+	if (ThrowMontageFinder.Succeeded())
+	{
+		ThrowingMontage = ThrowMontageFinder.Object;
+	}
+>>>>>>> 2458226cbdc63c0df0dae3b19940482ff8629aae
 }
 
 
@@ -79,7 +90,7 @@ void UGrabComponent::BeginPlay()
 	//	OtherEnemies.Add(*it);
 	//	it->EnemyHPComponent->SetVisibility(false);
 	//}
-
+	AnimInstance = Player->GetMesh()->GetAnimInstance();
 }
 
 void UGrabComponent::InitializeComponent()
@@ -223,11 +234,20 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		//HandleObject->SetTargetRotation( NewRotation );
 		//HandleObject->SetAngularDamping(10*DeltaTime);
 
-
 		//FVector NewLocation =Player->GetFollowCamera()->GetComponentLocation() + Player->GetFollowCamera()->GetForwardVector() * 500;
 		//FRotator NewRotation = FRotator( 10 * DeltaTime, 10 * DeltaTime, 10 * DeltaTime );
 		//HandleObject->SetTargetLocationAndRotation( NewLocation, NewRotation );
+<<<<<<< HEAD
 	}else if( bIsGrabbing == false) // 물체 안잡고 있으면
+=======
+		
+		if (AnimInstance && GrabbingMontage && !AnimInstance->Montage_IsPlaying(nullptr))
+		{
+			AnimInstance->Montage_Play(GrabbingMontage);
+		}
+		
+	}else if( bIsGrabbing == false || OtherEnemies.Num() > 0) // 물체 안잡고 있거나 적들이 있을 때
+>>>>>>> 2458226cbdc63c0df0dae3b19940482ff8629aae
 	{
 
 		//bool bTracePickUpActorSphereMulti = UKismetSystemLibrary::SphereTraceMulti( GetWorld(), Start, End, RadiusDetection, TraceTypeQuery, false, SphereTraceIgnoreActorsArray, EDrawDebugTrace::None, HitInfoArrayPickUpActors, true );
@@ -426,6 +446,15 @@ void UGrabComponent::ReleaseObject()
 		HandleObject->ReleaseComponent();
 
 		bIsGrabbing=false;
+
+		if (AnimInstance && ThrowingMontage)
+		{
+			if (GrabbingMontage)
+			{
+				AnimInstance->Montage_Stop(0, GrabbingMontage);
+			}
+			AnimInstance->Montage_Play(ThrowingMontage);
+		}
 	}
 	GetWorld()->GetTimerManager().SetTimer( ESkillCountDownHandle, this, &UGrabComponent::ESkillAdvanceTimer, 1.0f, true );
 
@@ -493,7 +522,7 @@ void UGrabComponent::SphereGrabObject()
 				UE_LOG( SYLog, Warning, TEXT( "pick!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! : %s" ), *PickUpActor->GetActorNameOrLabel() );
 				PickUpActor->MeshComp->SetRenderCustomDepth( true );
 				HandleObject->GrabComponentAtLocation( HitInfo.GetComponent(), TEXT( "GrabObject" ), HitInfo.GetComponent()->GetComponentLocation() );
-
+				
 				if ( HandleObject->GetGrabbedComponent() != nullptr )
 				{
 					bIsGrabbing=true;

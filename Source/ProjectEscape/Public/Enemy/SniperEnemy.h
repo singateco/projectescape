@@ -6,6 +6,7 @@
 #include "Enemy/EnemyBase.h"
 #include "SniperEnemy.generated.h"
 
+class USplineMeshComponent;
 /**
  * 
  */
@@ -17,6 +18,6 @@ class PROJECTESCAPE_API ASniperEnemy : public AEnemyBase
 public:
 	ASniperEnemy(const FObjectInitializer& ObjectInitializer);
 
-	UPROPERTY( EditDefaultsOnly )
-	UStaticMeshComponent* LaserBeam;
+	UPROPERTY(EditDefaultsOnly)
+	USplineMeshComponent* SplineLaserBeam;
 };

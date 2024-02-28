@@ -10,6 +10,7 @@
  * 
  */
 
+class URadialSlider;
 class UTextBlock;
 class AProjectEscapePlayer;
 class UProgressBar;
@@ -26,36 +27,27 @@ public:
 	AProjectEscapePlayer* Player;
 
 	UPROPERTY( BlueprintReadWrite, meta=(BindWidget) )
-	UTextBlock* TXT_CurrentBullets;
+	UTextBlock* BulletText;
+
+	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
+	URadialSlider* BulletSlider;
 
 	UPROPERTY( BlueprintReadWrite, meta=(BindWidget) )
-	UTextBlock* TXT_MaxBullets;
-
-	UPROPERTY( BlueprintReadWrite, meta=(BindWidget) )
-
 	UImage* IMG_QSkill;
 
 	UPROPERTY( BlueprintReadWrite, meta=(BindWidget) )
-
 	UImage* IMG_ESkill;
 
-
 	UPROPERTY( BlueprintReadWrite, meta=(BindWidget) )
-
 	UProgressBar* PRB_QSkill;
 
 	UPROPERTY( BlueprintReadWrite, meta=(BindWidget) )
-
 	UProgressBar* PRB_ESkill;
-
-
-
+	
 	UPROPERTY( BlueprintReadWrite, meta=(BindWidget) )
-
 	UTextBlock* TXT_QSkill;
 
 	UPROPERTY( BlueprintReadWrite, meta=(BindWidget) )
-
 	UTextBlock* TXT_ESkill;
 
 	UFUNCTION()
@@ -78,8 +70,6 @@ public:
 
 	UFUNCTION()
 	void StartESkillUI();
-
-
 
 protected:
 	virtual void NativeOnInitialized() override;

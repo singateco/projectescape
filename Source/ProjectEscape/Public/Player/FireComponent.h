@@ -82,7 +82,7 @@ public:
 	UParticleSystem* MuzzleEffect;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Pistol")
-	float GunImpulseForce {15000.f};
+	float GunImpulseForce {2500.f};
 
 	UPROPERTY( EditDefaultsOnly, Category="Pistol" )
 	USoundBase* GunSoundClass;
@@ -108,6 +108,9 @@ public:
 	void SetupPlayerInputComponent(UEnhancedInputComponent* PlayerInputComponent) ;
 
 	//void Fire();
+
+	UFUNCTION(BlueprintCallable)
+	void SetGunVisibility(const bool ShowGun);
 
 	void NormalGunFire();
 

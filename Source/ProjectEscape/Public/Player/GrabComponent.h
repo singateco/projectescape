@@ -122,6 +122,16 @@ public:
 
 	FTimerHandle ESkillCountDownHandle;
 	FTimerHandle QSkillCountDownHandle;
+
+	UPROPERTY()
+	UAnimInstance* AnimInstance;
+
+	UPROPERTY(EditDefaultsOnly)
+	UAnimMontage* GrabbingMontage;
+
+	UPROPERTY(EditDefaultsOnly)
+	UAnimMontage* ThrowingMontage;
+	
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
