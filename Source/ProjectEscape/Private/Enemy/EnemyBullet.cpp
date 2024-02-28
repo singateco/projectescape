@@ -69,7 +69,7 @@ void AEnemyBullet::OnSphereComponentBeginHit( UPrimitiveComponent* HitComponent,
 	{
 		if (Cast<USkeletalMeshComponent>(OtherComp))
 		{
-			Player->ProcessDamage( BulletDamage );
+			Player->ProcessDamageFromLoc(BulletDamage, Hit);
 			this->Destroy();
 			UDecalComponent* Decal = UGameplayStatics::SpawnDecalAtLocation(
 				GetWorld(), BulletDecalBlood, FVector(10), Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), 10);
