@@ -88,7 +88,6 @@ void AGrenade::Explosion()
 			}
 		}
 	}
-	UKismetMathLibrary::Vector_CosineAngle2D
 	//UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), ExplosionEffect, GrenadeLoc, FRotator(), FVector( 10 ), true, EPSCPoolMethod::None, true );
 	//UGameplayStatics::SpawnDecalAtLocation( GetWorld(), GrenadeDecal, FVector( 500 ), GrenadeLoc, FRotator(), 10 );
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, GrenadeLoc, FRotator(), FVector(2), true);
