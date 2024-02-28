@@ -83,12 +83,12 @@ void AGrenade::Explosion()
 				// 라인 트레이스에서 플레이어가 충돌한 경우 데미지를 입힘
 				if ( !bHit )
 				{
-					OtherCharacter->ProcessDamage( 10 );
+					OtherCharacter->ProcessDamageFromLoc( 10, HitResult );
 				}
 			}
 		}
 	}
-
+	UKismetMathLibrary::Vector_CosineAngle2D
 	//UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), ExplosionEffect, GrenadeLoc, FRotator(), FVector( 10 ), true, EPSCPoolMethod::None, true );
 	//UGameplayStatics::SpawnDecalAtLocation( GetWorld(), GrenadeDecal, FVector( 500 ), GrenadeLoc, FRotator(), 10 );
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, GrenadeLoc, FRotator(), FVector(2), true);

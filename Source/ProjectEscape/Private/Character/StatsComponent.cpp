@@ -77,6 +77,12 @@ void UStatsComponent::ProcessDamage(const float DamageValue)
 	}
 }
 
+void UStatsComponent::ProcessDamageFromLoc(const float DamageValue, const FHitResult& HitResult)
+{
+	ProcessDamage(DamageValue);
+	OnTakenDamageFromLoc.Broadcast(HitResult);
+}
+
 void UStatsComponent::ProcessHealing(const float HealValue)
 {
 	if (OwningChara->HasMatchingGameplayTag(PEGameplayTags::Status_IsDead))
