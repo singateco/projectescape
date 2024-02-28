@@ -28,10 +28,11 @@ ASniperEnemy::ASniperEnemy(const FObjectInitializer& ObjectInitializer)
 		GunMesh->SetRelativeScale3D( FVector( 1.1f ) );
 	}
 	SplineLaserBeam = CreateDefaultSubobject<USplineMeshComponent>(TEXT("Spline Laser Beam"));
+	SplineLaserBeam->SetRelativeLocation(FVector::Zero());
 	SplineLaserBeam->SetMobility(EComponentMobility::Movable);
 	SplineLaserBeam->SetupAttachment(GunMesh, TEXT("Laser"));
 	SplineLaserBeam->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	SplineLaserBeam->SetHiddenInGame(true);
+	SplineLaserBeam->SetHiddenInGame(true);	
 	SplineLaserBeam->SetAbsolute(false, true, true);
 	SplineLaserBeam->SetStartScale(FVector2d(5));
 	SplineLaserBeam->SetEndScale(FVector2d(5));

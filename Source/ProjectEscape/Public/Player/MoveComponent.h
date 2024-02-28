@@ -113,6 +113,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|Dashing")
 	float DashStamina {33.f};
 
+	UPROPERTY()
+	float LastDashTime;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|Dashing")
+	float DashCooldownSeconds {1.0f};
+
 	// ============= 스태미나 ===============
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
