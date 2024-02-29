@@ -4,7 +4,7 @@
 #include "UI/PlayerHP.h"
 
 #include "Components/ProgressBar.h"
-#include "Components/RadialSlider.h"
+#include "Components/TextBlock.h"
 #include "Player/PlayerStatsComponent.h"
 #include "Player/ProjectEscapePlayer.h"
 
@@ -21,4 +21,5 @@ void UPlayerHP::NativeConstruct()
 void UPlayerHP::UpdateHP(float MaxHP, float HP)
 {
 	HPProgress->SetPercent(HP / MaxHP);
+	HPText->SetText(FText::FromString(FString::Printf(TEXT("%.f | %.f"), HP, MaxHP)));
 }

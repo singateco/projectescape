@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "PlayerHP.generated.h"
 
+class UTextBlock;
 /**
  * 
  */
@@ -17,6 +18,9 @@ public:
 
 	virtual void NativeConstruct() override;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
+	UTextBlock* HPText;
+		
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	class UProgressBar* HPProgress;
 	
