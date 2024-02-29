@@ -55,6 +55,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetCrossHairColor(const bool EnemySeen);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void ShowEnemyHit(const bool IsDyingHit);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void GunShot();
 	
 	UFUNCTION()
 	void SetCurrentBullets();

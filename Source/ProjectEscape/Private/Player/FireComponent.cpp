@@ -283,6 +283,11 @@ void UFireComponent::NormalGunFire()
 	
 	//FRotator GazeRotation = UKismetMathLibrary::FindLookAtRotation(Player->GetActorLocation(), Player->GetCameraBoom()->GetForwardVector() * MaxDistanceToGun);
 	//Player->SetActorRotation(GazeRotation);
+
+	if (MainUI)
+	{
+		MainUI->GunShot();
+	}
 	
 	// =================== 데미지 체크 ===============
 
