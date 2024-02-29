@@ -22,8 +22,8 @@ public:
 	// Sets default values for this actor's properties
 	APickableActor();
 
-	UPROPERTY( EditAnywhere )
-	USphereComponent* CollisionComp;
+	//UPROPERTY( EditAnywhere )
+	//USphereComponent* CollisionComp;
 
 	UPROPERTY( EditAnywhere )
 	UStaticMeshComponent* MeshComp;
