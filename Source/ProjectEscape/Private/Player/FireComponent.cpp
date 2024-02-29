@@ -58,7 +58,7 @@ UFireComponent::UFireComponent()
 
 
 	// Blood VFX
-	static const ConstructorHelpers::FObjectFinder<UNiagaraSystem> BloodEffectFinder{ TEXT( "/Script/Niagara.NiagaraSystem'/Game/Resources/KDE/Blood_VFX/VFX/Performance_Versions/Bullet_Hits/One_Shot/OS_NS_Bullet_Hit_Medium.OS_NS_Bullet_Hit_Medium'" ) };
+	static const ConstructorHelpers::FObjectFinder<UNiagaraSystem> BloodEffectFinder{ TEXT( "/Script/Niagara.NiagaraSystem'/Game/Resources/KDE/Blood_VFX/VFX/Performance_Versions/Bullet_Hits/One_Shot/OS_NS_Bullet_Hit_Large.OS_NS_Bullet_Hit_Large'" ) };
 	if ( BloodEffectFinder.Succeeded())
 	{
 		BloodEffect =BloodEffectFinder.Object;
@@ -82,10 +82,16 @@ UFireComponent::UFireComponent()
 
 
 
-	static ConstructorHelpers::FObjectFinder<USoundBase> GunSoundFinder{ TEXT( "/Script/Engine.SoundWave'/Game/Resources/KDE/Sound/S_LPAMG_WEP_RC425_Fire.S_LPAMG_WEP_RC425_Fire'" ) };
+	static ConstructorHelpers::FObjectFinder<USoundBase> GunSoundFinder{ TEXT( "/Script/Engine.SoundWave'/Game/Resources/KDE/GunsAndGrenade/Modern/Weapons/Assets/Audio/GunFire/SW_GunFire_05.SW_GunFire_05'" ) };
 	if ( GunSoundFinder.Succeeded() )
 	{
 		GunSoundClass = GunSoundFinder.Object;
+	}
+
+	static const ConstructorHelpers::FObjectFinder<USoundBase> GunHitSoundFinder {TEXT("/Script/Engine.SoundWave'/Game/Sounds/511194__pablobd__headshot.511194__pablobd__headshot'")};
+	if (GunHitSoundFinder.Succeeded())
+	{
+		GunHitSound = GunHitSoundFinder.Object;
 	}
 
 
@@ -270,6 +276,7 @@ void UFireComponent::NormalGunFire()
 	const float RecoilValue = FMath::RandRange(RecoilValueMin,RecoilValueMax);
 	Player->AddControllerPitchInput(-RecoilValue);
 
+	UGameplayStatics::PlaySound2D(GetWorld(), GunSoundClass);
 	//FVector MuzzleLoc =NormalGun->NormalGunMesh->GetSocketLocation( FName( TEXT( "Muzzle" ) ) );
 	//UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), MuzzleEffect, MuzzleLoc, FRotator(), FVector( 1 ), true, EPSCPoolMethod::None, true );
 	UGameplayStatics::SpawnEmitterAttached( MuzzleEffect, NormalGun->NormalGunMesh ,FName(TEXT("Muzzle")),FVector::ForwardVector*1.0f, FRotator::ZeroRotator, EAttachLocation::SnapToTarget,true);
@@ -290,8 +297,8 @@ void UFireComponent::NormalGunFire()
 	{
 		if(HitInfo2.GetActor()->IsA<AEnemyBase>() )
 		{
-			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), BloodEffect, HitInfo2.Location, FRotator(), FireEffectScale, true );
-			UGameplayStatics::PlaySoundAtLocation( GetWorld(), GunSoundClass, HitInfo2.Location );
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), BloodEffect, HitInfo2.Location, HitInfo2.ImpactNormal.Rotation(), FireEffectScale * 3.f, true );
+			UGameplayStatics::PlaySound2D( GetWorld(), GunHitSound);
 			Enemy=Cast<AEnemyBase>( HitInfo2.GetActor() );
 
 			AActor* Actor=HitInfo2.GetActor();
@@ -311,13 +318,11 @@ void UFireComponent::NormalGunFire()
 			UDecalComponent* UdecalEffect = UGameplayStatics::SpawnDecalAtLocation( GetWorld(), WallDecalEffect, WallDecalScale, /*HitInfo2.GetComponent()->GetComponentLocation()*/ HitInfo2.ImpactPoint, HitInfo2.ImpactNormal.Rotation(), 10 );
 			UdecalEffect->SetFadeScreenSize(0.f);
 			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), GunEffectNoActor, HitInfo2.TraceEnd, FRotator(), FireEffectScale, true );
-			UGameplayStatics::PlaySoundAtLocation( GetWorld(), GunSoundClass, HitInfo2.Location );
 		}
 	}
 	else
 	{
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), GunEffectNoActor, HitInfo2.TraceEnd, FRotator(), FireEffectScale, true );
-		UGameplayStatics::PlaySoundAtLocation( GetWorld(), GunSoundClass, HitInfo2.Location );
 		AActor* Actor = HitInfo1.GetActor();
 		if (Actor && Actor->GetComponentByClass(UStaticMeshComponent::StaticClass()))
 		{
