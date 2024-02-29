@@ -58,7 +58,7 @@ UFireComponent::UFireComponent()
 
 
 	// Blood VFX
-	static const ConstructorHelpers::FObjectFinder<UNiagaraSystem> BloodEffectFinder{ TEXT( "/Script/Niagara.NiagaraSystem'/Game/Resources/KDE/Blood_VFX/VFX/Performance_Versions/Bullet_Hits/One_Shot/OS_NS_Bullet_Hit_Medium.OS_NS_Bullet_Hit_Medium'" ) };
+	static const ConstructorHelpers::FObjectFinder<UNiagaraSystem> BloodEffectFinder{ TEXT( "/Script/Niagara.NiagaraSystem'/Game/Resources/KDE/Blood_VFX/VFX/Performance_Versions/Bullet_Hits/One_Shot/OS_NS_Bullet_Hit_Large.OS_NS_Bullet_Hit_Large'" ) };
 	if ( BloodEffectFinder.Succeeded())
 	{
 		BloodEffect =BloodEffectFinder.Object;
@@ -82,10 +82,16 @@ UFireComponent::UFireComponent()
 
 
 
-	static ConstructorHelpers::FObjectFinder<USoundBase> GunSoundFinder{ TEXT( "/Script/Engine.SoundWave'/Game/Resources/KDE/Sound/S_LPAMG_WEP_RC425_Fire.S_LPAMG_WEP_RC425_Fire'" ) };
+	static ConstructorHelpers::FObjectFinder<USoundBase> GunSoundFinder{ TEXT( "/Script/Engine.SoundWave'/Game/Resources/KDE/GunsAndGrenade/Modern/Weapons/Assets/Audio/GunFire/SW_GunFire_05.SW_GunFire_05'" ) };
 	if ( GunSoundFinder.Succeeded() )
 	{
 		GunSoundClass = GunSoundFinder.Object;
+	}
+
+	static const ConstructorHelpers::FObjectFinder<USoundBase> GunHitSoundFinder {TEXT("/Script/Engine.SoundWave'/Game/Sounds/511194__pablobd__headshot.511194__pablobd__headshot'")};
+	if (GunHitSoundFinder.Succeeded())
+	{
+		GunHitSound = GunHitSoundFinder.Object;
 	}
 
 
@@ -148,13 +154,59 @@ void UFireComponent::BeginPlay()
 	NormalGun = GetWorld()->SpawnActor<ANormalGun>(NormalGunClass);
 	AttachPistol();
 	InitBullets();
+
+	if (PC)
+	{
+		MainUI = PC->InGameWIdget;
+	}
 }
 
 void UFireComponent::Deactivate()
 {
 	Super::Deactivate();
 
+	SetComponentTickEnabled(false);
 	EnhancedInputComponent->ClearBindingsForObject(this);
+}
+
+void UFireComponent::CheckIfShootCanHit()
+{
+	// 1) From Crosshair
+	FVector StartPos1 = Player->GetFollowCamera()->GetComponentLocation();
+	// 2) To End Point(Max Distance)
+	FVector EndPos1 = Player->GetFollowCamera()->GetComponentLocation() + Player->GetFollowCamera()->GetForwardVector() * MaxDistanceToGun;
+
+	FCollisionQueryParams Params1;
+	Params1.AddIgnoredActor(Player);
+
+	bool bHit1 = GetWorld()->LineTraceSingleByChannel(HitInfo1, StartPos1, EndPos1,ECC_Visibility, Params1);
+
+	if ( bHit1 ) {
+		
+		// 2. Collision Check - LineTrace 2nd
+		// 1) From Muzzle
+		FVector StartPos2=NormalGun->NormalGunMesh->GetSocketLocation( TEXT( "Muzzle" ) );
+		// 2) To Collision Position 
+		FVector EndPos2= HitInfo1.Location + Player->GetFollowCamera()->GetForwardVector() * 1;
+		
+		FCollisionQueryParams Params2;
+		Params2.AddIgnoredActor( Player );
+		GetWorld()->LineTraceSingleByChannel( HitInfo2, StartPos2, EndPos2, ECC_Visibility, Params2 );
+
+		if (MainUI)
+		{
+			MainUI->SetCrossHairColor(HitInfo2.bBlockingHit && Cast<AEnemyBase>(HitInfo2.GetActor()));
+		}
+	}
+	else
+	{
+		HitInfo2 = FHitResult();
+
+		if (MainUI)
+		{
+			MainUI->SetCrossHairColor(false);
+		}
+	}
 }
 
 void UFireComponent::InitializeComponent()
@@ -164,7 +216,7 @@ void UFireComponent::InitializeComponent()
 	Player = GetOwner<AProjectEscapePlayer>();
 	check(Player);
 
-	PC=Cast<AProjectEscapePlayerController>( GetWorld()->GetFirstPlayerController() );
+	PC = Cast<AProjectEscapePlayerController>( GetWorld()->GetFirstPlayerController());
 }
 
 
@@ -173,8 +225,8 @@ void UFireComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// ...
 	bHasFired = false;
+	CheckIfShootCanHit();
 }
 
 void UFireComponent::SetupPlayerInputComponent(UEnhancedInputComponent* PlayerInputComponent)
@@ -211,6 +263,8 @@ void UFireComponent::NormalGunFire()
 		return;
 	}
 
+	Player->RemoveGameplayTag(PEGameplayTags::Status_CanShoot);
+
 	HandleFireAnimation();
 	Player->PlayerStatsComponent->CurrentBullets--;
 
@@ -222,101 +276,66 @@ void UFireComponent::NormalGunFire()
 	const float RecoilValue = FMath::RandRange(RecoilValueMin,RecoilValueMax);
 	Player->AddControllerPitchInput(-RecoilValue);
 
-
-
-	//FRotator GazeRotation = UKismetMathLibrary::FindLookAtRotation(Player->GetActorLocation(), Player->GetCameraBoom()->GetForwardVector() * MaxDistanceToGun);
-	//Player->SetActorRotation(GazeRotation);
-
-	FVector MuzzleLoc =NormalGun->NormalGunMesh->GetSocketLocation( FName( TEXT( "Muzzle" ) ) );
+	UGameplayStatics::PlaySound2D(GetWorld(), GunSoundClass);
+	//FVector MuzzleLoc =NormalGun->NormalGunMesh->GetSocketLocation( FName( TEXT( "Muzzle" ) ) );
 	//UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), MuzzleEffect, MuzzleLoc, FRotator(), FVector( 1 ), true, EPSCPoolMethod::None, true );
 	UGameplayStatics::SpawnEmitterAttached( MuzzleEffect, NormalGun->NormalGunMesh ,FName(TEXT("Muzzle")),FVector::ForwardVector*1.0f, FRotator::ZeroRotator, EAttachLocation::SnapToTarget,true);
-
-	UGameplayStatics::PlaySoundAtLocation( GetWorld(), GunSoundClass, MuzzleLoc );
-
-
-	// 1. Collision Check - LineTrace 1st
-	FHitResult HitInfo1;
-	// 1) From Crosshair
-	FVector StartPos1 = Player->GetFollowCamera()->GetComponentLocation();
-	// 2) To End Point(Max Distance)
-	FVector EndPos1 = Player->GetFollowCamera()->GetComponentLocation() + Player->GetFollowCamera()->GetForwardVector()*MaxDistanceToGun;
-
-	FCollisionQueryParams Params1;
-	Params1.AddIgnoredActor(Player);
-
-	bool bHit1 = GetWorld()->LineTraceSingleByChannel(HitInfo1, StartPos1, EndPos1,ECC_Visibility, Params1);
 	
-	//DrawDebugLine( GetWorld(), StartPos1, EndPos1, FColor::Blue, true );
-	if (bHit1) { 
+	//FRotator GazeRotation = UKismetMathLibrary::FindLookAtRotation(Player->GetActorLocation(), Player->GetCameraBoom()->GetForwardVector() * MaxDistanceToGun);
+	//Player->SetActorRotation(GazeRotation);
+	
+	// =================== 데미지 체크 ===============
 
-		Player->RemoveGameplayTag(PEGameplayTags::Status_CanShoot);
-		
-		// 2. Collision Check - LineTrace 2nd
-		// 1) From Muzzle
-		FVector StartPos2=NormalGun->NormalGunMesh->GetSocketLocation( TEXT( "Muzzle" ) );
-		// 2) To Collision Position 
-		FVector EndPos2= HitInfo1.Location + Player->GetFollowCamera()->GetForwardVector() * 1;
-
-
-		FHitResult HitInfo2;
-		FCollisionQueryParams Params2;
-		Params2.AddIgnoredActor( Player );
-		bool bHit2 = GetWorld()->LineTraceSingleByChannel( HitInfo2, StartPos2, EndPos2, ECC_Visibility, Params2 );
-		AEnemyBase* Enemy = nullptr;
-		
-		if( bHit2 )
+	if ( !HitInfo1.bBlockingHit )
+	{
+		return;
+	}
+	
+	AEnemyBase* Enemy = nullptr;
+	
+	if( HitInfo2.bBlockingHit )
+	{
+		if(HitInfo2.GetActor()->IsA<AEnemyBase>() )
 		{
-			//DrawDebugLine( GetWorld(), StartPos2, EndPos2, FColor::Red, true );
-			//DrawDebugBox(GetWorld(), HitInfo2.Location, FVector(5), FColor::Red, false, 5.f, 0, 3);
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), BloodEffect, HitInfo2.Location, HitInfo2.ImpactNormal.Rotation(), FireEffectScale * 3.f, true );
+			UGameplayStatics::PlaySound2D( GetWorld(), GunHitSound);
+			Enemy=Cast<AEnemyBase>( HitInfo2.GetActor() );
 
-			if(HitInfo2.GetActor()->IsA<AEnemyBase>() )
+			AActor* Actor=HitInfo2.GetActor();
+
+			if ( Actor && Actor->GetRootComponent()->IsSimulatingPhysics() )
 			{
+				HitInfo2.Component->AddImpulse( HitInfo2.ImpactNormal * -1 * GunImpulseForce );
 
-				//UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), GunEffect, HitInfo2.Location, FRotator() );
-				UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), BloodEffect, HitInfo2.Location, FRotator(), FireEffectScale, true );
-				UGameplayStatics::PlaySoundAtLocation( GetWorld(), GunSoundClass, HitInfo2.Location );
-				Enemy=Cast<AEnemyBase>( HitInfo2.GetActor() );
-
-				AActor* Actor=HitInfo2.GetActor();
-
-				if ( Actor && Actor->GetRootComponent()->IsSimulatingPhysics() )
+				if ( Cast<UStaticMeshComponent>( Actor->GetComponentByClass( UStaticMeshComponent::StaticClass() ) )->IsSimulatingPhysics() )
 				{
 					HitInfo2.Component->AddImpulse( HitInfo2.ImpactNormal * -1 * GunImpulseForce );
-
-					if ( Cast<UStaticMeshComponent>( Actor->GetComponentByClass( UStaticMeshComponent::StaticClass() ) )->IsSimulatingPhysics() )
-					{
-						HitInfo2.Component->AddImpulse( HitInfo2.ImpactNormal * -1 * GunImpulseForce );
-					}
-				}
-				//UE_LOG(LogTemp, Warning, TEXT("hit actor: %s"), *HitInfo2.GetActor()->GetActorNameOrLabel())
-			}else
-			{
-				UE_LOG( LogTemp, Warning, TEXT( "hit actor: %s" ), *HitInfo2.GetActor()->GetActorNameOrLabel() )
-				UDecalComponent* UdecalEffect = UGameplayStatics::SpawnDecalAtLocation( GetWorld(), WallDecalEffect, WallDecalScale, /*HitInfo2.GetComponent()->GetComponentLocation()*/ HitInfo2.ImpactPoint, HitInfo2.ImpactNormal.Rotation(), 10 );
-				UdecalEffect->SetFadeScreenSize(0.f);
-				UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), GunEffectNoActor, EndPos2, FRotator(), FireEffectScale, true );
-				UGameplayStatics::PlaySoundAtLocation( GetWorld(), GunSoundClass, HitInfo2.Location );
-			}
-		}
-		else
-		{
-			//UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), GunEffect, EndPos2, FRotator() );
-			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), GunEffectNoActor, EndPos2, FRotator(), FireEffectScale, true );
-			UGameplayStatics::PlaySoundAtLocation( GetWorld(), GunSoundClass, HitInfo2.Location );
-			AActor* Actor=HitInfo1.GetActor();
-			if (Actor && Actor->GetComponentByClass(UStaticMeshComponent::StaticClass()))
-			{
-				if (Cast<UStaticMeshComponent>(Actor->GetComponentByClass(UStaticMeshComponent::StaticClass()))->IsSimulatingPhysics())
-				{
-					HitInfo2.Component->AddImpulse(HitInfo2.ImpactNormal * -1 * GunImpulseForce);
 				}
 			}
-		}
-		
-		if (Enemy)
+		}else
 		{
-			OnEnemyHitByPlayerGun.Broadcast(Enemy, HitInfo2);
+			UE_LOG( LogTemp, Warning, TEXT( "hit actor: %s" ), *HitInfo2.GetActor()->GetActorNameOrLabel() )
+			UDecalComponent* UdecalEffect = UGameplayStatics::SpawnDecalAtLocation( GetWorld(), WallDecalEffect, WallDecalScale, /*HitInfo2.GetComponent()->GetComponentLocation()*/ HitInfo2.ImpactPoint, HitInfo2.ImpactNormal.Rotation(), 10 );
+			UdecalEffect->SetFadeScreenSize(0.f);
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), GunEffectNoActor, HitInfo2.TraceEnd, FRotator(), FireEffectScale, true );
 		}
+	}
+	else
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), GunEffectNoActor, HitInfo2.TraceEnd, FRotator(), FireEffectScale, true );
+		AActor* Actor = HitInfo1.GetActor();
+		if (Actor && Actor->GetComponentByClass(UStaticMeshComponent::StaticClass()))
+		{
+			if (Cast<UStaticMeshComponent>(Actor->GetComponentByClass(UStaticMeshComponent::StaticClass()))->IsSimulatingPhysics())
+			{
+				HitInfo2.Component->AddImpulse(HitInfo2.ImpactNormal * -1 * GunImpulseForce);
+			}
+		}
+	}
+	
+	if (Enemy)
+	{
+		OnEnemyHitByPlayerGun.Broadcast(Enemy, HitInfo2);
 	}
 }
 

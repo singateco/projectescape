@@ -63,7 +63,7 @@ public:
 	float GrabDamageValue = 10.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Grab")
-	float GrabExplosionRadius = 300.f;
+	float GrabExplosionRadius = 1000.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gun|Bullets")
 	int MaxBullets = 13;

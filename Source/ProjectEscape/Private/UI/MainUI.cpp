@@ -68,3 +68,15 @@ void UMainUI::EndQSkillUI()
 	PRB_QSkill->SetVisibility( ESlateVisibility::Hidden );
 	TXT_QSkill->SetVisibility( ESlateVisibility::Hidden );
 }
+
+void UMainUI::SetCrossHairColor(const bool EnemySeen)
+{
+	if (EnemySeen)
+	{
+		CrossHair->SetBrushTintColor(FColor::Red);
+	}
+	else
+	{
+		CrossHair->SetBrushTintColor(FColor::White);
+	}
+}

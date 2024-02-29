@@ -87,6 +87,9 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category="Pistol" )
 	USoundBase* GunSoundClass;
 
+	UPROPERTY( EditDefaultsOnly, Category="Pistol" )
+	USoundBase* GunHitSound;
+	
 	UPROPERTY()
 	UMainUI* MainUI;
 
@@ -99,6 +102,13 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Settings|ADS")
 	FVector AdsOffset = FVector(-10, -60, 20);
 
+	UPROPERTY()
+	FHitResult HitInfo1;
+
+	UPROPERTY()
+	FHitResult HitInfo2;
+
+	void CheckIfShootCanHit();
 
 	virtual void InitializeComponent() override;
 
@@ -143,7 +153,6 @@ public:
 
 	UFUNCTION()
 	void HandleFireAnimation();
-
 
 	UFUNCTION()
 	void PlayReloadAnimation();

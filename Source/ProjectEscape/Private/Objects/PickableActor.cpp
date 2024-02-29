@@ -143,8 +143,6 @@ void APickableActor::OnCompHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 				{
 					OtherCharacter->ProcessDamage( Player->PlayerStatsComponent->GrabDamageValue );
 
-					//UGameplayStatics::SpawnEmitterAtLocation( GetWorld(),GunxplosionEffect, OtherCharacter->GetActorLocation(), FRotator(), FVector( 10 ), true, EPSCPoolMethod::None, true );
-
 					UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), BloodEffect, OtherCharacter->GetActorLocation(), FRotator(), ExplosionScale , true );
 
 				}/*
@@ -164,6 +162,8 @@ void APickableActor::OnCompHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 		}
 
 		//UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), ExplosionEffect, this->MeshComp->GetComponentLocation(), FRotator(), FVector( 10 ), true, EPSCPoolMethod::None, true );
+
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), ExplosionScale, true );
 
 		//GetActorLocation() 하면 안됨
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionObjEffect, this->MeshComp->GetComponentLocation(), FRotator(), ExplosionScale, true );
