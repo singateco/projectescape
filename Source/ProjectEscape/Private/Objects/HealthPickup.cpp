@@ -4,6 +4,7 @@
 #include "Objects/HealthPickup.h"
 
 #include "FCTween.h"
+#include "FCTweenUObject.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Player/PlayerStatsComponent.h"
@@ -66,6 +67,13 @@ void AHealthPickup::OnMagnetBoxOverlap(UPrimitiveComponent* OverlappedComponent,
 								SetActorLocation(FMath::Lerp(MagnetStartVector, PlayerTargetLocation, v));
 								SetActorRotation(FMath::RInterpTo(GetActorRotation(), UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), PlayerTargetLocation),
 									GetWorld()->GetDeltaSeconds(), 4.f));
+
+								if (PlayerTarget->PlayerStatsComponent->GetHP() >= PlayerTarget->PlayerStatsComponent->GetMaxHP() && MagnetTweenObj)
+								{
+									MagnetTweenObj->Tween->Destroy();
+									MagnetTweenObj->Tween = nullptr;
+									MagnetTweenObj->ConditionalBeginDestroy();
+								}
 							},
 							MagnetDuration,
 							EFCEase::InExpo

@@ -35,7 +35,7 @@ public:
 		AGrenade* EnemyGrenade;
 
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category="EnemyState" )
-		float GrenadeTime = 5.0f;
+		float GrenadeTime = 6.0f;
 
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category="EnemyState" )
 		float ChangeGrenadeTime = 0;

@@ -14,6 +14,8 @@ class PROJECTESCAPE_API UBTTask_Shooting : public UBTTask_BlackboardBase
 {
 	GENERATED_BODY()
 
+public:
+
 	UBTTask_Shooting();
 
 	UPROPERTY( EditDefaultsOnly )

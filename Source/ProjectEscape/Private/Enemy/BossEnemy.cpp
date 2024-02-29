@@ -6,6 +6,7 @@
 #include "Components/WidgetComponent.h"
 #include "AI/BossAIController.h"
 #include "Enemy/EnemyBaseFSM.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 ABossEnemy::ABossEnemy( const FObjectInitializer& ObjectInitializer )
 	:
@@ -38,7 +39,7 @@ void ABossEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	AttachPistol();
-	EnemyMaxSpeed = 500.f;
+	GetCharacterMovement()->MaxWalkSpeed = 500;
 }
 
 UBehaviorTree* ABossEnemy::GetBehaviorTree()

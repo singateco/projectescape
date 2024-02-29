@@ -37,6 +37,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TSubclassOf<AHealthPickup> HealthPickupActorClass;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UMaterialInstance* UIMaterial;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UEnemyStatsComponent* EnemyStatsComponent;
 	
@@ -62,7 +65,7 @@ public:
 	class UNavigationInvokerComponent* NavComponent;
 
 	UPROPERTY( EditAnywhere )
-	float EnemyMaxSpeed = 300.0f;
+	float EnemyMaxSpeed = 250.0f;
 
 	// --------------------- Function ---------------------------
 

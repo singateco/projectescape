@@ -54,8 +54,16 @@ void UPlayerStatsComponent::OnEnemyHitByPlayerGun(AEnemyBase* Enemy, FHitResult 
 			ActorsToIgnore,
 			OutComponents);
 	}
+
+	const float CalculatedGunDamage = GetGunDamage(bHitWeakPoint);
+	Enemy->ProcessDamage(CalculatedGunDamage);
+	const bool IsDyingHit = Enemy->GetStatsComponent()->GetHP() <= 0;
+
+	if (Player->FireComponent->MainUI)
+	{
+		Player->FireComponent->MainUI->ShowEnemyHit(IsDyingHit);
+	}
 	
-	Enemy->ProcessDamage(GetGunDamage(bHitWeakPoint));
 	for (TSubclassOf<UEffect> EffectBPClass : EffectsToApplyWhenEnemyHitByPlayerGun)
 	{
 		UEffect* NewEffect = NewObject<UEffect>(Enemy->EnemyStatsComponent, EffectBPClass);

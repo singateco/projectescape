@@ -41,6 +41,16 @@ AEnemyBase::AEnemyBase(const FObjectInitializer& ObjectInitializer)
 
 	EnemyHPComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("EnemyHPComponent"));
 	EnemyHPComponent->SetupAttachment(RootComponent);
+
+	ConstructorHelpers::FObjectFinder<UMaterialInstance> UIMaterialFinder
+	{
+		TEXT("/Script/Engine.MaterialInstanceConstant'/Engine/EngineMaterials/Widget3DPassThrough_Translucent_OneSided.Widget3DPassThrough_Translucent_OneSided'")
+	};
+	if (UIMaterialFinder.Succeeded())
+	{
+		UIMaterial = UIMaterialFinder.Object;
+	}
+
 	
 	//WBP(블루프린트 클래스)를 로드해서 HPComp의 위젯으로 설정, FClassFinder 주소 마지막에 _C해야함 블루프린트라서
 	ConstructorHelpers::FClassFinder<UUserWidget> tempHP(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/UI/WBP_EnemyHealthBar.WBP_EnemyHealthBar_C'"));
@@ -49,9 +59,13 @@ AEnemyBase::AEnemyBase(const FObjectInitializer& ObjectInitializer)
 	{
 		EnemyHPComponent->SetWidgetClass(tempHP.Class);
 		EnemyHPComponent->SetWidgetSpace(EWidgetSpace::Screen);
-		EnemyHPComponent->SetDrawSize(FVector2D(70, 10));
-		EnemyHPComponent->SetRelativeLocation(FVector(0, 0, 100));
+		EnemyHPComponent->SetDrawSize(FVector2D(70, 8));
+		EnemyHPComponent->SetRelativeLocation(FVector(0, 0, 90));
 		EnemyHPComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		if (UIMaterial)
+		{
+			EnemyHPComponent->SetMaterial(0, UIMaterial);
+		}
 	}
 
 	ConstructorHelpers::FClassFinder<UUserWidget> DamageNumberWidgetFinder {TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/UI/WBP_DamageNumber.WBP_DamageNumber_C'")};
@@ -96,11 +110,11 @@ void AEnemyBase::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 	
-	FVector Start = EnemyHPComponent->GetComponentLocation();
+	/*FVector Start = EnemyHPComponent->GetComponentLocation();
 	FVector End = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->GetCameraLocation();
 
 	float DistanceToPlayer = FVector::Distance( Start, End );
-	float MaxDisplayDistance = 3000.0f;
+	float MaxDisplayDistance = 3000.0f;*/
 
 	//if(DistanceToPlayer <= MaxDisplayDistance )
 	//{
@@ -111,9 +125,8 @@ void AEnemyBase::Tick(float DeltaSeconds)
 	//	EnemyHPComponent->SetVisibility( false );
 	//}
 
-	FRotator newRoatation = UKismetMathLibrary::FindLookAtRotation(Start, End);
-	EnemyHPComponent->SetWorldRotation(newRoatation);
-
+	//FRotator newRoatation = UKismetMathLibrary::FindLookAtRotation(Start, End);
+	//EnemyHPComponent->SetWorldRotation(newRoatation);
 }
 
 void AEnemyBase::PreInitializeComponents()

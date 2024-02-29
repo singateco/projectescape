@@ -24,8 +24,8 @@ URifleEnemyFSM::URifleEnemyFSM()
 	
 	AttackDistance = 3000;
 
-	MinAttackTime = 0.5f;
-	MaxAttackTime = 1.0f;
+	MinAttackTime = 5.0f;
+	MaxAttackTime = 6.0f;
 
 	Accuracy = 3;
 	Spread = 5.0f;
