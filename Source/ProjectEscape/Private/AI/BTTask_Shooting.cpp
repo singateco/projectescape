@@ -3,9 +3,11 @@
 
 #include "AI/BTTask_Shooting.h"
 
+#include "Particles/ParticleSystem.h"
 #include "AI/BossAIController.h"
 #include "Enemy/BossEnemy.h"
 #include "Enemy/EnemyBullet.h"
+#include "Kismet/GameplayStatics.h"
 #include "Player/ProjectEscapePlayer.h"
 
 UBTTask_Shooting::UBTTask_Shooting()
@@ -16,8 +18,24 @@ UBTTask_Shooting::UBTTask_Shooting()
 
     if ( BulletClassFinder.Succeeded() )
     {
-        EnemyBulletFactory=BulletClassFinder.Class;
+        EnemyBulletFactory = BulletClassFinder.Class;
     }
+
+    static ConstructorHelpers::FObjectFinder<USoundBase> ShootingSoundFinder( TEXT( "/Script/Engine.SoundCue'/Game/Resources/KDE/Sound/PlayerGunFire_Cue.PlayerGunFire_Cue'" ) );
+
+    if ( ShootingSoundFinder.Succeeded() )
+    {
+        ShootingSound = ShootingSoundFinder.Object;
+    }
+
+    static ConstructorHelpers::FObjectFinder<UParticleSystem> MuzzleFlashFinder( TEXT( "/Script/Engine.ParticleSystem'/Game/Resources/KDE/GunsAndGrenade/Modern/Weapons/Assets/VFX/P_MuzzleFlash_01.P_MuzzleFlash_01'" ) );
+
+    if ( MuzzleFlashFinder.Succeeded() )
+    {
+        MuzzleFlash= MuzzleFlashFinder.Object;
+    }
+
+   
 }
 
 EBTNodeResult::Type UBTTask_Shooting::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -31,13 +49,21 @@ EBTNodeResult::Type UBTTask_Shooting::ExecuteTask(UBehaviorTreeComponent& OwnerC
         // 현재 캐릭터의 위치와 회전을 얻어옴
         FVector MuzzleLocation = Boss->GunMesh->GetSocketLocation( FName( TEXT( "Muzzle" ) ) );
 
-        auto Player = Cast<AProjectEscapePlayer>( GetWorld()->GetFirstPlayerController()->GetPawn() );
-        FVector DirectionToPlayer = (Player->GetActorLocation() - Boss->GetActorLocation()).GetSafeNormal();
-        FRotator MuzzleRotation = DirectionToPlayer.Rotation();
+        auto Player = UGameplayStatics::GetPlayerCharacter( GetWorld(), 0 );
+        FVector DirectionToPlayer = (Player->GetActorLocation() - MuzzleLocation).GetSafeNormal();
+        FRotator RotationToPlayer = DirectionToPlayer.Rotation();
 
-        GetWorld()->SpawnActor<AEnemyBullet>( EnemyBulletFactory, MuzzleLocation, MuzzleRotation );
+        GetWorld()->SpawnActor<AEnemyBullet>( EnemyBulletFactory, MuzzleLocation, RotationToPlayer );
 
+
+        UGameplayStatics::SpawnEmitterAttached( MuzzleFlash, Boss->GunMesh, FName( TEXT( "Muzzle" ) ), FVector::ZeroVector, FRotator::ZeroRotator, FVector( 1 ), EAttachLocation::SnapToTarget, true );
+        UGameplayStatics::PlaySoundAtLocation( GetWorld(), ShootingSound, MuzzleLocation, FRotator() );
+
+        FinishLatentTask( OwnerComp, EBTNodeResult::Succeeded );
+        return EBTNodeResult::Succeeded;
     }
-    FinishLatentTask( OwnerComp, EBTNodeResult::Succeeded );
-    return EBTNodeResult::Succeeded;
+    else
+    {
+        return EBTNodeResult::Failed;
+    }
 }

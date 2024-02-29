@@ -55,11 +55,12 @@ void ABossAIController::SetupPerceptionSystem()
 
 void ABossAIController::OnTargetDetected(AActor* Actor, FAIStimulus const Stimulus)
 {
-	if ( AProjectEscapePlayer* Player=Cast<AProjectEscapePlayer>( Actor ) )
+
+	auto SeeActor=Cast<AProjectEscapePlayer>( Actor );
+	if ( SeeActor )
 	{
 		GetBlackboardComponent()->SetValueAsBool( "CanSeePlayer", Stimulus.WasSuccessfullySensed() );
 	}
-
 }
 
 

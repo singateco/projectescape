@@ -237,15 +237,13 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		//FRotator NewRotation = FRotator( 10 * DeltaTime, 10 * DeltaTime, 10 * DeltaTime );
 		//HandleObject->SetTargetLocationAndRotation( NewLocation, NewRotation );
 
-		
-	}else if( bIsGrabbing == false || OtherEnemies.Num() > 0) // 물체 안잡고 있거나 적들이 있을 때
-	{
-
 		if ( AnimInstance && GrabbingMontage && !AnimInstance->Montage_IsPlaying( nullptr ) )
 		{
 			AnimInstance->Montage_Play( GrabbingMontage );
 		}
-
+		
+	}else if( bIsGrabbing == false || OtherEnemies.Num() > 0) // 물체 안잡고 있거나 적들이 있을 때
+	{
 		//bool bTracePickUpActorSphereMulti = UKismetSystemLibrary::SphereTraceMulti( GetWorld(), Start, End, RadiusDetection, TraceTypeQuery, false, SphereTraceIgnoreActorsArray, EDrawDebugTrace::None, HitInfoArrayPickUpActors, true );
 		bool bTracePickUpActorSphereSingle = UKismetSystemLibrary::SphereTraceSingle(GetWorld(), Start, End , RadiusDetection, TraceTypeQuery , false, SphereTraceIgnoreActorsArray, EDrawDebugTrace::None, HitInfoPickUpActor, true );
 
