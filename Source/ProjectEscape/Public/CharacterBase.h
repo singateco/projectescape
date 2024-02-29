@@ -36,6 +36,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void ProcessDamage(const float DamageValue) const { StatsComponent->ProcessDamage(DamageValue); } 
+
+	UFUNCTION(BlueprintCallable)
+	void ProcessDamageFromLoc(const float DamageValue, const FHitResult& HitResult) const { StatsComponent->ProcessDamageFromLoc(DamageValue, HitResult); }
 	
 	UFUNCTION(BlueprintCallable)
 	UStatsComponent* GetStatsComponent() const { return StatsComponent; }

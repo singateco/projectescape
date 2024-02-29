@@ -7,11 +7,16 @@
 #include "Player/ProjectEscapePlayer.h"
 #include "Components/Image.h"
 #include "Components/ProgressBar.h"
+#include "Components/RadialSlider.h"
 
 
 void UMainUI::SetCurrentBullets()
 {
-	TXT_CurrentBullets->SetText( FText::AsNumber( Player->PlayerStatsComponent->CurrentBullets ) );
+	BulletText->SetText(FText::FromString(
+			FString::Printf(TEXT("%d | %d"), Player->PlayerStatsComponent->CurrentBullets, Player->PlayerStatsComponent->MaxBullets)
+		));
+	const float SliderValue = 1.f - (1.0f * Player->PlayerStatsComponent->CurrentBullets / Player->PlayerStatsComponent->MaxBullets);
+	BulletSlider->SetValue(SliderValue);
 }
 
 void UMainUI::NativeOnInitialized()
@@ -62,4 +67,16 @@ void UMainUI::EndQSkillUI()
 
 	PRB_QSkill->SetVisibility( ESlateVisibility::Hidden );
 	TXT_QSkill->SetVisibility( ESlateVisibility::Hidden );
+}
+
+void UMainUI::SetCrossHairColor(const bool EnemySeen)
+{
+	if (EnemySeen)
+	{
+		CrossHair->SetBrushTintColor(FColor::Red);
+	}
+	else
+	{
+		CrossHair->SetBrushTintColor(FColor::White);
+	}
 }

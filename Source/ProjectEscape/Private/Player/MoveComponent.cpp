@@ -223,7 +223,7 @@ void UMoveComponent::FlyButton(const FInputActionInstance& InputActionInstance)
 		CharacterMovementComponent->SetMovementMode(MOVE_Flying);
 	}
 
-	const float StaminaToUse = MovementStaminaPerSecond * GetWorld()->GetDeltaSeconds() * 2;
+	const float StaminaToUse = MovementStaminaPerSecond * GetWorld()->GetDeltaSeconds() * 1.5f;
 	if (CharacterMovementComponent->MovementMode == MOVE_Flying && Stamina > StaminaToUse)
 	{
 		Player->AddMovementInput(FVector::UpVector, UpwardForce);
@@ -287,7 +287,7 @@ void UMoveComponent::SetupPlayerInputComponent(UEnhancedInputComponent* PlayerIn
 	PlayerInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &UMoveComponent::Move);
 
 	// Dashing
-	PlayerInputComponent->BindAction(DashAction, ETriggerEvent::Started, this, &UMoveComponent::Dash);
+	PlayerInputComponent->BindAction(DashAction, ETriggerEvent::Triggered, this, &UMoveComponent::Dash);
 
 	// Flying
 	PlayerInputComponent->BindAction(FlyAction, ETriggerEvent::Triggered, this, &UMoveComponent::FlyButton);
@@ -366,6 +366,14 @@ void UMoveComponent::Dash(const FInputActionInstance& InputActionInstance)
 		return;
 	}
 
+	const float TriggeredTime = InputActionInstance.GetLastTriggeredWorldTime();
+	//(LogTemp, Warning, TEXT("TriggeredTime : %.1f, LastDashTime : %.1f"), TriggeredTime, LastDashTime);
+	if (TriggeredTime - LastDashTime <= DashCooldownSeconds)
+	{
+		return;
+	}
+	LastDashTime = TriggeredTime;
+
 	Stamina = FMath::Max(0, Stamina - DashStamina);
 	Player->AddGameplayTag(PEGameplayTags::Status_IsDashing);
 
@@ -377,15 +385,19 @@ void UMoveComponent::Dash(const FInputActionInstance& InputActionInstance)
 		CharacterMovementComponent->UpdateComponentVelocity();
 		CharacterMovementComponent->GravityScale = 0.05f;
 
+		TWeakObjectPtr<UMoveComponent> WeakThis = this;
 		if (!DashGravityHandle.IsValid())
 		{
 			GetWorld()->GetTimerManager().SetTimer(
 			DashGravityHandle,
 			FTimerDelegate::CreateLambda(
-				[&]
+				[WeakThis]
 				{
-					CharacterMovementComponent->GravityScale = 1.f;
-					DashGravityHandle.Invalidate();
+					if (WeakThis.IsValid())
+					{
+						WeakThis->CharacterMovementComponent->GravityScale = 1.f;
+						WeakThis->DashGravityHandle.Invalidate();
+					}
 				}),
 			0.4f,
 			false);

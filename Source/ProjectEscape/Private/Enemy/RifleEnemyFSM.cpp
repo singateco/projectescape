@@ -56,7 +56,7 @@ void URifleEnemyFSM::TickAttack()
 		CurrentTime = 0;
 		EnemyAnim->PlayShootMontage();
 
-		FVector DirectionToPlayer = (Player->GetActorLocation() - Enemy->GetActorLocation()).GetSafeNormal();
+		FVector DirectionToPlayer = (Player->GetActorLocation() - MuzzleLoc).GetSafeNormal();
 		FRotator RotationToPlayer = DirectionToPlayer.Rotation();
 
 		check( EnemyBulletFactory );

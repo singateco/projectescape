@@ -11,6 +11,7 @@ class UEffect;
 class ACharacterBase;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FHPChanged, float, ChangedMaxHP, float, ChangedHP);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTakenDamage, float, Damage);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTakenDamageFromLoc, const FHitResult&, HitResult);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGameplayTagAdded, const FGameplayTag&, Tag);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGameplayTagRemoved, const FGameplayTag&, Tag);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FHPReachedZero);
@@ -91,6 +92,9 @@ public:
 	void ProcessDamage(const float DamageValue);
 
 	UFUNCTION(BlueprintCallable)
+	void ProcessDamageFromLoc(const float DamageValue, const FHitResult& HitResult);
+	
+	UFUNCTION(BlueprintCallable)
 	void ProcessHealing(const float HealValue);
 
 	UPROPERTY(BlueprintAssignable)
@@ -103,4 +107,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FHPReachedZero OnHPReachedZero;
+
+	UPROPERTY(BlueprintAssignable)
+	FTakenDamageFromLoc OnTakenDamageFromLoc;
 };

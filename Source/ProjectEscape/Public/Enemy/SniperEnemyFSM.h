@@ -17,6 +17,9 @@ class PROJECTESCAPE_API USniperEnemyFSM : public UEnemyBaseFSM
 public:
 	USniperEnemyFSM();
 
+	UPROPERTY()
+	FVector TargetPostion;
+	
 	UPROPERTY( EditAnyWhere, BlueprintReadWrite, Category="Rifle" )
 	TSubclassOf<class AEnemyBullet> EnemyBulletFactory;
 

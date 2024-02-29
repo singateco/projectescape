@@ -91,7 +91,7 @@ void UEnemyBaseFSM::TickMove()
 	if (result.IsSuccessful())
 	{
 		//  타겟을 향해 이동하고싶다.
-		Ai->MoveToLocation( destination );
+		Ai->MoveToLocation( destination, EnemyAcceptanceRadius );
 	}
 	else // 그렇지 않다면
 	{

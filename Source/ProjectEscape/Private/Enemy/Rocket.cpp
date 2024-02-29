@@ -16,6 +16,7 @@ ARocket::ARocket()
 	CollisionComp=CreateDefaultSubobject<USphereComponent>( TEXT( "CollisionComp" ) );
 	SetRootComponent( CollisionComp );
 	CollisionComp->SetSphereRadius( 10 );
+	CollisionComp->SetCollisionProfileName( TEXT( "Projectile" ) );
 	CollisionComp->SetNotifyRigidBodyCollision( true );
 
 	RocketMesh=CreateDefaultSubobject<UStaticMeshComponent>( TEXT( "RocketMesh" ) );
@@ -94,14 +95,14 @@ void ARocket::Explosion()
 				// 라인 트레이스에서 플레이어가 충돌한 경우 데미지를 입힘
 				if ( !bHit )
 				{
-					OtherCharacter->ProcessDamage( 10 );
+					OtherCharacter->ProcessDamageFromLoc(10, HitResult);
 				}
 			}
 		}
 	}
 
 	//UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), ExplosionEffect, RocketLoc, FRotator(), FVector( 10 ), true, EPSCPoolMethod::None, true );
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, RocketLoc, FRotator(), FVector( 1.4 ), true );
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, RocketLoc, FRotator(), FVector( ExplosionEffectSize ), true );
 	UGameplayStatics::PlaySoundAtLocation( GetWorld(), ExplosionSound, RocketLoc );
 
 	this->Destroy();

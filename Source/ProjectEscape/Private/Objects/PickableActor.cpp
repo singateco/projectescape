@@ -14,6 +14,9 @@
 #include "Player/PlayerStatsComponent.h"
 #include "Player/ProjectEscapePlayer.h"
 #include "ProjectEscape/ProjectEscape.h"
+#include "NiagaraFunctionLibrary.h"
+
+
 
 // Sets default values
 APickableActor::APickableActor()
@@ -21,10 +24,10 @@ APickableActor::APickableActor()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	CollisionComp=CreateDefaultSubobject<USphereComponent>( TEXT( "CollisionComp" ) );
-	SetRootComponent( CollisionComp );
+	//CollisionComp=CreateDefaultSubobject<USphereComponent>( TEXT( "CollisionComp" ) );
+	//SetRootComponent( CollisionComp );
 	//CollisionComp->SetCollisionProfileName( TEXT( "PickUpActor" ) );
-	CollisionComp->SetCollisionEnabled( ECollisionEnabled::NoCollision ); 
+	//CollisionComp->SetCollisionEnabled( ECollisionEnabled::NoCollision ); 
 	//CollisionComp->SetNotifyRigidBodyCollision( true ); // Simulation Generates Hit Events
 	//CollisionComp->SetSimulatePhysics(true);
 	//CollisionComp->SetSphereRadius(10);
@@ -37,14 +40,36 @@ APickableActor::APickableActor()
 	MeshComp->SetSimulatePhysics( true );
 
 
-	CollisionComp->SetRelativeScale3D( MeshComp->GetRelativeScale3D() );
+	//CollisionComp->SetRelativeScale3D( MeshComp->GetRelativeScale3D() );
 
-	static ConstructorHelpers::FObjectFinder<UParticleSystem> FireEffectFinder{ TEXT( "/Script/Engine.ParticleSystem'/Game/StarterContent/Particles/P_Explosion.P_Explosion'" ) };
-	if ( FireEffectFinder.Succeeded() )
+	//static ConstructorHelpers::FObjectFinder<UParticleSystem> FireEffectFinder{ TEXT( "/Script/Engine.ParticleSystem'/Game/StarterContent/Particles/P_Explosion.P_Explosion'" ) };
+
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> ExplosionObjEffectFinder{ TEXT( "/Script/Niagara.NiagaraSystem'/Game/Resources/KDE/ExplosionsMegaPack/Niagara/Snow/NS_Explosion_Snow_3.NS_Explosion_Snow_3'" ) };
+
+	if ( ExplosionObjEffectFinder.Succeeded() )
 	{
-		GunEffect=FireEffectFinder.Object;
+		ExplosionObjEffect=ExplosionObjEffectFinder.Object;
 	}
+
+
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> ExplosionEffectFinder{ TEXT( "/Script/Niagara.NiagaraSystem'/Game/Resources/KDE/ExplosionsMegaPack/Niagara/Snow/NS_Explosion_Snow_1.NS_Explosion_Snow_1'" ) };
+
+	if ( ExplosionEffectFinder.Succeeded() )
+	{
+		ExplosionEffect=ExplosionEffectFinder.Object;
+	}
+
 	//Box->SetCollisionProfileName( TEXT( "GrabObject" ) );
+
+
+	// Blood VFX
+	static const ConstructorHelpers::FObjectFinder<UNiagaraSystem> BloodEffectFinder{ TEXT( "/Script/Niagara.NiagaraSystem'/Game/Resources/KDE/Blood_VFX/VFX/Performance_Versions/Bullet_Hits/One_Shot/OS_NS_Bullet_Hit_Medium.OS_NS_Bullet_Hit_Medium'" ) };
+	if ( BloodEffectFinder.Succeeded() )
+	{
+		BloodEffect=BloodEffectFinder.Object;
+	}
+
+
 }
 
 // Called when the game starts or when spawned
@@ -82,8 +107,6 @@ void APickableActor::OnCompHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 	//	 return;
 	// }
 
-
-
 	//if( this->MeshComp->GetComponentVelocity().Length() > 10000) // 던질때만 체크
 	//if( this->MeshComp->GetComponentVelocity().Length() > 9000) // 던질때만 체크
 	if (!Player || !Player->GrabComponent) return;
@@ -120,21 +143,35 @@ void APickableActor::OnCompHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 				{
 					OtherCharacter->ProcessDamage( Player->PlayerStatsComponent->GrabDamageValue );
 
-					UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), GunEffect, OtherCharacter->GetActorLocation(), FRotator(), FVector( 10 ), true, EPSCPoolMethod::None, true );
+					UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), BloodEffect, OtherCharacter->GetActorLocation(), FRotator(), ExplosionScale , true );
+
 				}/*
 				else
 				{
 
 					UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), GunEffect, this->MeshComp->GetComponentLocation(), FRotator(), FVector( EmitterScaleValue ), true, EPSCPoolMethod::None, true );
 				}*/
+				
+			//UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, HitActor->GetActorLocation(), FRotator(), ExplosionScale, true );
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), ExplosionScale, true );
 			}
 
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), ExplosionScale, true );
+			//UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionObjEffect, this->MeshComp->GetComponentLocation(), FRotator(), ExplosionScale, true );
+			this->Destroy();
 		}
 
-		UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), GunEffect, this->MeshComp->GetComponentLocation(), FRotator(), FVector( 10 ), true, EPSCPoolMethod::None, true );
-		//UE_LOG( SYLog, Warning, TEXT( "======================" ) );
+		//UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), ExplosionEffect, this->MeshComp->GetComponentLocation(), FRotator(), FVector( 10 ), true, EPSCPoolMethod::None, true );
 
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), ExplosionScale, true );
+
+		//GetActorLocation() 하면 안됨
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionObjEffect, this->MeshComp->GetComponentLocation(), FRotator(), ExplosionScale, true );
+		
 		this->Destroy();
 		Player->GrabComponent->bIsPushing=false;
 	}
+
+
+
 }

@@ -23,7 +23,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY( EditDefaultsOnly )
+	UPROPERTY( EditAnywhere, BlueprintReadWrite )
 	UStaticMeshComponent* GrenadeMesh;
 
 	UPROPERTY( EditAnywhere, Category = Effect )
@@ -41,9 +41,14 @@ public:
 	UPROPERTY( EditAnywhere )
 	float SphereRadius = 500.0f;
 
+	UPROPERTY( EditAnywhere )
+	float ExplosionEffectSize = 2.0f;
+
 	UFUNCTION(BlueprintCallable)
 	void Explosion();
 
+	virtual void Explosion(const FHitResult& Hit);
+
 	UFUNCTION()
-	void OnMeshBeginHit( UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit );
+	virtual void OnMeshBeginHit( UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit );
 };

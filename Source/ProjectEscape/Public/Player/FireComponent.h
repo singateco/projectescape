@@ -15,6 +15,8 @@ class ANormalGun;
 class UMainUI;
 class UParticleSystem;
 class AProjectEscapePlayerController;
+class UNiagaraSystem;
+class USoundBase;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEnemyHitByPlayerGun, AEnemyBase*, Enemy, FHitResult, HitResult);
 
@@ -41,6 +43,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	float MaxDistanceToGun = 100000.0f;
 
+	UPROPERTY( EditDefaultsOnly, Category="Weapon" )
+	FVector FireEffectScale = FVector(10);
+
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	bool bHasPistol = false;
 
@@ -58,12 +63,33 @@ public:
 	TSubclassOf<ANormalGun> NormalGunClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Pistol")
-	UParticleSystem* GunEffect;
+	UNiagaraSystem* GunUpgradeEffect;
+
+	UPROPERTY( EditAnywhere, Category="Pistol" )
+	UMaterialInterface* WallDecalEffect;
+
+	UPROPERTY( EditAnywhere, Category="Pistol" )
+	FVector WallDecalScale = FVector(10);;
+
+	UPROPERTY( EditDefaultsOnly, Category="Pistol" )
+	UNiagaraSystem* BloodEffect;
+
+	UPROPERTY( EditDefaultsOnly, Category="Pistol" )
+	UNiagaraSystem* GunEffectNoActor;
+
+
+	UPROPERTY( EditDefaultsOnly, Category="Pistol" )
+	UParticleSystem* MuzzleEffect;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Pistol")
 	float GunImpulseForce {2500.f};
 
+	UPROPERTY( EditDefaultsOnly, Category="Pistol" )
+	USoundBase* GunSoundClass;
 
+	UPROPERTY( EditDefaultsOnly, Category="Pistol" )
+	USoundBase* GunHitSound;
+	
 	UPROPERTY()
 	UMainUI* MainUI;
 
@@ -75,6 +101,14 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Settings|ADS")
 	FVector AdsOffset = FVector(-10, -60, 20);
+
+	UPROPERTY()
+	FHitResult HitInfo1;
+
+	UPROPERTY()
+	FHitResult HitInfo2;
+
+	void CheckIfShootCanHit();
 
 	virtual void InitializeComponent() override;
 
@@ -119,7 +153,6 @@ public:
 
 	UFUNCTION()
 	void HandleFireAnimation();
-
 
 	UFUNCTION()
 	void PlayReloadAnimation();

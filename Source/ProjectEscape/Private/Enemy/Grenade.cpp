@@ -83,23 +83,27 @@ void AGrenade::Explosion()
 				// 라인 트레이스에서 플레이어가 충돌한 경우 데미지를 입힘
 				if ( !bHit )
 				{
-					OtherCharacter->ProcessDamage( 10 );
+					OtherCharacter->ProcessDamageFromLoc( 10, HitResult );
 				}
 			}
 		}
 	}
-
 	//UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), ExplosionEffect, GrenadeLoc, FRotator(), FVector( 10 ), true, EPSCPoolMethod::None, true );
 	//UGameplayStatics::SpawnDecalAtLocation( GetWorld(), GrenadeDecal, FVector( 500 ), GrenadeLoc, FRotator(), 10 );
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, GrenadeLoc, FRotator(), FVector(2), true);
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, GrenadeLoc, FRotator(), FVector(ExplosionEffectSize), true);
 	UGameplayStatics::PlaySoundAtLocation( GetWorld(), ExplosionSound, GrenadeLoc );
 
 	Destroy();
 
 }
 
+void AGrenade::Explosion(const FHitResult& Hit)
+{
+
+}
+
 void AGrenade::OnMeshBeginHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-	FVector NormalImpulse, const FHitResult& Hit)
+                              FVector NormalImpulse, const FHitResult& Hit)
 {
 	/*GrenadeRange->SetVisibility( true );*/
 }

@@ -3,6 +3,8 @@
 
 #include "Enemy/SniperEnemy.h"
 
+#include "Components/SplineMeshComponent.h"
+
 ASniperEnemy::ASniperEnemy(const FObjectInitializer& ObjectInitializer)
 	:
 	Super( ObjectInitializer )
@@ -25,19 +27,22 @@ ASniperEnemy::ASniperEnemy(const FObjectInitializer& ObjectInitializer)
 		//GunMesh->SetRelativeLocationAndRotation( FVector( 0, -7.3, 2.75 ), FRotator(6.6,-97 ,90));
 		GunMesh->SetRelativeScale3D( FVector( 1.1f ) );
 	}
+	SplineLaserBeam = CreateDefaultSubobject<USplineMeshComponent>(TEXT("Spline Laser Beam"));
+	SplineLaserBeam->SetRelativeLocation(FVector::Zero());
+	SplineLaserBeam->SetMobility(EComponentMobility::Movable);
+	SplineLaserBeam->SetupAttachment(GunMesh, TEXT("Laser"));
+	SplineLaserBeam->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SplineLaserBeam->SetHiddenInGame(true);	
+	SplineLaserBeam->SetAbsolute(false, true, true);
+	SplineLaserBeam->SetStartScale(FVector2d(5));
+	SplineLaserBeam->SetEndScale(FVector2d(5));
 
-	LaserBeam = CreateDefaultSubobject<UStaticMeshComponent>( TEXT( "LaserBeam" ) );
-	LaserBeam->SetupAttachment( GunMesh, TEXT("Laser") );
-	LaserBeam->SetRelativeScale3D( FVector( 100.0f, 1.0f, 1.0f ) );
-	LaserBeam->SetRelativeLocationAndRotation( FVector( 0, 0, 0 ), FRotator( 90, 0, 0 ) );
-	LaserBeam->SetCollisionEnabled( ECollisionEnabled::NoCollision );
-	LaserBeam->SetHiddenInGame( true );
-
+	
 	ConstructorHelpers::FObjectFinder<UStaticMesh>TempLaserMesh( TEXT( "/Script/Engine.StaticMesh'/Game/Resources/KDE/Effects/Laser/Laser_Beam.Laser_Beam'" ) );
 
 	if ( TempLaserMesh.Succeeded() )
 	{
-		LaserBeam->SetStaticMesh( TempLaserMesh.Object );
+		SplineLaserBeam->SetStaticMesh( TempLaserMesh.Object );
 	}
 
 	MaxHP = 8;

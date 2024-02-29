@@ -68,7 +68,7 @@ void UGrenadeEnemyFSM::TickAttack()
 		CurrentTime = 0;
 		//슛 몽타주가 문제있는듯
 		//EnemyAnim->PlayShootMontage();
-		FVector DirectionToPlayer = (Player->GetActorLocation() - Enemy->GetActorLocation()).GetSafeNormal();
+		FVector DirectionToPlayer = (Player->GetActorLocation() - MuzzleLoc).GetSafeNormal();
 		FRotator RotationToPlayer = DirectionToPlayer.Rotation();
 		check( EnemyBulletFactory );
 

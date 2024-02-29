@@ -18,4 +18,14 @@ public:
 	ABossEnemy( const FObjectInitializer& ObjectInitializer );
 
 	virtual void BeginPlay() override;
+
+	UPROPERTY(EditAnywhere)
+	class UBehaviorTree* Tree;
+
+	UPROPERTY( EditAnywhere ,BlueprintReadWrite)
+	USceneComponent* ThrowRef;
+
+	UBehaviorTree* GetBehaviorTree();
+	void AttachPistol();
+
 };

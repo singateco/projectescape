@@ -76,6 +76,7 @@ public:
 
 	float DieTime = 6.0f;
 	FVector RandomLocation;
+	float EnemyAcceptanceRadius = 1000.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bCanSeePlayer = false;

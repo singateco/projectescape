@@ -10,6 +10,7 @@
  * 
  */
 
+class URadialSlider;
 class UTextBlock;
 class AProjectEscapePlayer;
 class UProgressBar;
@@ -25,39 +26,36 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	AProjectEscapePlayer* Player;
 
+	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
+	UImage* CrossHair;
+	
 	UPROPERTY( BlueprintReadWrite, meta=(BindWidget) )
-	UTextBlock* TXT_CurrentBullets;
+	UTextBlock* BulletText;
+
+	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
+	URadialSlider* BulletSlider;
 
 	UPROPERTY( BlueprintReadWrite, meta=(BindWidget) )
-	UTextBlock* TXT_MaxBullets;
-
-	UPROPERTY( BlueprintReadWrite, meta=(BindWidget) )
-
 	UImage* IMG_QSkill;
 
 	UPROPERTY( BlueprintReadWrite, meta=(BindWidget) )
-
 	UImage* IMG_ESkill;
 
-
 	UPROPERTY( BlueprintReadWrite, meta=(BindWidget) )
-
 	UProgressBar* PRB_QSkill;
 
 	UPROPERTY( BlueprintReadWrite, meta=(BindWidget) )
-
 	UProgressBar* PRB_ESkill;
-
-
-
+	
 	UPROPERTY( BlueprintReadWrite, meta=(BindWidget) )
-
 	UTextBlock* TXT_QSkill;
 
 	UPROPERTY( BlueprintReadWrite, meta=(BindWidget) )
-
 	UTextBlock* TXT_ESkill;
 
+	UFUNCTION(BlueprintCallable)
+	void SetCrossHairColor(const bool EnemySeen);
+	
 	UFUNCTION()
 	void SetCurrentBullets();
 
@@ -78,8 +76,6 @@ public:
 
 	UFUNCTION()
 	void StartESkillUI();
-
-
 
 protected:
 	virtual void NativeOnInitialized() override;

@@ -10,6 +10,7 @@
 class UParticleSystem;
 class UStaticMeshComponent;
 class USphereComponent;
+class UNiagaraSystem;
 class AProjectEscapePlayer;
 
 UCLASS()
@@ -21,23 +22,34 @@ public:
 	// Sets default values for this actor's properties
 	APickableActor();
 
-	UPROPERTY( EditAnywhere )
-	USphereComponent* CollisionComp;
+	//UPROPERTY( EditAnywhere )
+	//USphereComponent* CollisionComp;
 
 	UPROPERTY( EditAnywhere )
 	UStaticMeshComponent* MeshComp;
 
 	UPROPERTY( EditAnywhere, BlueprintReadWrite )
-	float SphereRadius = 300.f;
+	float SphereRadius = 2000.f;
 
 	UPROPERTY( EditDefaultsOnly)
-	UParticleSystem* GunEffect;
+	//UParticleSystem* GunEffect;
+	UNiagaraSystem* ExplosionObjEffect;
+
+	UPROPERTY( EditDefaultsOnly )
+	//UParticleSystem* GunEffect;
+	UNiagaraSystem* ExplosionEffect;
 
 	UPROPERTY( EditDefaultsOnly )
 	AProjectEscapePlayer* Player;
 
 	UPROPERTY( EditDefaultsOnly )
 	float EmitterScaleValue = 7;
+
+	UPROPERTY( EditDefaultsOnly )
+	FVector ExplosionScale = FVector( 1 );
+
+	UPROPERTY( EditDefaultsOnly, Category="Pistol" )
+	UNiagaraSystem* BloodEffect;
 
 	FString txt1;
 	FString txt2;
