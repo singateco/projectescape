@@ -8,6 +8,7 @@
 #include "Enemy/BossEnemy.h"
 #include "Enemy/EnemyBullet.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Player/ProjectEscapePlayer.h"
 
 UBTTask_Shooting::UBTTask_Shooting()
@@ -35,7 +36,6 @@ UBTTask_Shooting::UBTTask_Shooting()
         MuzzleFlash= MuzzleFlashFinder.Object;
     }
 
-   
 }
 
 EBTNodeResult::Type UBTTask_Shooting::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -53,8 +53,19 @@ EBTNodeResult::Type UBTTask_Shooting::ExecuteTask(UBehaviorTreeComponent& OwnerC
         FVector DirectionToPlayer = (Player->GetActorLocation() - MuzzleLocation).GetSafeNormal();
         FRotator RotationToPlayer = DirectionToPlayer.Rotation();
 
-        GetWorld()->SpawnActor<AEnemyBullet>( EnemyBulletFactory, MuzzleLocation, RotationToPlayer );
+        float RandAccuracy = FMath::RandRange( 0, 9 );
+        if ( RandAccuracy < Accuracy )
+        {
+            GetWorld()->SpawnActor<AEnemyBullet>( EnemyBulletFactory, MuzzleLocation, RotationToPlayer );
+        }
+        else
+        {
+            float X=UKismetMathLibrary::RandomFloatInRange( Spread * -1, Spread );
+            float Y=UKismetMathLibrary::RandomFloatInRange( Spread * -1, Spread );
+            float Z=UKismetMathLibrary::RandomFloatInRange( Spread * -1, Spread );
 
+            GetWorld()->SpawnActor<AEnemyBullet>( EnemyBulletFactory, MuzzleLocation, RotationToPlayer + FRotator( X, Y, Z ) );
+        }
 
         UGameplayStatics::SpawnEmitterAttached( MuzzleFlash, Boss->GunMesh, FName( TEXT( "Muzzle" ) ), FVector::ZeroVector, FRotator::ZeroRotator, FVector( 1 ), EAttachLocation::SnapToTarget, true );
         UGameplayStatics::PlaySoundAtLocation( GetWorld(), ShootingSound, MuzzleLocation, FRotator() );
