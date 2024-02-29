@@ -21,7 +21,7 @@ UBTTask_Shooting::UBTTask_Shooting()
         EnemyBulletFactory = BulletClassFinder.Class;
     }
 
-    static ConstructorHelpers::FObjectFinder<USoundBase> ShootingSoundFinder( TEXT( "/Script/Engine.SoundCue'/Game/Resources/KDE/Sound/PlayerGunFire_Cue.PlayerGunFire_Cue'" ) );
+    static ConstructorHelpers::FObjectFinder<USoundBase> ShootingSoundFinder( TEXT( "/Script/Engine.SoundCue'/Game/Resources/KDE/Sound/GunFire_Cue.GunFire_Cue'" ) );
 
     if ( ShootingSoundFinder.Succeeded() )
     {
