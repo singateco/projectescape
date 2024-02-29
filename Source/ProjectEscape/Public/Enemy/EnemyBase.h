@@ -62,7 +62,7 @@ public:
 	class UNavigationInvokerComponent* NavComponent;
 
 	UPROPERTY( EditAnywhere )
-	float EnemyMaxSpeed = 300.0f;
+	float EnemyMaxSpeed = 250.0f;
 
 	// --------------------- Function ---------------------------
 

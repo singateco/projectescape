@@ -25,12 +25,14 @@ EBTNodeResult::Type UBTTask_FindPatrolPos::ExecuteTask(UBehaviorTreeComponent& O
 				FNavLocation Loc;
 				if (NavSys->GetRandomPointInNavigableRadius(Origin, SearchRadius, Loc) )
 				{
+					Loc.Location = Origin + (Loc.Location - Origin).GetSafeNormal() * SearchRadius;
 					OwnerComp.GetBlackboardComponent()->SetValueAsVector( GetSelectedBlackboardKey(), Loc.Location );
 				}
 
 				FinishLatentTask( OwnerComp, EBTNodeResult::Succeeded );
 				return EBTNodeResult::Succeeded;
 			}
+			
 		}
 	}
 	return EBTNodeResult::Failed;
