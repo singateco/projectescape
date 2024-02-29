@@ -385,15 +385,19 @@ void UMoveComponent::Dash(const FInputActionInstance& InputActionInstance)
 		CharacterMovementComponent->UpdateComponentVelocity();
 		CharacterMovementComponent->GravityScale = 0.05f;
 
+		TWeakObjectPtr<UMoveComponent> WeakThis = this;
 		if (!DashGravityHandle.IsValid())
 		{
 			GetWorld()->GetTimerManager().SetTimer(
 			DashGravityHandle,
 			FTimerDelegate::CreateLambda(
-				[&]
+				[WeakThis]
 				{
-					CharacterMovementComponent->GravityScale = 1.f;
-					DashGravityHandle.Invalidate();
+					if (WeakThis.IsValid())
+					{
+						WeakThis->CharacterMovementComponent->GravityScale = 1.f;
+						WeakThis->DashGravityHandle.Invalidate();
+					}
 				}),
 			0.4f,
 			false);
