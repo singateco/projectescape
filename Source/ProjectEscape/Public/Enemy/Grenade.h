@@ -47,6 +47,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Explosion();
 
+	virtual void Explosion(const FHitResult& Hit);
+
 	UFUNCTION()
 	virtual void OnMeshBeginHit( UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit );
 };

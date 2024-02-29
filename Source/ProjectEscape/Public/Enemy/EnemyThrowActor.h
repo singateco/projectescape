@@ -17,6 +17,8 @@ class PROJECTESCAPE_API AEnemyThrowActor : public AGrenade
 
 	AEnemyThrowActor();
 
+	void Explosion(const FHitResult& Hit) override;
+
 	void OnMeshBeginHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) override;
 
 };
