@@ -23,12 +23,12 @@ void UProjectEscapeAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	UPECharacterMovementComponent* CharMoveComp = CastChecked<UPECharacterMovementComponent>(Character->GetMovementComponent());
 	const FPECharacterGroundInfo& GroundInfo = CharMoveComp->GetGroundInfo();
 	GroundDistance = GroundInfo.GroundDistance;
+	bIsDashing = Character->HasMatchingGameplayTag(PEGameplayTags::Status_IsDashing);
 	
 	if (!Player)
 	{
 		return;
 	}
-	bIsDashing = Player->HasMatchingGameplayTag(PEGameplayTags::Status_IsDashing);
 	bHasFiring = Player->FireComponent->bHasFired;
 }
 
