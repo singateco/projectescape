@@ -99,6 +99,13 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Settings|ADS")
 	FVector AdsOffset = FVector(-10, -60, 20);
 
+	UPROPERTY()
+	FHitResult HitInfo1;
+
+	UPROPERTY()
+	FHitResult HitInfo2;
+
+	void CheckIfShootCanHit();
 
 	virtual void InitializeComponent() override;
 

@@ -26,6 +26,9 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	AProjectEscapePlayer* Player;
 
+	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
+	UImage* CrossHair;
+	
 	UPROPERTY( BlueprintReadWrite, meta=(BindWidget) )
 	UTextBlock* BulletText;
 
@@ -50,6 +53,9 @@ public:
 	UPROPERTY( BlueprintReadWrite, meta=(BindWidget) )
 	UTextBlock* TXT_ESkill;
 
+	UFUNCTION(BlueprintCallable)
+	void SetCrossHairColor(const bool EnemySeen);
+	
 	UFUNCTION()
 	void SetCurrentBullets();
 
