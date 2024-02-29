@@ -228,7 +228,8 @@ void UFireComponent::NormalGunFire()
 	//Player->SetActorRotation(GazeRotation);
 
 	FVector MuzzleLoc =NormalGun->NormalGunMesh->GetSocketLocation( FName( TEXT( "Muzzle" ) ) );
-	UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), MuzzleEffect, MuzzleLoc, FRotator(), FVector( 1 ), true, EPSCPoolMethod::None, true );
+	//UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), MuzzleEffect, MuzzleLoc, FRotator(), FVector( 1 ), true, EPSCPoolMethod::None, true );
+	UGameplayStatics::SpawnEmitterAttached( MuzzleEffect, NormalGun->NormalGunMesh ,FName(TEXT("Muzzle")),FVector::ForwardVector*1.0f, FRotator::ZeroRotator, EAttachLocation::SnapToTarget,true);
 
 	UGameplayStatics::PlaySoundAtLocation( GetWorld(), GunSoundClass, MuzzleLoc );
 
