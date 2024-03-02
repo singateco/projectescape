@@ -192,6 +192,6 @@ public:
 
 	void QSkillUpdateTimerDisplay();
 
-	void EnemyHPUITarget( TArray<AEnemyBase*> EnemiesSort );
+	void TargetEnemySorting(  );
 	virtual void Deactivate() override;
 };
