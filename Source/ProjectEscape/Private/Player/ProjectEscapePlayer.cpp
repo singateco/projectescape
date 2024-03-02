@@ -9,6 +9,7 @@
 #include "GameFramework/Controller.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "NiagaraComponent.h"
 #include "Blueprint/UserWidget.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Player/MoveComponent.h"
@@ -90,6 +91,9 @@ AProjectEscapePlayer::AProjectEscapePlayer(const FObjectInitializer& ObjectIniti
 
 	PlayerStatsComponent = Cast<UPlayerStatsComponent>(StatsComponent);
 
+	QShieldEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Q Shield Effect Component"));
+	QShieldEffect->SetupAttachment(GetMesh());
+
 	// Set MaxHP
 	MaxHP = 10;
 }
@@ -114,7 +118,7 @@ void AProjectEscapePlayer::BeginPlay()
 		PlayerStatsComponent->OnTakenDamageFromLoc.AddUniqueDynamic(this, &AProjectEscapePlayer::PlayHitReactAnim);
 	}
 
-	
+	QShieldEffect->Deactivate();
 }
 
 void AProjectEscapePlayer::Tick(float DeltaSeconds)

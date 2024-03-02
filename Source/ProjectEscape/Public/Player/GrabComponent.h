@@ -35,6 +35,19 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category="Input" )
 	UInputAction* InputActionQSkill;
 
+	UPROPERTY( EditDefaultsOnly, Category="Input" )
+	UInputAction* ActionThrow;
+
+
+
+	//UPROPERTY( EditDefaultsOnly, Category="Grab" )
+	//TArray<FVector2D> EnemiesScreenPosition;
+	//UPROPERTY( EditDefaultsOnly, Category="Grab" )
+	//TArray<AEnemyBase*> EnemiesCurrentInfo;
+
+	UPROPERTY( EditDefaultsOnly )
+	FVector2D CrosshairLocationScreen;
+
 	UPROPERTY()
 	AProjectEscapePlayer* Player;
 
@@ -98,18 +111,23 @@ public:
 
 
 	UPROPERTY( EditDefaultsOnly )
-	int32 QSkillMaxCoolTime = 6;
+	int32 QSkillMaxCoolTime = 15;
 
 	UPROPERTY( EditDefaultsOnly )
 	int32 ESkillMaxCoolTime = 5;
-
-
+	
 	UPROPERTY( EditDefaultsOnly )
-	int32 QSkillCurrentCoolTime=6;
-
+	int32 QSkillCurrentCoolTime= 12;
+	
 	UPROPERTY( EditDefaultsOnly )
 	int32 ESkillCurrentCoolTime=5;
 
+	UPROPERTY(EditDefaultsOnly)
+	float QSkillDurationSeconds {5.0f};
+	
+	UPROPERTY()
+	FTimerHandle QSkillHandle;
+	
 	//UPROPERTY( EditDefaultsOnly, Category="QSkill" )
 	//UParticleSystem* QExplosionEffect;
 
@@ -120,11 +138,19 @@ public:
 	UPROPERTY( EditAnywhere )
 	//TArray<AActor*> OtherEnemies;
 	TArray<AEnemyBase*> OtherEnemies;
+	UPROPERTY( EditAnywhere )
 
 	FTimerHandle ESkillCountDownHandle;
+
+	UPROPERTY( EditAnywhere )
+
 	FTimerHandle QSkillCountDownHandle;
 
+	UPROPERTY( EditAnywhere )
+	float minDist=50.f;
+
 	UPROPERTY()
+
 	UAnimInstance* AnimInstance;
 
 	UPROPERTY(EditDefaultsOnly)
@@ -132,7 +158,10 @@ public:
 
 	UPROPERTY(EditDefaultsOnly)
 	UAnimMontage* ThrowingMontage;
-	
+
+	int32 Sizex = 1;
+	int32 Sizey = 1;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

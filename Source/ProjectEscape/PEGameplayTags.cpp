@@ -22,4 +22,5 @@ namespace PEGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_IsDashing, "Status.IsDashing", "대시를 하고 있다.")
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_IsADS, "Status.IsADS", "조준사격을 하고 있다.")
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_CanShoot, "Status.CanShoot", "사격을 할 수 있다.")
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_CantBeDamaged, "Status.CantBeDamaged", "데미지를 받지 않는다.")
 }
