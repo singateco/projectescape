@@ -82,6 +82,9 @@ UGrabComponent::UGrabComponent()
 	{
 		ThrowingMontage = ThrowMontageFinder.Object;
 	}
+
+
+
 }
 
 

@@ -11,6 +11,7 @@ class UParticleSystem;
 class UStaticMeshComponent;
 class USphereComponent;
 class UNiagaraSystem;
+//class USoundBase;
 class AProjectEscapePlayer;
 
 UCLASS()
@@ -50,6 +51,10 @@ public:
 
 	UPROPERTY( EditDefaultsOnly, Category="Pistol" )
 	UNiagaraSystem* BloodEffect;
+
+	UPROPERTY( EditAnywhere )
+	USoundBase* ExplosionSoundClass;
+
 
 	FString txt1;
 	FString txt2;

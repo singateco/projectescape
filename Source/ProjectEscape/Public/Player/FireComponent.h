@@ -157,6 +157,9 @@ public:
 	UFUNCTION()
 	void PlayReloadAnimation();
 
+	UPROPERTY( EditAnywhere )
+	USoundBase* ReloadSoundClass;
+
 	virtual void Deactivate() override;
 
 	UPROPERTY( EditAnywhere )

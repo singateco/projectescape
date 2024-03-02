@@ -24,13 +24,20 @@ class UMainUI : public UUserWidget
 	GENERATED_BODY()
 public:
 
+	virtual void NativeTick( const FGeometry& MyGeometry, float InDeltaTime ) override;
 public:
 	UPROPERTY(EditDefaultsOnly)
 	AProjectEscapePlayer* Player;
 
 	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
 	UImage* CrossHair;
-	
+
+	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidgetAnim), Transient )
+	class UWidgetAnimation* DamageUIAnim;
+
+	UFUNCTION()
+	void PlayDamageAnimation();
+
 	UPROPERTY( BlueprintReadWrite, meta=(BindWidget) )
 	UTextBlock* BulletText;
 

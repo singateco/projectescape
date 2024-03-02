@@ -69,6 +69,12 @@ APickableActor::APickableActor()
 		BloodEffect=BloodEffectFinder.Object;
 	}
 
+	static ConstructorHelpers::FObjectFinder<USoundBase> ExplosionSoundFinder( TEXT( "/Script/Engine.SoundWave'/Game/Resources/KDE/Sound/S_LPAMG_Explosion_Grenade_01.S_LPAMG_Explosion_Grenade_01'" ) );
+
+	if ( ExplosionSoundFinder.Succeeded() )
+	{
+		ExplosionSoundClass=ExplosionSoundFinder.Object;
+	}
 
 }
 
@@ -112,9 +118,11 @@ void APickableActor::OnCompHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 	if (!Player || !Player->GrabComponent) return;
 	if(Player->GrabComponent->bIsPushing == true )
 	{
-		UE_LOG( SYLog, Warning, TEXT( "%.1f" ), this->MeshComp->GetComponentVelocity().Length() );
+		//UE_LOG( SYLog, Warning, TEXT( "%.1f" ), this->MeshComp->GetComponentVelocity().Length() );
 		//txt1=(Player->GrabComponent->bIsGrabbing) ? "true" : "false";
 		//UE_LOG( SYLog, Warning, TEXT( "5000이상 bIsGrabbing : %s" ), *txt1 );
+
+		UGameplayStatics::PlaySoundAtLocation( GetWorld(), ExplosionSoundClass, Hit.ImpactPoint, Hit.ImpactNormal.Rotation() );
 
 		TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
 		//ObjectTypes.Add(EObjectTypeQuery::)

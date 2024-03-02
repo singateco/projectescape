@@ -88,6 +88,14 @@ UFireComponent::UFireComponent()
 		GunSoundClass = GunSoundFinder.Object;
 	}
 
+	static ConstructorHelpers::FObjectFinder<USoundBase> ReloadSoundFinder( TEXT( "/Script/Engine.SoundWave'/Game/Resources/KDE/Sound/S_LPAMG_WEP_X13_Reload.S_LPAMG_WEP_X13_Reload'" ) );
+
+	if ( ReloadSoundFinder.Succeeded() )
+	{
+		ReloadSoundClass=ReloadSoundFinder.Object;
+	}
+
+
 	static const ConstructorHelpers::FObjectFinder<USoundBase> GunHitSoundFinder {TEXT("/Script/Engine.SoundWave'/Game/Sounds/511194__pablobd__headshot.511194__pablobd__headshot'")};
 	if (GunHitSoundFinder.Succeeded())
 	{

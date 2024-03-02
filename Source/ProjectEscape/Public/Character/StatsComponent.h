@@ -9,6 +9,7 @@
 
 class UEffect;
 class ACharacterBase;
+class AProjectEscapePlayerController;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FHPChanged, float, ChangedMaxHP, float, ChangedHP);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTakenDamage, float, Damage);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTakenDamageFromLoc, const FHitResult&, HitResult);
@@ -29,10 +30,14 @@ protected:
 
     UPROPERTY()
     float MaxHP {3};
-	
+
 public:
 	// Sets default values for this component's properties
 	UStatsComponent();
+
+	UPROPERTY()
+
+	AProjectEscapePlayerController* PC;
 
 	UFUNCTION(BlueprintCallable)
 	float GetHP() const { return HP; }

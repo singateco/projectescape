@@ -6,6 +6,8 @@
 #include "CharacterBase.h"
 #include "Character/Effect.h"
 #include "ProjectEscape/PEGameplayTags.h"
+#include "System/ProjectEscapePlayerController.h"
+#include "UI/MainUI.h"
 
 
 // Sets default values for this component's properties
@@ -25,6 +27,8 @@ void UStatsComponent::BeginPlay()
 	
 	// Initialize HP.
 	SetHP(MaxHP);
+
+	PC = Cast<AProjectEscapePlayerController>( GetWorld()->GetFirstPlayerController() );
 }
 
 void UStatsComponent::AddEffect(UEffect* EffectToAdd)
@@ -72,7 +76,12 @@ void UStatsComponent::ProcessDamage(const float DamageValue)
 	HP = FMath::Max(HP - DamageValue, 0);
 	OnHPChanged.Broadcast(MaxHP, HP);
 	OnTakenDamage.Broadcast(DamageValue);
-	
+
+	if( PC )
+	{
+		PC->InGameWIdget->PlayDamageAnimation();
+	}
+
 	if (HP <= 0)
 	{
 		ProcessDying();

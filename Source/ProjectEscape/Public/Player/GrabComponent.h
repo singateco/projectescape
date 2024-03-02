@@ -17,6 +17,7 @@ class APickableActor;
 class UParticleSystem;
 class AEnemyBase;
 class AProjectEscapePlayerController;
+class USoundBase;
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -97,7 +98,7 @@ public:
 	APickableActor* ObjectInHand;
 
 	UPROPERTY( EditDefaultsOnly, Category="Throw" )
-	float ThrowingPower = 20000.0f;
+	float ThrowingPower = 13000.0f;
 
 	UPROPERTY( EditAnywhere, Category="QSkill" )
 	class UNiagaraSystem* QExplosionEffect;
