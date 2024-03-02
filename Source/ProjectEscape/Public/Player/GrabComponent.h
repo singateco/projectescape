@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "InputAction.h"
 #include "Components/ActorComponent.h"
 #include "GrabComponent.generated.h"
 
@@ -142,13 +143,15 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 
+	void SkillKeyUIUpdate(const FInputActionInstance& InputActionInstance);
+
 	void SetupPlayerInputComponent(UEnhancedInputComponent* PlayerInputComponent);
 
-	void GrabObject();
+	void GrabObject(const FInputActionInstance& Instance);
 
 	void ReleaseObject();
 
-	void ActionQSkill();
+	void ActionQSkill(const FInputActionInstance& Instance);
 
 	void SphereGrabObject();
 

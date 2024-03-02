@@ -60,13 +60,14 @@ void UMainUI::EndESkillUI()
 {
 	PRB_ESkill->SetVisibility( ESlateVisibility::Hidden );
 	TXT_ESkill->SetVisibility( ESlateVisibility::Hidden );
-
+	PlayESkillCooldownAnim();
 }
 void UMainUI::EndQSkillUI()
 {
 
 	PRB_QSkill->SetVisibility( ESlateVisibility::Hidden );
 	TXT_QSkill->SetVisibility( ESlateVisibility::Hidden );
+	PlayQSkillCooldownAnim();
 }
 
 void UMainUI::SetCrossHairColor(const bool EnemySeen)

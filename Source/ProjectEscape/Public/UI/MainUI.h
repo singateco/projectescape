@@ -10,6 +10,8 @@
  * 
  */
 
+struct FInputActionInstance;
+class UInputAction;
 class URadialSlider;
 class UTextBlock;
 class AProjectEscapePlayer;
@@ -83,6 +85,15 @@ public:
 	UFUNCTION()
 	void StartESkillUI();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void SkillKeyTriggered(const FInputActionInstance& ActionInstance);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void PlayQSkillCooldownAnim();
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void PlayESkillCooldownAnim();
+	
 protected:
 	virtual void NativeOnInitialized() override;
 };
