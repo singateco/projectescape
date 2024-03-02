@@ -17,10 +17,10 @@ class PROJECTESCAPE_API UBTTask_ShootRocket : public UBTTask_BlackboardBase
 public:
 	UBTTask_ShootRocket();
 
-	UPROPERTY( EditDefaultsOnly )
+	UPROPERTY( EditAnywhere )
 	TSubclassOf<class ARocket> RocketFactory;
 
-	UPROPERTY( EditDefaultsOnly )
+	UPROPERTY( EditAnywhere )
 	USoundBase* ShootingSound;
 
 	UPROPERTY( EditAnywhere )

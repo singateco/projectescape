@@ -18,16 +18,16 @@ public:
 
 	UBTTask_Shooting();
 
-	UPROPERTY( EditDefaultsOnly )
+	UPROPERTY( EditAnywhere )
 	TSubclassOf<class AEnemyBullet> EnemyBulletFactory;
 
-	UPROPERTY( EditDefaultsOnly )
+	UPROPERTY( EditAnywhere )
 	USoundBase* ShootingSound;
 
 	UPROPERTY( EditAnywhere )
 	UParticleSystem* MuzzleFlash;
 
-	UPROPERTY( EditDefaultsOnly )
+	UPROPERTY( EditAnywhere )
 	UAnimMontage* ShootingMontage;
 
 	UPROPERTY( EditAnywhere )

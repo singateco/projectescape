@@ -26,6 +26,8 @@ ABossEnemy::ABossEnemy( const FObjectInitializer& ObjectInitializer )
 
 	}
 
+	PlaySpawnEffect = false;
+
 	ThrowRef = CreateDefaultSubobject<USceneComponent>( TEXT( "ThrowRef" ) );
 	ThrowRef->SetupAttachment( RootComponent );
 

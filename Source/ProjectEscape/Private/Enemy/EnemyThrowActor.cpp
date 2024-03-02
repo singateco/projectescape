@@ -16,6 +16,7 @@ AEnemyThrowActor::AEnemyThrowActor()
 	GrenadeMesh->SetRelativeRotation( FRotator( 0, 0, 0 ) );
 	GrenadeMesh->SetSimulatePhysics( false );
 	ExplosionEffectSize = 0.5f;
+	SphereRadius = 300.0f;
 	ExplosionTime = 10.0f;
 }
 
