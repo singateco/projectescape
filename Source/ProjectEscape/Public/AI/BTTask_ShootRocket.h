@@ -4,22 +4,21 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/Tasks/BTTask_BlackboardBase.h"
-#include "BTTask_Shooting.generated.h"
+#include "BTTask_ShootRocket.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECTESCAPE_API UBTTask_Shooting : public UBTTask_BlackboardBase
+class PROJECTESCAPE_API UBTTask_ShootRocket : public UBTTask_BlackboardBase
 {
 	GENERATED_BODY()
 
 public:
-
-	UBTTask_Shooting();
+	UBTTask_ShootRocket();
 
 	UPROPERTY( EditDefaultsOnly )
-	TSubclassOf<class AEnemyBullet> EnemyBulletFactory;
+	TSubclassOf<class ARocket> RocketFactory;
 
 	UPROPERTY( EditDefaultsOnly )
 	USoundBase* ShootingSound;
@@ -30,11 +29,6 @@ public:
 	UPROPERTY( EditDefaultsOnly )
 	UAnimMontage* ShootingMontage;
 
-	UPROPERTY( EditAnywhere )
-	float Accuracy = 5.0f;
-
-	UPROPERTY( EditAnywhere )
-	float Spread = 3.0f;
-
 	virtual EBTNodeResult::Type ExecuteTask( UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory ) override;
+
 };
