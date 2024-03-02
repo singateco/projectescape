@@ -7,6 +7,7 @@
 #include "CharacterBase.h"
 #include "ProjectEscapePlayer.generated.h"
 
+class UNiagaraComponent;
 class UMoveComponent;
 class UFireComponent;
 class UGrabComponent;
@@ -56,6 +57,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<UUserWidget> GameOverUIClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UNiagaraComponent* QShieldEffect;
 	
 	// #################################
 	// ########### FUNCTIONS ###########
@@ -89,9 +93,15 @@ protected:
 	
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	
+
+	UFUNCTION()
+	void PlayHitReactAnim(const FHitResult& HitResult);
+
 	// To add mapping context
 	virtual void BeginPlay();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	UAnimMontage* SelectHitMontage(FVector HitNormal, AActor* HitActor);
 
 	virtual void Tick(float DeltaSeconds) override;
 

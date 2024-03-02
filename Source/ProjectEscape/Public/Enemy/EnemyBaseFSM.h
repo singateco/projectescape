@@ -106,4 +106,7 @@ public:
 	void OnDying();
 
 	bool UpdateRandomLocation(FVector origin, float radius, FVector& outLocation);
+	
+	virtual void Deactivate() override;
+	virtual void Activate(bool bReset) override;
 };

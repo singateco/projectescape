@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "InputAction.h"
 #include "Components/ActorComponent.h"
 #include "GrabComponent.generated.h"
 
@@ -110,18 +111,23 @@ public:
 
 
 	UPROPERTY( EditDefaultsOnly )
-	int32 QSkillMaxCoolTime = 6;
+	int32 QSkillMaxCoolTime = 15;
 
 	UPROPERTY( EditDefaultsOnly )
 	int32 ESkillMaxCoolTime = 5;
-
-
+	
 	UPROPERTY( EditDefaultsOnly )
-	int32 QSkillCurrentCoolTime=6;
-
+	int32 QSkillCurrentCoolTime= 12;
+	
 	UPROPERTY( EditDefaultsOnly )
 	int32 ESkillCurrentCoolTime=5;
 
+	UPROPERTY(EditDefaultsOnly)
+	float QSkillDurationSeconds {5.0f};
+	
+	UPROPERTY()
+	FTimerHandle QSkillHandle;
+	
 	//UPROPERTY( EditDefaultsOnly, Category="QSkill" )
 	//UParticleSystem* QExplosionEffect;
 
@@ -166,13 +172,15 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 
+	void SkillKeyUIUpdate(const FInputActionInstance& InputActionInstance);
+
 	void SetupPlayerInputComponent(UEnhancedInputComponent* PlayerInputComponent);
 
-	void GrabObject();
+	void GrabObject(const FInputActionInstance& Instance);
 
 	void ReleaseObject();
 
-	void ActionQSkill();
+	void ActionQSkill(const FInputActionInstance& Instance);
 
 	void SphereGrabObject();
 

@@ -101,7 +101,7 @@ UFireComponent::UFireComponent()
 		MuzzleEffect=MuzzleEffectFinder.Object;
 	}
 
-	static const ConstructorHelpers::FObjectFinder<UAnimMontage> FireMontageFinder {TEXT("/Script/Engine.AnimMontage'/Game/Animations/Actions/AM_MM_Pistol_DryFire.AM_MM_Pistol_DryFire'")};
+	static const ConstructorHelpers::FObjectFinder<UAnimMontage> FireMontageFinder {TEXT("/Script/Engine.AnimMontage'/Game/Animations/Actions/AM_MM_Pistol_Fire.AM_MM_Pistol_Fire'")};
 	if (FireMontageFinder.Succeeded())
 	{
 		FireMontage = FireMontageFinder.Object;

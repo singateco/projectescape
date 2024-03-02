@@ -6,6 +6,7 @@
 #include "Components/WidgetComponent.h"
 #include "AI/BossAIController.h"
 #include "Enemy/EnemyBaseFSM.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 ABossEnemy::ABossEnemy( const FObjectInitializer& ObjectInitializer )
 	:
@@ -25,6 +26,8 @@ ABossEnemy::ABossEnemy( const FObjectInitializer& ObjectInitializer )
 
 	}
 
+	PlaySpawnEffect = false;
+
 	ThrowRef = CreateDefaultSubobject<USceneComponent>( TEXT( "ThrowRef" ) );
 	ThrowRef->SetupAttachment( RootComponent );
 
@@ -38,7 +41,7 @@ void ABossEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	AttachPistol();
-	EnemyMaxSpeed = 500.f;
+	GetCharacterMovement()->MaxWalkSpeed = 500;
 }
 
 UBehaviorTree* ABossEnemy::GetBehaviorTree()

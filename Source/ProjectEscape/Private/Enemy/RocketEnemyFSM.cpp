@@ -16,7 +16,7 @@ URocketEnemyFSM::URocketEnemyFSM()
 
 	AttackDistance = 3000;
 
-	MinAttackTime = 4.0f;
+	MinAttackTime = 2.5f;
 	MaxAttackTime = 6.0f;
 
 }
