@@ -37,6 +37,9 @@ public:
 	UPROPERTY()
 	FVector2D CurrentLocationScreen;
 
+	UPROPERTY()
+	float CrosshairDist;
+
 	UFUNCTION()
 	void ProcessDying();
 

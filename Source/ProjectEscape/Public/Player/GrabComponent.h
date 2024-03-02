@@ -159,8 +159,9 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	UAnimMontage* ThrowingMontage;
 
-	int32 Sizex = 1;
-	int32 Sizey = 1;
+	int32 ScreenSizeX = 1;
+	int32 ScreenSizeY = 1;
+	int GrabObjectCount = 1;
 
 protected:
 	// Called when the game starts
@@ -190,5 +191,7 @@ public:
 	void ESkillUpdateTimerDisplay();
 
 	void QSkillUpdateTimerDisplay();
+
+	void EnemyHPUITarget( TArray<AEnemyBase*> EnemiesSort );
 	virtual void Deactivate() override;
 };

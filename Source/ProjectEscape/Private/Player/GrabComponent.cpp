@@ -101,9 +101,9 @@ void UGrabComponent::BeginPlay()
 	//}
 	AnimInstance = Player->GetMesh()->GetAnimInstance();
 
-	PC->GetViewportSize( Sizex, Sizey );
-	UE_LOG( SYLog, Warning, TEXT( "Crosshair %d ,%d" ), Sizex, Sizey );
-	CrosshairLocationScreen=FVector2D( (float)Sizex / 2, (float)Sizey / 2 );
+	PC->GetViewportSize( ScreenSizeX, ScreenSizeY );
+	UE_LOG( SYLog, Warning, TEXT( "Crosshair %d ,%d" ), ScreenSizeX, ScreenSizeY );
+	CrosshairLocationScreen=FVector2D( (float)ScreenSizeX / 2, (float)ScreenSizeY / 2 );
 
 }
 
@@ -144,29 +144,41 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 	OtherEnemies.Empty();
 	
-	for ( TActorIterator<AEnemyBase> it( GetWorld() ); it; ++it ) {
-
-		OtherEnemies.Add( *it );
-		//bool WorldToScreenResult = UGameplayStatics::ProjectWorldToScreen( GetWorld()->GetFirstPlayerController(), /it-/>GetActorLocation(), it->CurrentLocationScreen );
-		//
-		//if ( WorldToScreenResult )
-		//{
-		//
-		//}
+	for ( TActorIterator<AEnemyBase> it( GetWorld() ); it; ++it ) 
+	{
+		FVector2D TempLocScreen;
+		bool WorldToScreenResult=UGameplayStatics::ProjectWorldToScreen( GetWorld()->GetFirstPlayerController(), it->GetActorLocation(), TempLocScreen/*it->CurrentLocationScreen*/ );
+		if ( WorldToScreenResult )
+		{
+			if( TempLocScreen.X > 0 && TempLocScreen.Y >0 && TempLocScreen.X <= ScreenSizeX && TempLocScreen.Y <= ScreenSizeY )
+			{//적이 화면안에 있을 경우
+				float TempDist=FVector2D::Distance( TempLocScreen, it->CurrentLocationScreen );
+				it->CurrentLocationScreen = TempLocScreen;
+				it->CrosshairDist = TempDist;
+				OtherEnemies.Add( *it );
+			}
+		}
 		it->EnemyHPComponent->SetVisibility(false);
 	}
 
+	UE_LOG( SYLog, Warning, TEXT( "총 %d명 감지" ), OtherEnemies.Num() );
+
+	if ( OtherEnemies.Num() > 0 )
+	{
+		EnemyHPUITarget( OtherEnemies );
+	
+	}
 	
 
 	TArray<FHitResult> HitInfoArrayPickUpActors;
-	TArray<FHitResult> HitInfoArrayEnemies;
+	//TArray<FHitResult> HitInfoArrayEnemies;
 	FHitResult HitInfoPickUpActor;
 	FVector Start=Player->GetFollowCamera()->GetComponentLocation();
 	FVector End=Player->GetFollowCamera()->GetComponentLocation() + Player->GetFollowCamera()->GetForwardVector() * EnemyHPMaxDistance;
 
 
 	ETraceTypeQuery TraceTypeQuery=UEngineTypes::ConvertToTraceType( ECC_GameTraceChannel1 );
-	ETraceTypeQuery TraceTypeQueryEnemy=UEngineTypes::ConvertToTraceType( ECC_GameTraceChannel2 );
+	//ETraceTypeQuery TraceTypeQueryEnemy=UEngineTypes::ConvertToTraceType( ECC_GameTraceChannel2 );
 
 	TArray<AActor*> SphereTraceIgnoreActorsArray;
 	// 체크하기전에 한 번 비워주기
@@ -176,16 +188,16 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 
 
-	if( OtherEnemies.Num() > 0 )
-	{
-		AEnemyBase* TargetEnemy=OtherEnemies[0]; // 아무거나 하나 넣어주기
-		bool bTraceResultEnemies=UKismetSystemLibrary::SphereTraceMulti( GetWorld(), Start, End, RadiusDetectionHPBar, TraceTypeQueryEnemy,
-			false, SphereTraceIgnoreActorsArray, EDrawDebugTrace::ForDuration, HitInfoArrayEnemies, true, FColor::Green, FColor::Red, 2.0f );
-		/*bool bTraceResultEnemies = UKismetSystemLibrary::SphereTraceMulti( GetWorld(), Start, End, RadiusDetectionHPBar, TraceTypeQueryEnemy,
-			false, SphereTraceIgnoreActorsArray, EDrawDebugTrace::None, HitInfoArrayEnemies, true);*/
-		if ( bTraceResultEnemies )
-		{
-			//for (int32 i=0 ; i < HitInfoArrayEnemies.Num() ;i++ )
+	//if( OtherEnemies.Num() > 0 )
+	//{
+	//	AEnemyBase* TargetEnemy=OtherEnemies[0]; // 아무거나 하나 넣어주기
+	//	bool bTraceResultEnemies=UKismetSystemLibrary::SphereTraceMulti( GetWorld(), Start, End, RadiusDetectionHPBar, TraceTypeQueryEnemy,
+	//		false, SphereTraceIgnoreActorsArray, EDrawDebugTrace::ForDuration, HitInfoArrayEnemies, true, FColor::Green, FColor::Red, 2.0f );
+	//	/*bool bTraceResultEnemies = UKismetSystemLibrary::SphereTraceMulti( GetWorld(), Start, End, RadiusDetectionHPBar, TraceTypeQueryEnemy,
+	//		false, SphereTraceIgnoreActorsArray, EDrawDebugTrace::None, HitInfoArrayEnemies, true);*/
+	//	if ( bTraceResultEnemies )
+	//	{
+	//		//for (int32 i=0 ; i < HitInfoArrayEnemies.Num() ;i++ )
 			//for ( FHitResult& HitInfo : HitInfoArrayEnemies )
 			//{
 			//	//FHitResult& HitInfo = HitInfoArrayEnemies[i];
@@ -222,22 +234,22 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 			//	}
 			//
 			//}
-
-			for ( FHitResult& HitInfo : HitInfoArrayEnemies )
-			{int i=1;
-				if ( HitInfo.GetActor()->IsA<AEnemyBase>() )
-				{
-					auto TargetEnemy1=Cast<AEnemyBase>( HitInfo.GetActor() );
-					UE_LOG( SYLog, Warning, TEXT( "총 %d/%d명 감지, TargetEnemy %s" ), i++ ,HitInfoArrayEnemies.Num(), *TargetEnemy->GetActorNameOrLabel() );
-					if ( TargetEnemy1 )
-					{
-						TargetEnemy1->EnemyHPComponent->SetVisibility( true );
-					}
-				}
-				
-			}
-
-			//for ( FHitResult& HitInfo : HitInfoArrayEnemies )
+	//
+	//		for ( FHitResult& HitInfo : HitInfoArrayEnemies )
+	//		{int i=1;
+	//			if ( HitInfo.GetActor()->IsA<AEnemyBase>() )
+	//			{
+	//				auto TargetEnemy1=Cast<AEnemyBase>( HitInfo.GetActor() );
+	//				UE_LOG( SYLog, Warning, TEXT( "총 %d/%d명 감지, TargetEnemy %s" ), i++ ,HitInfoArrayEnemies.Num(), *TargetEnemy->GetActorNameOrLabel() );
+	//				if ( TargetEnemy1 )
+	//				{
+	//					TargetEnemy1->EnemyHPComponent->SetVisibility( true );
+	//				}
+	//			}
+	//			
+	//		}
+	//
+	//		//for ( FHitResult& HitInfo : HitInfoArrayEnemies )
 			//{
 			//	if ( HitInfo.GetActor()->IsA<AEnemyBase>() )
 			//	{
@@ -249,14 +261,14 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 			//		}
 			//	}
 			//}
-
-			TArray<AActor*> ResultEnemies;
-			for(auto temp : HitInfoArrayEnemies )
-			{
-				ResultEnemies.Add( temp .GetActor());
-			}
-
-			//시야에 없는 에너미 HP바 지우기
+	//
+	//		TArray<AActor*> ResultEnemies;
+	//		for(auto temp : HitInfoArrayEnemies )
+	//		{
+	//			ResultEnemies.Add( temp .GetActor());
+	//		}
+	//
+	//		//시야에 없는 에너미 HP바 지우기
 			//if ( OtherEnemies.Num() > HitInfoArrayPickUpActors.Num() )
 			//{
 			//	for ( auto anyEnemy : OtherEnemies )
@@ -277,24 +289,24 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 			//		}
 			//	}
 			//}
-
-			//시야에 없는 에너미 HP바 지우기
-			if ( OtherEnemies.Num() > HitInfoArrayEnemies.Num() )
-			{
-				for ( auto a : OtherEnemies )
-				{
-					for ( auto b : HitInfoArrayEnemies )
-					{
-						if ( b.GetActor()->GetActorNameOrLabel() != a->GetActorNameOrLabel() )
-						{
-							auto aa=Cast<AEnemyBase>( a );
-							aa->EnemyHPComponent->SetVisibility( false );
-						}
-					}
-				}
-			}
-		}
-	}
+	//
+	//		//시야에 없는 에너미 HP바 지우기
+	//		if ( OtherEnemies.Num() > HitInfoArrayEnemies.Num() )
+	//		{
+	//			for ( auto a : OtherEnemies )
+	//			{
+	//				for ( auto b : HitInfoArrayEnemies )
+	//				{
+	//					if ( b.GetActor()->GetActorNameOrLabel() != a->GetActorNameOrLabel() )
+	//					{
+	//						auto aa=Cast<AEnemyBase>( a );
+	//						aa->EnemyHPComponent->SetVisibility( false );
+	//					}
+	//				}
+	//			}
+	//		}
+	//	}
+	//}
 
 	if(bIsGrabbing == true)
 	{
@@ -683,4 +695,37 @@ void UGrabComponent::Deactivate()
 	Super::Deactivate();
 
 	EnhancedInputComponent->ClearBindingsForObject(this);
+}
+
+void UGrabComponent::EnemyHPUITarget( TArray<AEnemyBase*> EnemiesSort )
+{
+	UE_LOG( SYLog, Warning, TEXT( "bubble start!") );
+	int EnemiesCount = EnemiesSort.Num();
+	//float TempCrosshairDistance;
+	AEnemyBase* TempTargetEnemy;
+	for(int i = 0 ; i < EnemiesCount - 1 ; i++ )
+	{
+		for(int j = 0 ; j < EnemiesCount - i - 1 ; j++ )
+		{
+			if(FVector2D::Distance( EnemiesSort[j]->CurrentLocationScreen , CrosshairLocationScreen) > FVector2D::Distance( EnemiesSort[j+1]->CurrentLocationScreen, CrosshairLocationScreen ))
+			{				
+				TempTargetEnemy=EnemiesSort[j];
+				EnemiesSort[j] =EnemiesSort[j+1];
+				EnemiesSort[j + 1] =TempTargetEnemy;
+			}
+		}
+		
+	}
+	for(int i=0;i< EnemiesCount;i++ )
+	{
+		UE_LOG( SYLog, Warning, TEXT( "Entire Enemies Sort%d번째 %s적 거리 %f "),i+1, *EnemiesSort[i]->GetActorNameOrLabel(), FVector2D::Distance( EnemiesSort[i]->CurrentLocationScreen, CrosshairLocationScreen ) );
+	}
+
+	UE_LOG( SYLog, Warning, TEXT( "bubble end!" ) );
+
+	for ( int i=0; i < GrabObjectCount; i++ )
+	{
+		UE_LOG( SYLog, Warning, TEXT( "HT TargetEnemy %s  " ), *OtherEnemies[i]->GetActorNameOrLabel() );
+		EnemiesSort[i]->EnemyHPComponent->SetVisibility( true );
+	}
 }
