@@ -6,6 +6,7 @@
 #include "EngineUtils.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "NiagaraComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Enemy/RifleEnemy.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -24,6 +25,7 @@
 #include "UI/MainUI.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Enemy/EnemyBase.h"
+#include "ProjectEscape/PEGameplayTags.h"
 
 // Sets default values for this component's properties
 UGrabComponent::UGrabComponent()
@@ -480,7 +482,22 @@ void UGrabComponent::ActionQSkill(const FInputActionInstance& Instance)
 	GetWorld()->GetTimerManager().SetTimer( QSkillCountDownHandle, this, &UGrabComponent::QSkillAdvanceTimer, 1.0f, true );
 
 	//UGameplayStatics::SpawnEmitterAtLocation( GetWorld(),QExplosionEffect, Player->GetActorLocation(), FRotator(), FVector( 100 ), true, EPSCPoolMethod::None, true );
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), QExplosionEffect, Player->GetActorLocation(), FRotator(), FVector( 5 ), true);
+	//UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), QExplosionEffect, Player->GetActorLocation(), FRotator(), FVector( 5 ), true);
+	
+	Player->AddGameplayTag(PEGameplayTags::Status_CantBeDamaged);
+	if (Player->QShieldEffect)
+	{
+		Player->QShieldEffect->Activate();
+	}
+
+	GetWorld()->GetTimerManager().SetTimer(QSkillHandle,
+		FTimerDelegate::CreateWeakLambda(this, [&]
+		{
+			Player->QShieldEffect->Deactivate();
+			Player->RemoveGameplayTag(PEGameplayTags::Status_CantBeDamaged);
+		}),
+		QSkillDurationSeconds,
+		false);
 }
 
 void UGrabComponent::SphereGrabObject()

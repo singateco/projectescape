@@ -98,18 +98,23 @@ public:
 
 
 	UPROPERTY( EditDefaultsOnly )
-	int32 QSkillMaxCoolTime = 6;
+	int32 QSkillMaxCoolTime = 15;
 
 	UPROPERTY( EditDefaultsOnly )
 	int32 ESkillMaxCoolTime = 5;
-
-
+	
 	UPROPERTY( EditDefaultsOnly )
-	int32 QSkillCurrentCoolTime=6;
-
+	int32 QSkillCurrentCoolTime= 12;
+	
 	UPROPERTY( EditDefaultsOnly )
 	int32 ESkillCurrentCoolTime=5;
 
+	UPROPERTY(EditDefaultsOnly)
+	float QSkillDurationSeconds {5.0f};
+	
+	UPROPERTY()
+	FTimerHandle QSkillHandle;
+	
 	//UPROPERTY( EditDefaultsOnly, Category="QSkill" )
 	//UParticleSystem* QExplosionEffect;
 

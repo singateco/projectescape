@@ -7,6 +7,7 @@
 #include "CharacterBase.h"
 #include "ProjectEscapePlayer.generated.h"
 
+class UNiagaraComponent;
 class UMoveComponent;
 class UFireComponent;
 class UGrabComponent;
@@ -56,6 +57,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<UUserWidget> GameOverUIClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UNiagaraComponent* QShieldEffect;
 	
 	// #################################
 	// ########### FUNCTIONS ###########
