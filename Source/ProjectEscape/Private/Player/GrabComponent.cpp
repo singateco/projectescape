@@ -134,7 +134,7 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		it->EnemyHPComponent->SetVisibility(false);
 	}
 
-
+	
 
 	TArray<FHitResult> HitInfoArrayPickUpActors;
 	TArray<FHitResult> HitInfoArrayEnemies;

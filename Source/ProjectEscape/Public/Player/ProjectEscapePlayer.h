@@ -89,9 +89,15 @@ protected:
 	
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	
+
+	UFUNCTION()
+	void PlayHitReactAnim(const FHitResult& HitResult);
+
 	// To add mapping context
 	virtual void BeginPlay();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	UAnimMontage* SelectHitMontage(FVector HitNormal, AActor* HitActor);
 
 	virtual void Tick(float DeltaSeconds) override;
 

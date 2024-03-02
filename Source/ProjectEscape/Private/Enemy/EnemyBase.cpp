@@ -58,7 +58,7 @@ AEnemyBase::AEnemyBase(const FObjectInitializer& ObjectInitializer)
 	if (tempHP.Succeeded())
 	{
 		EnemyHPComponent->SetWidgetClass(tempHP.Class);
-		EnemyHPComponent->SetWidgetSpace(EWidgetSpace::Screen);
+		EnemyHPComponent->SetWidgetSpace(EWidgetSpace::World);
 		EnemyHPComponent->SetDrawSize(FVector2D(70, 8));
 		EnemyHPComponent->SetRelativeLocation(FVector(0, 0, 90));
 		EnemyHPComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
