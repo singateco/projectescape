@@ -216,4 +216,16 @@ bool UEnemyBaseFSM::UpdateRandomLocation(FVector origin, float radius, FVector& 
 	return false;
 }
 
+void UEnemyBaseFSM::Deactivate()
+{
+	Super::Deactivate();
+	SetComponentTickEnabled(false);
+}
+
+void UEnemyBaseFSM::Activate(bool bReset)
+{
+	Super::Activate(bReset);
+	SetComponentTickEnabled(true);
+}
+
 

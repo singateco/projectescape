@@ -3,7 +3,11 @@
 
 #include "Enemy/EnemyBase.h"
 
+#include "FCTween.h"
+#include "FCTweenUObject.h"
 #include "NavigationInvokerComponent.h"
+#include "NiagaraComponent.h"
+#include "NiagaraSystem.h"
 #include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
@@ -13,8 +17,6 @@
 #include "Enemy/EnemyStatsComponent.h"
 #include "Objects/HealthPickup.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetMathLibrary.h"
 #include "Player/ProjectEscapePlayer.h"
 #include "UI/DamageNumber.h"
 
@@ -82,6 +84,27 @@ AEnemyBase::AEnemyBase(const FObjectInitializer& ObjectInitializer)
 		HealthPickupActorClass = HealthPickupBPFinder.Class;
 	}
 
+	SpawnEffectEmitter = CreateDefaultSubobject<UNiagaraComponent>(TEXT("SpawnEffectEmitter"));
+	SpawnEffectEmitter->SetupAttachment(GetCapsuleComponent());
+	
+	SpawnEffectCircle = CreateDefaultSubobject<UNiagaraComponent>(TEXT("SpawnEffectCircle"));
+	SpawnEffectCircle->SetupAttachment(SpawnEffectEmitter);
+
+	static const ConstructorHelpers::FObjectFinder<UNiagaraSystem> SpawnEffectFinder {TEXT("/Script/Niagara.NiagaraSystem'/Game/Resources/VFX_Pickup_Pack_1/VFX/Presets/NE_VFX_Generic_Objective.NE_VFX_Generic_Objective'")};
+	if (SpawnEffectFinder.Succeeded())
+	{
+		SpawnEffectEmitter->SetAsset(SpawnEffectFinder.Object);
+	}
+
+	static const ConstructorHelpers::FObjectFinder<UNiagaraSystem> SpawnCircleEffectFinder {TEXT("/Script/Niagara.NiagaraSystem'/Game/Resources/VFX_Pickup_Pack_1/VFX/Presets/NE_VFX_Loot_Idle_03.NE_VFX_Loot_Idle_03'")};
+	if (SpawnCircleEffectFinder.Succeeded())
+	{
+		SpawnEffectCircle->SetAsset(SpawnCircleEffectFinder.Object);
+	}
+
+	SpawnEffectEmitter->SetAutoActivate(false);
+	SpawnEffectCircle->SetAutoActivate(false);
+
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	UCapsuleComponent* cap = GetCapsuleComponent();
@@ -104,6 +127,41 @@ void AEnemyBase::BeginPlay()
 	check(DamageNumberWidgetClass);
 	StatsComponent->OnHPReachedZero.AddUniqueDynamic(this, &AEnemyBase::ProcessDying);
 	StatsComponent->OnTakenDamage.AddUniqueDynamic(this, &AEnemyBase::DisplayDamageNumber);
+
+	if (PlaySpawnEffect)
+	{
+		SpawnEffectEmitter->SetVariableFloat(TEXT("Alpha"), 0.f);
+		SpawnEffectEmitter->Activate();
+		SpawnEffectCircle->SetVariableFloat(TEXT("Alpha"), 0.f);
+		SpawnEffectCircle->Activate();
+		EnemyBaseFSM->Deactivate();
+
+		FTimerHandle SpawnMoveTimer;
+		GetWorld()->GetTimerManager().SetTimer(
+			SpawnMoveTimer,
+			FTimerDelegate::CreateWeakLambda(this, [&]
+			{
+				EnemyBaseFSM->Activate(false);
+			}),
+			2.f,
+			false);
+		
+		SpawnEffectTweenUObject =
+			FCTween::Play(0, 1, [&] (const float V)
+			{
+				SpawnEffectEmitter->SetVariableFloat(TEXT("Alpha"), V);
+				SpawnEffectCircle->SetVariableFloat(TEXT("Alpha"), V);
+			},
+			2.f)
+			->SetYoyo(true)
+			->SetYoyoDelay(SpawnEffectSeconds)
+			->SetOnComplete([&]
+			{
+				SpawnEffectEmitter->DestroyInstance();
+				SpawnEffectCircle->DestroyInstance();
+			})
+			->CreateUObject();
+	}
 }
 
 void AEnemyBase::Tick(float DeltaSeconds)
@@ -151,6 +209,18 @@ void AEnemyBase::ProcessDying()
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 		GetWorld()->SpawnActor<AHealthPickup>(HealthPickupActorClass, GetActorLocation(), FRotator::ZeroRotator, SpawnParams);
+	}
+
+	if (SpawnEffectEmitter)
+	{
+		if (SpawnEffectTweenUObject)
+		{
+			SpawnEffectTweenUObject->Tween->Destroy();
+			SpawnEffectTweenUObject->Tween = nullptr;
+			SpawnEffectTweenUObject = nullptr;
+		}
+		SpawnEffectEmitter->DestroyInstance();
+		SpawnEffectCircle->DestroyInstance();
 	}
 }
 
