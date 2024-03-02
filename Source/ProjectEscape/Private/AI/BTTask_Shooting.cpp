@@ -36,13 +36,13 @@ UBTTask_Shooting::UBTTask_Shooting()
         MuzzleFlash= MuzzleFlashFinder.Object;
     }
 
-    static ConstructorHelpers::FObjectFinder<UAnimMontage> ShootingFinder
+   /* static ConstructorHelpers::FObjectFinder<UAnimMontage> ShootingFinder
     { TEXT( "/Script/Engine.AnimMontage'/Game/Animations/Actions/AM_MM_Pistol_Fire.AM_MM_Pistol_Fire'" ) };
 
     if ( ShootingFinder.Succeeded() )
     {
         ShootingMontage=ShootingFinder.Object;
-    }
+    }*/
 }
 
 EBTNodeResult::Type UBTTask_Shooting::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -76,7 +76,7 @@ EBTNodeResult::Type UBTTask_Shooting::ExecuteTask(UBehaviorTreeComponent& OwnerC
         UGameplayStatics::SpawnEmitterAttached( MuzzleFlash, Boss->GunMesh, FName( TEXT( "Muzzle" ) ), FVector::ZeroVector, FRotator::ZeroRotator, FVector( 1 ), EAttachLocation::SnapToTarget, true );
         UGameplayStatics::PlaySoundAtLocation( GetWorld(), ShootingSound, MuzzleLocation, FRotator() );
 
-        UAnimInstance* AnimInstance = Boss->GetMesh()->GetAnimInstance();
+       UAnimInstance* AnimInstance = Boss->GetMesh()->GetAnimInstance();
         AnimInstance->Montage_Play( ShootingMontage );
 
         FinishLatentTask( OwnerComp, EBTNodeResult::Succeeded );
