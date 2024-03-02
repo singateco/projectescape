@@ -248,7 +248,13 @@ void UFireComponent::SetGunVisibility(const bool ShowGun)
 
 void UFireComponent::NormalGunFire()
 {
-	if (bHasPistol == false || Player->IsReloading == true || Player->HasMatchingGameplayTag(PEGameplayTags::Status_IsDashing)) {
+	if (bHasPistol == false 
+	|| Player->IsReloading == true 
+	|| Player->GrabComponent->bIsGrabbing == true
+	|| Player->GrabComponent->bIsPulling == true
+	|| Player->GrabComponent->bIsPushing == true
+	|| Player->GrabComponent->bIsGrabbing == true
+	|| Player->HasMatchingGameplayTag(PEGameplayTags::Status_IsDashing)) {
 		return;
 	}
 
@@ -303,7 +309,9 @@ void UFireComponent::NormalGunFire()
 		if(HitInfo2.GetActor()->IsA<AEnemyBase>() )
 		{
 			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), BloodEffect, HitInfo2.Location, HitInfo2.ImpactNormal.Rotation(), FireEffectScale * 3.f, true );
+
 			UGameplayStatics::PlaySound2D( GetWorld(), GunHitSound);
+
 			Enemy=Cast<AEnemyBase>( HitInfo2.GetActor() );
 
 			AActor* Actor=HitInfo2.GetActor();
@@ -322,12 +330,13 @@ void UFireComponent::NormalGunFire()
 			UE_LOG( LogTemp, Warning, TEXT( "hit actor: %s" ), *HitInfo2.GetActor()->GetActorNameOrLabel() )
 			UDecalComponent* UdecalEffect = UGameplayStatics::SpawnDecalAtLocation( GetWorld(), WallDecalEffect, WallDecalScale, /*HitInfo2.GetComponent()->GetComponentLocation()*/ HitInfo2.ImpactPoint, HitInfo2.ImpactNormal.Rotation(), 10 );
 			UdecalEffect->SetFadeScreenSize(0.f);
-			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), GunEffectNoActor, HitInfo2.TraceEnd, FRotator(), FireEffectScale, true );
+			//UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), GunEffectNoActor, HitInfo2.TraceEnd, FRotator(), FireEffectScale, true );
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), GunEffectNoActor, HitInfo2.ImpactPoint, FRotator(), FireEffectScale, true );
 		}
 	}
 	else
 	{
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), GunEffectNoActor, HitInfo2.TraceEnd, FRotator(), FireEffectScale, true );
+		//UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), GunEffectNoActor, HitInfo2.TraceEnd, FRotator(), FireEffectScale, true );
 		AActor* Actor = HitInfo1.GetActor();
 		if (Actor && Actor->GetComponentByClass(UStaticMeshComponent::StaticClass()))
 		{

@@ -44,7 +44,7 @@ public:
 	float MaxDistanceToGun = 100000.0f;
 
 	UPROPERTY( EditDefaultsOnly, Category="Weapon" )
-	FVector FireEffectScale = FVector(10);
+	FVector FireEffectScale = FVector(1);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	bool bHasPistol = false;

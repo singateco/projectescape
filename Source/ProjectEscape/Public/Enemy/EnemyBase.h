@@ -31,6 +31,9 @@ public:
 	UPROPERTY()
 	FEnemyDied OnEnemyDied;
 
+	UPROPERTY()
+	FVector2D CurrentLocationScreen;
+
 	UFUNCTION()
 	void ProcessDying();
 

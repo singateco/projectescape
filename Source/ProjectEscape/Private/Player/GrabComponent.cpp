@@ -55,6 +55,14 @@ UGrabComponent::UGrabComponent()
 		ActionGrab = GrabActionFinder.Object;
 	}
 
+
+	static const ConstructorHelpers::FObjectFinder<UInputAction> ThrowActionFinder{ TEXT( "/Script/EnhancedInput.InputAction'/Game/ThirdPerson/Input/Actions/IA_Fire.IA_Fire'" ) };
+	if ( ThrowActionFinder.Succeeded() )
+	{
+		ActionThrow=ThrowActionFinder.Object;
+	}
+
+
 	static const ConstructorHelpers::FObjectFinder<UInputAction> QSkillActionFinder {TEXT("/Script/EnhancedInput.InputAction'/Game/ThirdPerson/Input/Actions/IA_QUltimateSkill.IA_QUltimateSkill'")};
 	if (QSkillActionFinder.Succeeded())
 	{
@@ -90,6 +98,11 @@ void UGrabComponent::BeginPlay()
 	//	it->EnemyHPComponent->SetVisibility(false);
 	//}
 	AnimInstance = Player->GetMesh()->GetAnimInstance();
+
+	PC->GetViewportSize( Sizex, Sizey );
+	UE_LOG( SYLog, Warning, TEXT( "Crosshair %d ,%d" ), Sizex, Sizey );
+	CrosshairLocationScreen=FVector2D( (float)Sizex / 2, (float)Sizey / 2 );
+
 }
 
 void UGrabComponent::InitializeComponent()
@@ -101,6 +114,7 @@ void UGrabComponent::InitializeComponent()
 	HandleObject = Player->PhysicsHandleComponent;
 
 	PC=Cast<AProjectEscapePlayerController>( GetWorld()->GetFirstPlayerController() );
+
 }
 
 // Called every frame
@@ -129,8 +143,14 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	OtherEnemies.Empty();
 	
 	for ( TActorIterator<AEnemyBase> it( GetWorld() ); it; ++it ) {
-		
-		OtherEnemies.Add(*it);
+
+		OtherEnemies.Add( *it );
+		//bool WorldToScreenResult = UGameplayStatics::ProjectWorldToScreen( GetWorld()->GetFirstPlayerController(), /it-/>GetActorLocation(), it->CurrentLocationScreen );
+		//
+		//if ( WorldToScreenResult )
+		//{
+		//
+		//}
 		it->EnemyHPComponent->SetVisibility(false);
 	}
 
@@ -156,24 +176,78 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 	if( OtherEnemies.Num() > 0 )
 	{
-		/*bool bTraceResultEnemies=UKismetSystemLibrary::SphereTraceMulti( GetWorld(), Start, End, RadiusDetectionHPBar, TraceTypeQueryEnemy,
-			false, SphereTraceIgnoreActorsArray, EDrawDebugTrace::ForDuration, HitInfoArrayEnemies, true, FColor::Green, FColor::Red, 2.0f );*/
+		AEnemyBase* TargetEnemy=OtherEnemies[0]; // 아무거나 하나 넣어주기
 		bool bTraceResultEnemies=UKismetSystemLibrary::SphereTraceMulti( GetWorld(), Start, End, RadiusDetectionHPBar, TraceTypeQueryEnemy,
-			false, SphereTraceIgnoreActorsArray, EDrawDebugTrace::None, HitInfoArrayEnemies, true);
+			false, SphereTraceIgnoreActorsArray, EDrawDebugTrace::ForDuration, HitInfoArrayEnemies, true, FColor::Green, FColor::Red, 2.0f );
+		/*bool bTraceResultEnemies = UKismetSystemLibrary::SphereTraceMulti( GetWorld(), Start, End, RadiusDetectionHPBar, TraceTypeQueryEnemy,
+			false, SphereTraceIgnoreActorsArray, EDrawDebugTrace::None, HitInfoArrayEnemies, true);*/
 		if ( bTraceResultEnemies )
 		{
+			//for (int32 i=0 ; i < HitInfoArrayEnemies.Num() ;i++ )
+			//for ( FHitResult& HitInfo : HitInfoArrayEnemies )
+			//{
+			//	//FHitResult& HitInfo = HitInfoArrayEnemies[i];
+			//
+			//	if ( HitInfo.GetActor()->IsA<AEnemyBase>() )
+			//	{
+			//		auto TempTargetEnemy=Cast<AEnemyBase>( HitInfo.GetActor() );
+			//
+			//		//TargetEnemy->EnemyHPComponent->SetVisibility( true );
+			//		bool WorldToScreenResult = UGameplayStatics::ProjectWorldToScreen( GetWorld()->GetFirstPlayerController(), TempTargetEnemy->GetActorLocation(), TempTargetEnemy-//>CurrentLocationScreen );
+			//
+			//		if ( WorldToScreenResult )
+			//		{
+			//			float NewDist =FVector2D::Distance( CrosshairLocationScreen, TempTargetEnemy->CurrentLocationScreen );
+			//
+			//			//UE_LOG( SYLog, Warning, TEXT( "TargetEnemy %s (%f) " ), *TargetEnemy->GetActorNameOrLabel(), NewDist );
+			//			//if (  NewDist < 15.f )
+			//			//{
+			//			//	minDist=NewDist;
+			//			//	if ( NewDist <= minDist )
+			//			//	{
+			//			//		minDist=NewDist;
+			//			//		TargetEnemy=TempTargetEnemy;
+			//			//		TargetEnemy->EnemyHPComponent->SetVisibility( true );
+			//			//		UE_LOG( SYLog, Warning, TEXT( "TargetEnemy %s (%f) " ), *TargetEnemy->GetActorNameOrLabel(), NewDist );
+			//			//
+			//			//	}
+			//			//}
+			//
+			//
+			//		}
+			//		//TargetEnemy->EnemyHPComponent->SetVisibility( true );
+			//		
+			//	}
+			//
+			//}
+
 			for ( FHitResult& HitInfo : HitInfoArrayEnemies )
-			{
+			{int i=1;
 				if ( HitInfo.GetActor()->IsA<AEnemyBase>() )
 				{
-					auto TargetEnemy=Cast<AEnemyBase>( HitInfo.GetActor() );
-					//UE_LOG( SYLog, Warning, TEXT( "TargetEnemy %s" ), *TargetEnemy->GetActorNameOrLabel() );
-					if ( TargetEnemy )
+					auto TargetEnemy1=Cast<AEnemyBase>( HitInfo.GetActor() );
+					UE_LOG( SYLog, Warning, TEXT( "총 %d/%d명 감지, TargetEnemy %s" ), i++ ,HitInfoArrayEnemies.Num(), *TargetEnemy->GetActorNameOrLabel() );
+					if ( TargetEnemy1 )
 					{
-						TargetEnemy->EnemyHPComponent->SetVisibility( true );
+						TargetEnemy1->EnemyHPComponent->SetVisibility( true );
 					}
 				}
+				
 			}
+
+			//for ( FHitResult& HitInfo : HitInfoArrayEnemies )
+			//{
+			//	if ( HitInfo.GetActor()->IsA<AEnemyBase>() )
+			//	{
+			//		auto TargetEnemy1 =Cast<AEnemyBase>( HitInfo.GetActor() );
+			//		UE_LOG( SYLog, Warning, TEXT( "총 %d명 감지, TargetEnemy %s" ), HitInfoArrayEnemies.Num(), *TargetEnemy->GetActorNameOrLabel() );
+			//		if ( TargetEnemy1 )
+			//		{
+			//			TargetEnemy1->EnemyHPComponent->SetVisibility( true );
+			//		}
+			//	}
+			//}
+
 			TArray<AActor*> ResultEnemies;
 			for(auto temp : HitInfoArrayEnemies )
 			{
@@ -217,9 +291,6 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 					}
 				}
 			}
-
-
-
 		}
 	}
 
@@ -242,7 +313,7 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 			AnimInstance->Montage_Play( GrabbingMontage );
 		}
 		
-	}else if( bIsGrabbing == false || OtherEnemies.Num() > 0) // 물체 안잡고 있거나 적들이 있을 때
+	}else if( bIsGrabbing == false )//|| OtherEnemies.Num() > 0) // 물체 안잡고 있거나 적들이 있을 때
 	{
 		//bool bTracePickUpActorSphereMulti = UKismetSystemLibrary::SphereTraceMulti( GetWorld(), Start, End, RadiusDetection, TraceTypeQuery, false, SphereTraceIgnoreActorsArray, EDrawDebugTrace::None, HitInfoArrayPickUpActors, true );
 		bool bTracePickUpActorSphereSingle = UKismetSystemLibrary::SphereTraceSingle(GetWorld(), Start, End , RadiusDetection, TraceTypeQuery , false, SphereTraceIgnoreActorsArray, EDrawDebugTrace::None, HitInfoPickUpActor, true );
@@ -332,7 +403,8 @@ void UGrabComponent::SetupPlayerInputComponent(UEnhancedInputComponent* PlayerIn
 	
 	PlayerInputComponent->BindAction(ActionGrab, ETriggerEvent::Started, this, &UGrabComponent::GrabObject);
 	//PlayerInputComponent->BindAction(ActionGrab, ETriggerEvent::Started, this, &UGrabComponent::SphereGrabObject);
-	PlayerInputComponent->BindAction( ActionGrab, ETriggerEvent::Completed, this, &UGrabComponent::ReleaseObject );
+	//PlayerInputComponent->BindAction( ActionGrab, ETriggerEvent::Completed, this, &UGrabComponent::ReleaseObject );
+	PlayerInputComponent->BindAction( ActionThrow, ETriggerEvent::Completed, this, &UGrabComponent::ReleaseObject );
 	PlayerInputComponent->BindAction( InputActionQSkill, ETriggerEvent::Completed, this, &UGrabComponent::ActionQSkill );
 }
 

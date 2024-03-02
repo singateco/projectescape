@@ -123,44 +123,58 @@ void APickableActor::OnCompHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 		TArray<AActor*> OutActorsArray;
 
 		GetExplosionRadius();
-		
-		bool bSphereOverlapResult=UKismetSystemLibrary::SphereOverlapActors( GetWorld(), this->MeshComp->GetComponentLocation(), SphereRadius, ObjectTypes, nullptr, ActorsToIgnoreArray, OutActorsArray );
-		//bool bSphereOverlapResult=UKismetSystemLibrary::SphereOverlapActors( GetWorld(), this->GetActorLocation(), SphereRadius, ObjectTypes, AActor::StaticClass(), ActorsToIgnoreArray, OutActorsArray );
 
 		txt1=(Player->GrabComponent->bIsGrabbing) ? "true" : "false";
 		txt2=(Player->GrabComponent->bIsPulling) ? "true" : "false";
 		txt3=(Player->GrabComponent->bIsPushing) ? "true" : "false";
 		UE_LOG( SYLog, Warning, TEXT( "bIsGrabbing:%s, bIsPulling : %s, bIsPushing : %s" ), *txt1, *txt2, *txt3 );
+		if(Hit.GetActor()->IsA<AEnemyBase>() ){
+			auto OtherCharacter=Cast<AEnemyBase>( Hit.GetActor() );
+			OtherCharacter->ProcessDamage( Player->PlayerStatsComponent->GrabDamageValue );
 
-		if ( bSphereOverlapResult)
-		{
-			UE_LOG( SYLog, Warning, TEXT( "hit") );
-			for ( AActor* HitActor : OutActorsArray )
-			{
-				UE_LOG( SYLog, Warning, TEXT( "HitActor:%s" ), *HitActor->GetActorNameOrLabel() );
-				auto OtherCharacter=Cast<AEnemyBase>( HitActor );
-				if ( OtherCharacter )
-				{
-					OtherCharacter->ProcessDamage( Player->PlayerStatsComponent->GrabDamageValue );
-
-					UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), BloodEffect, OtherCharacter->GetActorLocation(), FRotator(), ExplosionScale , true );
-
-				}/*
-				else
-				{
-
-					UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), GunEffect, this->MeshComp->GetComponentLocation(), FRotator(), FVector( EmitterScaleValue ), true, EPSCPoolMethod::None, true );
-				}*/
-				
-			//UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, HitActor->GetActorLocation(), FRotator(), ExplosionScale, true );
 			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), ExplosionScale, true );
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), BloodEffect, OtherCharacter->GetActorLocation(), FRotator(), ExplosionScale, true );
+				this->Destroy();
+
+			//UGameplayStatics::PlaySoundAtLocation( GetWorld(), ExplosionSound, EnemyLoc );
+		}else
+		{
+
+			bool bSphereOverlapResult=UKismetSystemLibrary::SphereOverlapActors( GetWorld(), this->MeshComp->GetComponentLocation(), SphereRadius, ObjectTypes, nullptr, ActorsToIgnoreArray, OutActorsArray );
+			//bool bSphereOverlapResult=UKismetSystemLibrary::SphereOverlapActors( GetWorld(), this->GetActorLocation(), SphereRadius, ObjectTypes, AActor::StaticClass(), ActorsToIgnoreArray, OutActorsArray );
+
+			if ( bSphereOverlapResult )
+			{
+				UE_LOG( SYLog, Warning, TEXT( "hit" ) );
+				for ( AActor* HitActor : OutActorsArray )
+				{
+					UE_LOG( SYLog, Warning, TEXT( "HitActor:%s" ), *HitActor->GetActorNameOrLabel() );
+					auto OtherCharacter=Cast<AEnemyBase>( HitActor );
+					if ( OtherCharacter )
+					{
+						OtherCharacter->ProcessDamage( Player->PlayerStatsComponent->GrabDamageValue );
+
+						UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), BloodEffect, OtherCharacter->GetActorLocation(), FRotator(), ExplosionScale, true );
+
+					}
+					else
+					{
+
+						//UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), GunEffect, this->MeshComp->GetComponentLocation(), FRotator(), FVector( EmitterScaleValue ), true, EPSCPoolMethod::None, true );
+
+						UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), ExplosionScale, true );
+					}
+
+					//UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, HitActor->GetActorLocation(), FRotator(), ExplosionScale, true );
+					UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), ExplosionScale, true );
+				}
+
+				UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), ExplosionScale, true );
+				//UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionObjEffect, this->MeshComp->GetComponentLocation(), FRotator(), ExplosionScale, true );
+				this->Destroy();
 			}
 
-			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), ExplosionScale, true );
-			//UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionObjEffect, this->MeshComp->GetComponentLocation(), FRotator(), ExplosionScale, true );
-			this->Destroy();
 		}
-
 		//UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), ExplosionEffect, this->MeshComp->GetComponentLocation(), FRotator(), FVector( 10 ), true, EPSCPoolMethod::None, true );
 
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), ExplosionScale, true );
