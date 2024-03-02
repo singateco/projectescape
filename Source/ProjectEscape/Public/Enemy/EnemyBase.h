@@ -6,6 +6,8 @@
 #include "CharacterBase.h"
 #include "EnemyBase.generated.h"
 
+class UFCTweenUObject;
+class UNiagaraComponent;
 class AHealthPickup;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FEnemyDied, class AEnemyBase*, Enemy);
 
@@ -20,6 +22,7 @@ class PROJECTESCAPE_API AEnemyBase : public ACharacterBase
 public:
 	explicit AEnemyBase(const FObjectInitializer& ObjectInitializer);
 
+	
 	virtual void BeginPlay() override;
 
 	virtual void Tick( float DeltaSeconds ) override;
@@ -52,6 +55,21 @@ public:
 	UPROPERTY(EditDefaultsOnly, meta = (Class))
 	TSubclassOf<UUserWidget> DamageNumberWidgetClass;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UNiagaraComponent* SpawnEffectEmitter;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UNiagaraComponent* SpawnEffectCircle;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	bool PlaySpawnEffect {true};
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float SpawnEffectSeconds {4.0f};
+
+	UPROPERTY()
+	UFCTweenUObject* SpawnEffectTweenUObject;
+	
 	UPROPERTY( EditDefaultsOnly )
 	USkeletalMeshComponent* GunMesh;
 

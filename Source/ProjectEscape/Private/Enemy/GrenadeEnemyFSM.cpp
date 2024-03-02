@@ -26,7 +26,7 @@ UGrenadeEnemyFSM::UGrenadeEnemyFSM()
 	
 	AttackDistance = 3000;
 
-	MinAttackTime = 5.0f;
+	MinAttackTime = 2.5f;
 	MaxAttackTime = 6.0f;
 
 	Accuracy = 3;

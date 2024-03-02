@@ -111,6 +111,7 @@ void AProjectEscapePlayer::BeginPlay()
 	if (PlayerStatsComponent)
 	{
 		PlayerStatsComponent->OnHPReachedZero.AddUniqueDynamic(this, &AProjectEscapePlayer::Die);
+		PlayerStatsComponent->OnTakenDamageFromLoc.AddUniqueDynamic(this, &AProjectEscapePlayer::PlayHitReactAnim);
 	}
 
 	
@@ -207,5 +208,10 @@ void AProjectEscapePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	{
 		UE_LOG(LogTemplateCharacter, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
 	}
+}
+
+void AProjectEscapePlayer::PlayHitReactAnim(const FHitResult& HitResult)
+{
+	GetMesh()->GetAnimInstance()->Montage_Play(SelectHitMontage(HitResult.ImpactNormal, this), 1, EMontagePlayReturnType::MontageLength, false);
 }
 

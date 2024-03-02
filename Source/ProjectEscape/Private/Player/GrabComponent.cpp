@@ -134,7 +134,7 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		it->EnemyHPComponent->SetVisibility(false);
 	}
 
-
+	
 
 	TArray<FHitResult> HitInfoArrayPickUpActors;
 	TArray<FHitResult> HitInfoArrayEnemies;
@@ -326,9 +326,23 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	}
 }
 
+void UGrabComponent::SkillKeyUIUpdate(const FInputActionInstance& InputActionInstance)
+{
+	if (PC && PC->InGameWIdget)
+	{
+		PC->InGameWIdget->SkillKeyTriggered(InputActionInstance);
+	}
+}
+
 void UGrabComponent::SetupPlayerInputComponent(UEnhancedInputComponent* PlayerInputComponent)
 {
 	EnhancedInputComponent = PlayerInputComponent;
+
+	PlayerInputComponent->BindAction(ActionGrab, ETriggerEvent::Started, this, &UGrabComponent::SkillKeyUIUpdate);
+	PlayerInputComponent->BindAction(InputActionQSkill, ETriggerEvent::Started, this, &UGrabComponent::SkillKeyUIUpdate);
+	PlayerInputComponent->BindAction(ActionGrab, ETriggerEvent::Completed, this, &UGrabComponent::SkillKeyUIUpdate);
+	PlayerInputComponent->BindAction(InputActionQSkill, ETriggerEvent::Completed, this, &UGrabComponent::SkillKeyUIUpdate);
+
 	
 	PlayerInputComponent->BindAction(ActionGrab, ETriggerEvent::Started, this, &UGrabComponent::GrabObject);
 	//PlayerInputComponent->BindAction(ActionGrab, ETriggerEvent::Started, this, &UGrabComponent::SphereGrabObject);
@@ -336,8 +350,13 @@ void UGrabComponent::SetupPlayerInputComponent(UEnhancedInputComponent* PlayerIn
 	PlayerInputComponent->BindAction( InputActionQSkill, ETriggerEvent::Completed, this, &UGrabComponent::ActionQSkill );
 }
 
-void UGrabComponent::GrabObject()
+void UGrabComponent::GrabObject(const FInputActionInstance& Instance)
 {
+	if ( ESkillCurrentCoolTime < ESkillMaxCoolTime )
+	{
+		return;
+	}
+	
 	if(bIsGrabbing == true)
 	{
 		return;
@@ -345,12 +364,7 @@ void UGrabComponent::GrabObject()
 
 	bIsPulling = true;
 	bIsPushing = false;
-
-
-	if ( ESkillCurrentCoolTime < ESkillMaxCoolTime )
-	{
-		return;
-	}
+	
 
 	if ( ObjectInHand )
 	{
@@ -450,17 +464,19 @@ void UGrabComponent::ReleaseObject()
 			AnimInstance->Montage_Play(ThrowingMontage);
 		}
 	}
+	ESkillUpdateTimerDisplay();
 	GetWorld()->GetTimerManager().SetTimer( ESkillCountDownHandle, this, &UGrabComponent::ESkillAdvanceTimer, 1.0f, true );
 
 }
 
-void UGrabComponent::ActionQSkill()
+void UGrabComponent::ActionQSkill(const FInputActionInstance& Instance)
 {
-
+	
 	if ( GetWorld()->GetTimerManager().IsTimerActive( QSkillCountDownHandle )) {
 		return;
 	}
-
+	
+	QSkillUpdateTimerDisplay();
 	GetWorld()->GetTimerManager().SetTimer( QSkillCountDownHandle, this, &UGrabComponent::QSkillAdvanceTimer, 1.0f, true );
 
 	//UGameplayStatics::SpawnEmitterAtLocation( GetWorld(),QExplosionEffect, Player->GetActorLocation(), FRotator(), FVector( 100 ), true, EPSCPoolMethod::None, true );
@@ -530,10 +546,9 @@ void UGrabComponent::SphereGrabObject()
 void UGrabComponent::QSkillAdvanceTimer()
 {
 	--QSkillCurrentCoolTime;
-
 	QSkillUpdateTimerDisplay();
 
-	if ( QSkillCurrentCoolTime < 1 ) {
+	if ( QSkillCurrentCoolTime <= 0 ) {
 		// 카운트 다운이 완료 되었으니 타이머를 중지 시킨다.
 		GetWorld()->GetTimerManager().ClearTimer( QSkillCountDownHandle );
 
@@ -544,11 +559,10 @@ void UGrabComponent::QSkillAdvanceTimer()
 
 void UGrabComponent::ESkillAdvanceTimer()
 {
-	ESkillUpdateTimerDisplay();
 	--ESkillCurrentCoolTime;
+	ESkillUpdateTimerDisplay();
 
-
-	if(ESkillCurrentCoolTime<1){
+	if(ESkillCurrentCoolTime <= 0){
 		// 카운트 다운이 완료 되었으니 타이머를 중지 시킨다.
 		GetWorld()->GetTimerManager().ClearTimer( ESkillCountDownHandle );
 
