@@ -19,6 +19,8 @@ public:
 
 	virtual void BeginPlay() override;
 
+	virtual void Tick(float DeltaSeconds) override;
+
 	UPROPERTY(EditAnywhere)
 	class UBehaviorTree* Tree;
 
@@ -27,5 +29,8 @@ public:
 
 	UBehaviorTree* GetBehaviorTree();
 	void AttachPistol();
+
+	void OnDie();
+
 
 };
