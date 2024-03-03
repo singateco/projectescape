@@ -15,7 +15,7 @@
 #include "Player/ProjectEscapePlayer.h"
 #include "ProjectEscape/ProjectEscape.h"
 #include "NiagaraFunctionLibrary.h"
-
+#include "UI/MainUI.h"
 
 
 // Sets default values
@@ -139,7 +139,14 @@ void APickableActor::OnCompHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 		if(Hit.GetActor()->IsA<AEnemyBase>() ){
 			auto OtherCharacter=Cast<AEnemyBase>( Hit.GetActor() );
 			OtherCharacter->ProcessDamage( Player->PlayerStatsComponent->GrabDamageValue );
+			
+			const bool IsDyingHit = OtherCharacter->GetStatsComponent()->GetHP() <= 0;
 
+			if (Player && Player->MainUI)
+			{
+				Player->MainUI->ShowEnemyHit(IsDyingHit);
+			}
+			
 			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), ExplosionScale, true );
 			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), BloodEffect, OtherCharacter->GetActorLocation(), FRotator(), ExplosionScale, true );
 				this->Destroy();
@@ -193,7 +200,5 @@ void APickableActor::OnCompHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 		this->Destroy();
 		Player->GrabComponent->bIsPushing=false;
 	}
-
-
-
+	
 }

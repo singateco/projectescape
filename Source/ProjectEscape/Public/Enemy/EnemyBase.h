@@ -39,9 +39,12 @@ public:
 
 	UPROPERTY()
 	float CrosshairDist;
-
+	
 	UFUNCTION()
 	void ProcessDying();
+
+	UPROPERTY()
+	USoundBase* DyingSound;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TSubclassOf<AHealthPickup> HealthPickupActorClass;

@@ -87,9 +87,6 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category="Pistol" )
 	USoundBase* GunSoundClass;
 
-	UPROPERTY( EditDefaultsOnly, Category="Pistol" )
-	USoundBase* GunHitSound;
-	
 	UPROPERTY()
 	UMainUI* MainUI;
 

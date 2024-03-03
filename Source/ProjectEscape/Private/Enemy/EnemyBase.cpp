@@ -17,6 +17,7 @@
 #include "Enemy/EnemyStatsComponent.h"
 #include "Objects/HealthPickup.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Player/ProjectEscapePlayer.h"
 #include "UI/DamageNumber.h"
 
@@ -53,6 +54,15 @@ AEnemyBase::AEnemyBase(const FObjectInitializer& ObjectInitializer)
 		UIMaterial = UIMaterialFinder.Object;
 	}
 
+	ConstructorHelpers::FObjectFinder<USoundWave> DyingSoundFinder
+	{
+		TEXT("/Script/Engine.SoundWave'/Game/Sounds/HitSound.HitSound'")
+	};
+
+	if (DyingSoundFinder.Succeeded())
+	{
+		DyingSound = DyingSoundFinder.Object;
+	}
 	
 	//WBP(블루프린트 클래스)를 로드해서 HPComp의 위젯으로 설정, FClassFinder 주소 마지막에 _C해야함 블루프린트라서
 	ConstructorHelpers::FClassFinder<UUserWidget> tempHP(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/UI/WBP_EnemyHealthBar.WBP_EnemyHealthBar_C'"));
@@ -117,7 +127,6 @@ AEnemyBase::AEnemyBase(const FObjectInitializer& ObjectInitializer)
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 	GetCharacterMovement()->MaxWalkSpeed=EnemyMaxSpeed;
-
 }
 
 void AEnemyBase::BeginPlay()
@@ -210,6 +219,8 @@ void AEnemyBase::ProcessDying()
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 		GetWorld()->SpawnActor<AHealthPickup>(HealthPickupActorClass, GetActorLocation(), FRotator::ZeroRotator, SpawnParams);
 	}
+
+	UGameplayStatics::PlaySound2D(GetWorld(), DyingSound);
 
 	if (SpawnEffectEmitter)
 	{

@@ -94,15 +94,7 @@ UFireComponent::UFireComponent()
 	{
 		ReloadSoundClass=ReloadSoundFinder.Object;
 	}
-
-
-	static const ConstructorHelpers::FObjectFinder<USoundBase> GunHitSoundFinder {TEXT("/Script/Engine.SoundWave'/Game/Sounds/511194__pablobd__headshot.511194__pablobd__headshot'")};
-	if (GunHitSoundFinder.Succeeded())
-	{
-		GunHitSound = GunHitSoundFinder.Object;
-	}
-
-
+	
 	static const ConstructorHelpers::FObjectFinder<UParticleSystem> MuzzleEffectFinder{ TEXT( "/Script/Engine.ParticleSystem'/Game/Resources/KDE/GunsAndGrenade/Modern/Weapons/Assets/VFX/P_MuzzleFlash_02.P_MuzzleFlash_02'" ) }; 
 	if ( MuzzleEffectFinder.Succeeded() )
 	{
@@ -317,8 +309,7 @@ void UFireComponent::NormalGunFire()
 		if(HitInfo2.GetActor()->IsA<AEnemyBase>() )
 		{
 			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), BloodEffect, HitInfo2.Location, HitInfo2.ImpactNormal.Rotation(), FireEffectScale * 3.f, true );
-
-			UGameplayStatics::PlaySound2D( GetWorld(), GunHitSound);
+			
 
 			Enemy=Cast<AEnemyBase>( HitInfo2.GetActor() );
 

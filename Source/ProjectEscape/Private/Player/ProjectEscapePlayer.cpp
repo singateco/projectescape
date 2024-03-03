@@ -113,6 +113,11 @@ void AProjectEscapePlayer::BeginPlay()
 		}
 	}
 
+	if (AProjectEscapePlayerController* PC = Cast<AProjectEscapePlayerController>(Controller))
+	{
+		MainUI = PC->InGameWIdget;
+	}
+
 	if (PlayerStatsComponent)
 	{
 		PlayerStatsComponent->OnHPReachedZero.AddUniqueDynamic(this, &AProjectEscapePlayer::Die);
@@ -125,9 +130,9 @@ void AProjectEscapePlayer::BeginPlay()
 
 void AProjectEscapePlayer::PlayDamageAnim(float Damage)
 {
-	if (auto PC = GetController<AProjectEscapePlayerController>())
+	if (MainUI)
 	{
-		PC->InGameWIdget->PlayDamageAnimation();
+		MainUI->PlayDamageAnimation();
 	}
 }
 

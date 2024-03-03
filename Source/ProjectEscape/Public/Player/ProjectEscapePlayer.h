@@ -7,6 +7,7 @@
 #include "CharacterBase.h"
 #include "ProjectEscapePlayer.generated.h"
 
+class UMainUI;
 class UNiagaraComponent;
 class UMoveComponent;
 class UFireComponent;
@@ -32,6 +33,9 @@ public:
 	// #################################
 	// ########### PROPERTIES ##########
 	// #################################
+
+	UPROPERTY()
+	UMainUI* MainUI;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UMoveComponent* MoveComponent;
