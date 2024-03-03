@@ -29,10 +29,11 @@ protected:
 
     UPROPERTY()
     float MaxHP {3};
-	
+
 public:
 	// Sets default values for this component's properties
 	UStatsComponent();
+	
 
 	UFUNCTION(BlueprintCallable)
 	float GetHP() const { return HP; }

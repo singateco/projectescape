@@ -18,14 +18,17 @@ public:
 
 	UBTTask_Shooting();
 
-	UPROPERTY( EditDefaultsOnly )
+	UPROPERTY( EditAnywhere )
 	TSubclassOf<class AEnemyBullet> EnemyBulletFactory;
 
-	UPROPERTY( EditDefaultsOnly )
+	UPROPERTY( EditAnywhere )
 	USoundBase* ShootingSound;
 
 	UPROPERTY( EditAnywhere )
 	UParticleSystem* MuzzleFlash;
+
+	UPROPERTY( EditAnywhere )
+	UAnimMontage* ShootingMontage;
 
 	UPROPERTY( EditAnywhere )
 	float Accuracy = 5.0f;

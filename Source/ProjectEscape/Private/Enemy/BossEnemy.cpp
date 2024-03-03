@@ -5,6 +5,7 @@
 
 #include "Components/WidgetComponent.h"
 #include "AI/BossAIController.h"
+#include "Components/CapsuleComponent.h"
 #include "Enemy/EnemyBaseFSM.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -26,6 +27,8 @@ ABossEnemy::ABossEnemy( const FObjectInitializer& ObjectInitializer )
 
 	}
 
+	PlaySpawnEffect = false;
+
 	ThrowRef = CreateDefaultSubobject<USceneComponent>( TEXT( "ThrowRef" ) );
 	ThrowRef->SetupAttachment( RootComponent );
 
@@ -42,6 +45,16 @@ void ABossEnemy::BeginPlay()
 	GetCharacterMovement()->MaxWalkSpeed = 500;
 }
 
+void ABossEnemy::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if(GetStatsComponent()->GetHP() <= 0 )
+	{
+		OnDie();
+	}
+}
+
 UBehaviorTree* ABossEnemy::GetBehaviorTree()
 {
 	return Tree;
@@ -52,6 +65,14 @@ void ABossEnemy::AttachPistol()
 	TArray<UActorComponent*> Comp = this->GetComponentsByTag( USkeletalMeshComponent::StaticClass(), TEXT( "Body" ) );
 	USceneComponent* BodyComp = Cast<USceneComponent>( Comp[0] );
 	GunMesh->AttachToComponent( BodyComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT( "GunPosition" ) );
+}
+
+void ABossEnemy::OnDie()
+{
+	GetCapsuleComponent()->SetCollisionProfileName( FName( "NoCollision" ) );
+	GetMesh()->SetCollisionProfileName( TEXT( "Ragdoll" ) );
+	GetMesh()->SetSimulatePhysics( true );
+
 }
 
 

@@ -10,6 +10,8 @@
  * 
  */
 
+struct FInputActionInstance;
+class UInputAction;
 class URadialSlider;
 class UTextBlock;
 class AProjectEscapePlayer;
@@ -22,13 +24,20 @@ class UMainUI : public UUserWidget
 	GENERATED_BODY()
 public:
 
+	virtual void NativeTick( const FGeometry& MyGeometry, float InDeltaTime ) override;
 public:
 	UPROPERTY(EditDefaultsOnly)
 	AProjectEscapePlayer* Player;
 
 	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
 	UImage* CrossHair;
-	
+
+	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidgetAnim), Transient )
+	class UWidgetAnimation* DamageUIAnim;
+
+	UFUNCTION()
+	void PlayDamageAnimation();
+
 	UPROPERTY( BlueprintReadWrite, meta=(BindWidget) )
 	UTextBlock* BulletText;
 
@@ -83,6 +92,15 @@ public:
 	UFUNCTION()
 	void StartESkillUI();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void SkillKeyTriggered(const FInputActionInstance& ActionInstance);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void PlayQSkillCooldownAnim();
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void PlayESkillCooldownAnim();
+	
 protected:
 	virtual void NativeOnInitialized() override;
 };

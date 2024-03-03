@@ -88,20 +88,20 @@ UFireComponent::UFireComponent()
 		GunSoundClass = GunSoundFinder.Object;
 	}
 
-	static const ConstructorHelpers::FObjectFinder<USoundBase> GunHitSoundFinder {TEXT("/Script/Engine.SoundWave'/Game/Sounds/511194__pablobd__headshot.511194__pablobd__headshot'")};
-	if (GunHitSoundFinder.Succeeded())
+	static ConstructorHelpers::FObjectFinder<USoundBase> ReloadSoundFinder( TEXT( "/Script/Engine.SoundWave'/Game/Resources/KDE/Sound/S_LPAMG_WEP_X13_Reload.S_LPAMG_WEP_X13_Reload'" ) );
+
+	if ( ReloadSoundFinder.Succeeded() )
 	{
-		GunHitSound = GunHitSoundFinder.Object;
+		ReloadSoundClass=ReloadSoundFinder.Object;
 	}
-
-
+	
 	static const ConstructorHelpers::FObjectFinder<UParticleSystem> MuzzleEffectFinder{ TEXT( "/Script/Engine.ParticleSystem'/Game/Resources/KDE/GunsAndGrenade/Modern/Weapons/Assets/VFX/P_MuzzleFlash_02.P_MuzzleFlash_02'" ) }; 
 	if ( MuzzleEffectFinder.Succeeded() )
 	{
 		MuzzleEffect=MuzzleEffectFinder.Object;
 	}
 
-	static const ConstructorHelpers::FObjectFinder<UAnimMontage> FireMontageFinder {TEXT("/Script/Engine.AnimMontage'/Game/Animations/Actions/AM_MM_Pistol_DryFire.AM_MM_Pistol_DryFire'")};
+	static const ConstructorHelpers::FObjectFinder<UAnimMontage> FireMontageFinder {TEXT("/Script/Engine.AnimMontage'/Game/Animations/Actions/AM_MM_Pistol_Fire.AM_MM_Pistol_Fire'")};
 	if (FireMontageFinder.Succeeded())
 	{
 		FireMontage = FireMontageFinder.Object;
@@ -248,7 +248,13 @@ void UFireComponent::SetGunVisibility(const bool ShowGun)
 
 void UFireComponent::NormalGunFire()
 {
-	if (bHasPistol == false || Player->IsReloading == true || Player->HasMatchingGameplayTag(PEGameplayTags::Status_IsDashing)) {
+	if (bHasPistol == false 
+	|| Player->IsReloading == true 
+	|| Player->GrabComponent->bIsGrabbing == true
+	|| Player->GrabComponent->bIsPulling == true
+	|| Player->GrabComponent->bIsPushing == true
+	|| Player->GrabComponent->bIsGrabbing == true
+	|| Player->HasMatchingGameplayTag(PEGameplayTags::Status_IsDashing)) {
 		return;
 	}
 
@@ -303,7 +309,8 @@ void UFireComponent::NormalGunFire()
 		if(HitInfo2.GetActor()->IsA<AEnemyBase>() )
 		{
 			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), BloodEffect, HitInfo2.Location, HitInfo2.ImpactNormal.Rotation(), FireEffectScale * 3.f, true );
-			UGameplayStatics::PlaySound2D( GetWorld(), GunHitSound);
+			
+
 			Enemy=Cast<AEnemyBase>( HitInfo2.GetActor() );
 
 			AActor* Actor=HitInfo2.GetActor();
@@ -322,12 +329,13 @@ void UFireComponent::NormalGunFire()
 			UE_LOG( LogTemp, Warning, TEXT( "hit actor: %s" ), *HitInfo2.GetActor()->GetActorNameOrLabel() )
 			UDecalComponent* UdecalEffect = UGameplayStatics::SpawnDecalAtLocation( GetWorld(), WallDecalEffect, WallDecalScale, /*HitInfo2.GetComponent()->GetComponentLocation()*/ HitInfo2.ImpactPoint, HitInfo2.ImpactNormal.Rotation(), 10 );
 			UdecalEffect->SetFadeScreenSize(0.f);
-			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), GunEffectNoActor, HitInfo2.TraceEnd, FRotator(), FireEffectScale, true );
+			//UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), GunEffectNoActor, HitInfo2.TraceEnd, FRotator(), FireEffectScale, true );
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), GunEffectNoActor, HitInfo2.ImpactPoint, FRotator(), FireEffectScale, true );
 		}
 	}
 	else
 	{
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), GunEffectNoActor, HitInfo2.TraceEnd, FRotator(), FireEffectScale, true );
+		//UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), GunEffectNoActor, HitInfo2.TraceEnd, FRotator(), FireEffectScale, true );
 		AActor* Actor = HitInfo1.GetActor();
 		if (Actor && Actor->GetComponentByClass(UStaticMeshComponent::StaticClass()))
 		{

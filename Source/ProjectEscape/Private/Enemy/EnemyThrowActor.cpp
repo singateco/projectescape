@@ -11,11 +11,11 @@
 
 AEnemyThrowActor::AEnemyThrowActor()
 {
-
 	GrenadeMesh->SetRelativeScale3D( FVector( 1.0f ) );
 	GrenadeMesh->SetRelativeRotation( FRotator( 0, 0, 0 ) );
 	GrenadeMesh->SetSimulatePhysics( false );
 	ExplosionEffectSize = 0.5f;
+	SphereRadius = 300.0f;
 	ExplosionTime = 10.0f;
 }
 
@@ -60,8 +60,7 @@ void AEnemyThrowActor::Explosion(const FHitResult& Hit)
 
 }
 
-void AEnemyThrowActor::OnMeshBeginHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
-                                      UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+void AEnemyThrowActor::OnMeshBeginHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	Super::OnMeshBeginHit(HitComponent, OtherActor, OtherComp, NormalImpulse, Hit);
 	Explosion(Hit);

@@ -14,6 +14,8 @@ class PROJECTESCAPE_API UBTService_IsBossHalfHP : public UBTService_BlackboardBa
 {
 	GENERATED_BODY()
 
+public:
+
 	UBTService_IsBossHalfHP();
 
 	void OnBecomeRelevant( UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory ) override;

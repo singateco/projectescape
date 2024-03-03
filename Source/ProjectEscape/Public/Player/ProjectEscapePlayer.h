@@ -7,6 +7,8 @@
 #include "CharacterBase.h"
 #include "ProjectEscapePlayer.generated.h"
 
+class UMainUI;
+class UNiagaraComponent;
 class UMoveComponent;
 class UFireComponent;
 class UGrabComponent;
@@ -31,6 +33,9 @@ public:
 	// #################################
 	// ########### PROPERTIES ##########
 	// #################################
+
+	UPROPERTY()
+	UMainUI* MainUI;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UMoveComponent* MoveComponent;
@@ -56,6 +61,15 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<UUserWidget> GameOverUIClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UNiagaraComponent* QShieldEffect;
+	
+	UPROPERTY(VisibleAnywhere)
+	bool bIsDead {false};
+	
+	UPROPERTY( VisibleAnywhere )
+	bool IsReloading=false;
 	
 	// #################################
 	// ########### FUNCTIONS ###########
@@ -72,12 +86,6 @@ public:
 	UFUNCTION()
 	void Die();
 
-	UPROPERTY(VisibleAnywhere)
-	bool bIsDead {false};
-
-
-	UPROPERTY( VisibleAnywhere )
-	bool IsReloading=false;
 
 protected:
 	// #################################
@@ -89,10 +97,19 @@ protected:
 	
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	
+
+	UFUNCTION()
+	void PlayHitReactAnim(const FHitResult& HitResult);
+
 	// To add mapping context
 	virtual void BeginPlay();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	UAnimMontage* SelectHitMontage(FVector HitNormal, AActor* HitActor);
+
+	UFUNCTION()
+	void PlayDamageAnim(float Damage);
+	
 	virtual void Tick(float DeltaSeconds) override;
 
 private:

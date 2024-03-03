@@ -23,7 +23,7 @@ AHealthPickup::AHealthPickup()
 	SetRootComponent(HitBox);
 	MagnetBox->SetupAttachment(HitBox);
 	
-	SetLifeSpan(30.f);
+	SetLifeSpan(45.f);
 }
 
 void AHealthPickup::OnHitBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

@@ -44,7 +44,7 @@ public:
 	float MaxDistanceToGun = 100000.0f;
 
 	UPROPERTY( EditDefaultsOnly, Category="Weapon" )
-	FVector FireEffectScale = FVector(10);
+	FVector FireEffectScale = FVector(1);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	bool bHasPistol = false;
@@ -87,9 +87,6 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category="Pistol" )
 	USoundBase* GunSoundClass;
 
-	UPROPERTY( EditDefaultsOnly, Category="Pistol" )
-	USoundBase* GunHitSound;
-	
 	UPROPERTY()
 	UMainUI* MainUI;
 
@@ -156,6 +153,9 @@ public:
 
 	UFUNCTION()
 	void PlayReloadAnimation();
+
+	UPROPERTY( EditAnywhere )
+	USoundBase* ReloadSoundClass;
 
 	virtual void Deactivate() override;
 

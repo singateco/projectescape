@@ -62,7 +62,9 @@ void UStatsComponent::RemoveTag(const FGameplayTag& TagToRemove)
 
 void UStatsComponent::ProcessDamage(const float DamageValue)
 {
-	if (OwningChara->HasMatchingGameplayTag(PEGameplayTags::Status_IsDead))
+	if (OwningChara->HasMatchingGameplayTag(PEGameplayTags::Status_IsDead)
+		||
+		OwningChara->HasMatchingGameplayTag(PEGameplayTags::Status_CantBeDamaged))
 	{
 		return;
 	}
@@ -70,7 +72,9 @@ void UStatsComponent::ProcessDamage(const float DamageValue)
 	HP = FMath::Max(HP - DamageValue, 0);
 	OnHPChanged.Broadcast(MaxHP, HP);
 	OnTakenDamage.Broadcast(DamageValue);
+
 	
+
 	if (HP <= 0)
 	{
 		ProcessDying();
@@ -79,6 +83,13 @@ void UStatsComponent::ProcessDamage(const float DamageValue)
 
 void UStatsComponent::ProcessDamageFromLoc(const float DamageValue, const FHitResult& HitResult)
 {
+	if (OwningChara->HasMatchingGameplayTag(PEGameplayTags::Status_IsDead)
+		||
+		OwningChara->HasMatchingGameplayTag(PEGameplayTags::Status_CantBeDamaged))
+	{
+		return;
+	}
+	
 	ProcessDamage(DamageValue);
 	OnTakenDamageFromLoc.Broadcast(HitResult);
 }

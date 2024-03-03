@@ -59,6 +59,7 @@ void ABossAIController::OnTargetDetected(AActor* Actor, FAIStimulus const Stimul
 	auto SeeActor=Cast<AProjectEscapePlayer>( Actor );
 	if ( SeeActor )
 	{
+		GetBlackboardComponent()->SetValueAsObject( "Player", SeeActor );
 		GetBlackboardComponent()->SetValueAsBool( "CanSeePlayer", Stimulus.WasSuccessfullySensed() );
 	}
 }

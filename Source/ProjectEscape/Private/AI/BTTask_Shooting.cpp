@@ -36,6 +36,13 @@ UBTTask_Shooting::UBTTask_Shooting()
         MuzzleFlash= MuzzleFlashFinder.Object;
     }
 
+   /* static ConstructorHelpers::FObjectFinder<UAnimMontage> ShootingFinder
+    { TEXT( "/Script/Engine.AnimMontage'/Game/Animations/Actions/AM_MM_Pistol_Fire.AM_MM_Pistol_Fire'" ) };
+
+    if ( ShootingFinder.Succeeded() )
+    {
+        ShootingMontage=ShootingFinder.Object;
+    }*/
 }
 
 EBTNodeResult::Type UBTTask_Shooting::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -46,7 +53,6 @@ EBTNodeResult::Type UBTTask_Shooting::ExecuteTask(UBehaviorTreeComponent& OwnerC
 
     if ( Boss )
     {
-        // 현재 캐릭터의 위치와 회전을 얻어옴
         FVector MuzzleLocation = Boss->GunMesh->GetSocketLocation( FName( TEXT( "Muzzle" ) ) );
 
         auto Player = UGameplayStatics::GetPlayerCharacter( GetWorld(), 0 );
@@ -69,6 +75,9 @@ EBTNodeResult::Type UBTTask_Shooting::ExecuteTask(UBehaviorTreeComponent& OwnerC
 
         UGameplayStatics::SpawnEmitterAttached( MuzzleFlash, Boss->GunMesh, FName( TEXT( "Muzzle" ) ), FVector::ZeroVector, FRotator::ZeroRotator, FVector( 1 ), EAttachLocation::SnapToTarget, true );
         UGameplayStatics::PlaySoundAtLocation( GetWorld(), ShootingSound, MuzzleLocation, FRotator() );
+
+       UAnimInstance* AnimInstance = Boss->GetMesh()->GetAnimInstance();
+        AnimInstance->Montage_Play( ShootingMontage );
 
         FinishLatentTask( OwnerComp, EBTNodeResult::Succeeded );
         return EBTNodeResult::Succeeded;

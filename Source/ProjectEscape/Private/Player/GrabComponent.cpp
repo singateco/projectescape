@@ -6,6 +6,7 @@
 #include "EngineUtils.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "NiagaraComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Enemy/RifleEnemy.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -24,6 +25,7 @@
 #include "UI/MainUI.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Enemy/EnemyBase.h"
+#include "ProjectEscape/PEGameplayTags.h"
 
 // Sets default values for this component's properties
 UGrabComponent::UGrabComponent()
@@ -55,6 +57,14 @@ UGrabComponent::UGrabComponent()
 		ActionGrab = GrabActionFinder.Object;
 	}
 
+
+	static const ConstructorHelpers::FObjectFinder<UInputAction> ThrowActionFinder{ TEXT( "/Script/EnhancedInput.InputAction'/Game/ThirdPerson/Input/Actions/IA_Fire.IA_Fire'" ) };
+	if ( ThrowActionFinder.Succeeded() )
+	{
+		ActionThrow=ThrowActionFinder.Object;
+	}
+
+
 	static const ConstructorHelpers::FObjectFinder<UInputAction> QSkillActionFinder {TEXT("/Script/EnhancedInput.InputAction'/Game/ThirdPerson/Input/Actions/IA_QUltimateSkill.IA_QUltimateSkill'")};
 	if (QSkillActionFinder.Succeeded())
 	{
@@ -72,6 +82,9 @@ UGrabComponent::UGrabComponent()
 	{
 		ThrowingMontage = ThrowMontageFinder.Object;
 	}
+
+
+
 }
 
 
@@ -90,6 +103,11 @@ void UGrabComponent::BeginPlay()
 	//	it->EnemyHPComponent->SetVisibility(false);
 	//}
 	AnimInstance = Player->GetMesh()->GetAnimInstance();
+
+	PC->GetViewportSize( ScreenSizeX, ScreenSizeY );
+	UE_LOG( SYLog, Warning, TEXT( "Crosshair %d ,%d" ), ScreenSizeX, ScreenSizeY );
+	CrosshairLocationScreen=FVector2D( (float)ScreenSizeX / 2, (float)ScreenSizeY / 2 );
+
 }
 
 void UGrabComponent::InitializeComponent()
@@ -101,6 +119,7 @@ void UGrabComponent::InitializeComponent()
 	HandleObject = Player->PhysicsHandleComponent;
 
 	PC=Cast<AProjectEscapePlayerController>( GetWorld()->GetFirstPlayerController() );
+
 }
 
 // Called every frame
@@ -128,23 +147,44 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 	OtherEnemies.Empty();
 	
-	for ( TActorIterator<AEnemyBase> it( GetWorld() ); it; ++it ) {
-		
-		OtherEnemies.Add(*it);
+	for ( TActorIterator<AEnemyBase> it( GetWorld() ); it; ++it ) 
+	{
+		FVector2D TempLocScreen;
+		bool WorldToScreenResult=UGameplayStatics::ProjectWorldToScreen( GetWorld()->GetFirstPlayerController(), it->GetActorLocation(), TempLocScreen );
+		if ( WorldToScreenResult )
+		{
+			if( TempLocScreen.X > 0 && TempLocScreen.Y >0 && TempLocScreen.X <= ScreenSizeX && TempLocScreen.Y <= ScreenSizeY )
+			{//적이 화면안에 있을 경우
+				float TempDist=FVector2D::Distance( TempLocScreen, it->CurrentLocationScreen );
+				it->CurrentLocationScreen = TempLocScreen;
+				it->CrosshairDist = TempDist;
+				OtherEnemies.Add( *it );
+			}
+		}
 		it->EnemyHPComponent->SetVisibility(false);
 	}
 
+	//UE_LOG( SYLog, Warning, TEXT( "총 %d명 감지" ), OtherEnemies.Num() );
 
+	if ( OtherEnemies.Num() > 0 )
+	{
+		TargetEnemySorting( );
+
+
+		for ( int i=0; i < GrabObjectCount; i++ )
+		{
+			OtherEnemies[i]->EnemyHPComponent->SetVisibility( true );
+		}
+	}
+	
 
 	TArray<FHitResult> HitInfoArrayPickUpActors;
-	TArray<FHitResult> HitInfoArrayEnemies;
 	FHitResult HitInfoPickUpActor;
 	FVector Start=Player->GetFollowCamera()->GetComponentLocation();
 	FVector End=Player->GetFollowCamera()->GetComponentLocation() + Player->GetFollowCamera()->GetForwardVector() * EnemyHPMaxDistance;
 
 
 	ETraceTypeQuery TraceTypeQuery=UEngineTypes::ConvertToTraceType( ECC_GameTraceChannel1 );
-	ETraceTypeQuery TraceTypeQueryEnemy=UEngineTypes::ConvertToTraceType( ECC_GameTraceChannel2 );
 
 	TArray<AActor*> SphereTraceIgnoreActorsArray;
 	// 체크하기전에 한 번 비워주기
@@ -153,96 +193,16 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	SphereTraceIgnoreActorsArray.Add( Player );
 
 
-
-	if( OtherEnemies.Num() > 0 )
-	{
-		/*bool bTraceResultEnemies=UKismetSystemLibrary::SphereTraceMulti( GetWorld(), Start, End, RadiusDetectionHPBar, TraceTypeQueryEnemy,
-			false, SphereTraceIgnoreActorsArray, EDrawDebugTrace::ForDuration, HitInfoArrayEnemies, true, FColor::Green, FColor::Red, 2.0f );*/
-		bool bTraceResultEnemies=UKismetSystemLibrary::SphereTraceMulti( GetWorld(), Start, End, RadiusDetectionHPBar, TraceTypeQueryEnemy,
-			false, SphereTraceIgnoreActorsArray, EDrawDebugTrace::None, HitInfoArrayEnemies, true);
-		if ( bTraceResultEnemies )
-		{
-			for ( FHitResult& HitInfo : HitInfoArrayEnemies )
-			{
-				if ( HitInfo.GetActor()->IsA<AEnemyBase>() )
-				{
-					auto TargetEnemy=Cast<AEnemyBase>( HitInfo.GetActor() );
-					//UE_LOG( SYLog, Warning, TEXT( "TargetEnemy %s" ), *TargetEnemy->GetActorNameOrLabel() );
-					if ( TargetEnemy )
-					{
-						TargetEnemy->EnemyHPComponent->SetVisibility( true );
-					}
-				}
-			}
-			TArray<AActor*> ResultEnemies;
-			for(auto temp : HitInfoArrayEnemies )
-			{
-				ResultEnemies.Add( temp .GetActor());
-			}
-
-			//시야에 없는 에너미 HP바 지우기
-			//if ( OtherEnemies.Num() > HitInfoArrayPickUpActors.Num() )
-			//{
-			//	for ( auto anyEnemy : OtherEnemies )
-			//	{
-			//		//if( !ResultEnemies.Contains(a) ) //맵에 있는 전체 에너미 중에서 레이더에 잡힌 에너미들에 포함되지않는다면 
-			//		//{
-			//		//	a->EnemyHPComponent->SetVisibility( false );
-			//		//
-			//		//}
-			//
-			//		for ( auto b : HitInfoArrayPickUpActors )
-			//		{
-			//			if ( b.GetActor()->GetActorNameOrLabel() != anyEnemy->GetActorNameOrLabel() )
-			//			{
-			//				auto tempEnemy=Cast<AEnemyBase>( anyEnemy );
-			//				tempEnemy->EnemyHPComponent->SetVisibility( false );
-			//			}
-			//		}
-			//	}
-			//}
-
-			//시야에 없는 에너미 HP바 지우기
-			if ( OtherEnemies.Num() > HitInfoArrayEnemies.Num() )
-			{
-				for ( auto a : OtherEnemies )
-				{
-					for ( auto b : HitInfoArrayEnemies )
-					{
-						if ( b.GetActor()->GetActorNameOrLabel() != a->GetActorNameOrLabel() )
-						{
-							auto aa=Cast<AEnemyBase>( a );
-							aa->EnemyHPComponent->SetVisibility( false );
-						}
-					}
-				}
-			}
-
-
-
-		}
-	}
-
 	if(bIsGrabbing == true)
 	{
 		HandleObject->SetTargetLocation( Player->GetFollowCamera()->GetComponentLocation() + Player->GetFollowCamera()->GetForwardVector()*500 );
-		//HandleObject->SetTargetLocation( Player->GetMesh()->GetSocketLocation("GrabPosition") );
-		//NewAngle+= RotSpeed * DeltaTime;
-		//FRotator NewRotation = FRotator( 0, NewAngle, 0 );
-		//FRotator NewRotation = FRotator( NewAngle, NewAngle, NewAngle );
-		//HandleObject->SetTargetRotation( NewRotation );
-		//HandleObject->SetAngularDamping(10*DeltaTime);
-
-		//FVector NewLocation =Player->GetFollowCamera()->GetComponentLocation() + Player->GetFollowCamera()->GetForwardVector() * 500;
-		//FRotator NewRotation = FRotator( 10 * DeltaTime, 10 * DeltaTime, 10 * DeltaTime );
-		//HandleObject->SetTargetLocationAndRotation( NewLocation, NewRotation );
 
 		if ( AnimInstance && GrabbingMontage && !AnimInstance->Montage_IsPlaying( nullptr ) )
 		{
 			AnimInstance->Montage_Play( GrabbingMontage );
 		}
 		
-	}else if( bIsGrabbing == false || OtherEnemies.Num() > 0) // 물체 안잡고 있거나 적들이 있을 때
+	}else if( bIsGrabbing == false )//|| OtherEnemies.Num() > 0) // 물체 안잡고 있거나 적들이 있을 때
 	{
 		//bool bTracePickUpActorSphereMulti = UKismetSystemLibrary::SphereTraceMulti( GetWorld(), Start, End, RadiusDetection, TraceTypeQuery, false, SphereTraceIgnoreActorsArray, EDrawDebugTrace::None, HitInfoArrayPickUpActors, true );
 		bool bTracePickUpActorSphereSingle = UKismetSystemLibrary::SphereTraceSingle(GetWorld(), Start, End , RadiusDetection, TraceTypeQuery , false, SphereTraceIgnoreActorsArray, EDrawDebugTrace::None, HitInfoPickUpActor, true );
@@ -268,76 +228,41 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 			}
 		}
 
-		/*
-		if ( bTracePickUpActorSphereSingle )
-		{
-			//UE_LOG( SYLog, Warning, TEXT( "OtherEnemies %d" ), OtherEnemies.Num() );
-		
-			for ( FHitResult& HitInfo : HitInfoArrayPickUpActors )
-			{
-				//auto PickUpActor=Cast<APickableActor>( HitInfo.GetActor() );
-				////UE_LOG( SYLog, Warning, TEXT( "%s" ), *PickUpActor->GetActorNameOrLabel() );
-				//if(PickUpActor )
-				//{
-				//	PickUpActor->MeshComp->SetRenderCustomDepth( true );
-				//}
+	}
+}
 
-				if(HitInfo.GetActor()->IsA<APickableActor>())
-				{
-					auto PickUpActor=Cast<APickableActor>( HitInfo.GetActor() );
-					//UE_LOG( SYLog, Warning, TEXT( "PickUpActor %s" ), *PickUpActor->GetActorNameOrLabel() );
-					if ( PickUpActor )
-					{
-						PickUpActor->MeshComp->SetRenderCustomDepth( true );
-					}
-				
-				}
-				//if( HitInfo.GetActor()->IsA<ARifleEnemy>() || HitInfo.GetActor()->IsA<AGrenadeEnemy>() )
-				//if( HitInfo.GetActor()->IsA<AEnemyBase>() )
-				//{
-				//	auto TargetEnemy = Cast<AEnemyBase>( HitInfo.GetActor() );
-				//	UE_LOG( SYLog, Warning, TEXT( "TargetEnemy %s" ), *TargetEnemy->GetActorNameOrLabel() );
-				//	if(TargetEnemy )
-				//	{
-				//		TargetEnemy->EnemyHPComponent->SetVisibility( true );
-				//
-				//	}
-				//	
-				//}
-			}
-
-			//시야에 없는 에너미 HP바 지우기
-			//if( OtherEnemies.Num()> HitInfoArrayPickUpActors.Num() )
-			//{
-			//	for(auto a : OtherEnemies )
-			//	{
-			//		for(auto b: HitInfoArrayPickUpActors )
-			//		{
-			//			if(b.GetActor()->GetActorNameOrLabel() != a->GetActorNameOrLabel() )
-			//			{
-			//				auto aa = Cast<AEnemyBase>(a);
-			//				aa->EnemyHPComponent->SetVisibility(false);
-			//			}
-			//		}
-			//	}
-			//}
-		}
-*/
+void UGrabComponent::SkillKeyUIUpdate(const FInputActionInstance& InputActionInstance)
+{
+	if (PC && PC->InGameWIdget)
+	{
+		PC->InGameWIdget->SkillKeyTriggered(InputActionInstance);
 	}
 }
 
 void UGrabComponent::SetupPlayerInputComponent(UEnhancedInputComponent* PlayerInputComponent)
 {
 	EnhancedInputComponent = PlayerInputComponent;
+
+	PlayerInputComponent->BindAction(ActionGrab, ETriggerEvent::Started, this, &UGrabComponent::SkillKeyUIUpdate);
+	PlayerInputComponent->BindAction(InputActionQSkill, ETriggerEvent::Started, this, &UGrabComponent::SkillKeyUIUpdate);
+	PlayerInputComponent->BindAction(ActionGrab, ETriggerEvent::Completed, this, &UGrabComponent::SkillKeyUIUpdate);
+	PlayerInputComponent->BindAction(InputActionQSkill, ETriggerEvent::Completed, this, &UGrabComponent::SkillKeyUIUpdate);
+
 	
 	PlayerInputComponent->BindAction(ActionGrab, ETriggerEvent::Started, this, &UGrabComponent::GrabObject);
 	//PlayerInputComponent->BindAction(ActionGrab, ETriggerEvent::Started, this, &UGrabComponent::SphereGrabObject);
-	PlayerInputComponent->BindAction( ActionGrab, ETriggerEvent::Completed, this, &UGrabComponent::ReleaseObject );
+	//PlayerInputComponent->BindAction( ActionGrab, ETriggerEvent::Completed, this, &UGrabComponent::ReleaseObject );
+	PlayerInputComponent->BindAction( ActionThrow, ETriggerEvent::Completed, this, &UGrabComponent::ReleaseObject );
 	PlayerInputComponent->BindAction( InputActionQSkill, ETriggerEvent::Completed, this, &UGrabComponent::ActionQSkill );
 }
 
-void UGrabComponent::GrabObject()
+void UGrabComponent::GrabObject(const FInputActionInstance& Instance)
 {
+	if ( ESkillCurrentCoolTime < ESkillMaxCoolTime )
+	{
+		return;
+	}
+	
 	if(bIsGrabbing == true)
 	{
 		return;
@@ -345,12 +270,7 @@ void UGrabComponent::GrabObject()
 
 	bIsPulling = true;
 	bIsPushing = false;
-
-
-	if ( ESkillCurrentCoolTime < ESkillMaxCoolTime )
-	{
-		return;
-	}
+	
 
 	if ( ObjectInHand )
 	{
@@ -388,49 +308,23 @@ void UGrabComponent::ReleaseObject()
 
 	if(bIsGrabbing == true )
 	{
-		/********************************** Sphere Trace SingleByChannel **********************************/
-		/**************************************************************************************************/
-
-		TArray<FHitResult> HitInfoArray;
-		FVector Start=Player->GetFollowCamera()->GetComponentLocation();
-		FVector End=Player->GetFollowCamera()->GetComponentLocation() + Player->GetFollowCamera()->GetForwardVector() * MaxDistanceToGrab;
-
-
-		ETraceTypeQuery TraceTypeQuery=UEngineTypes::ConvertToTraceType( ECC_GameTraceChannel2 );
-
-		TArray<AActor*> SphereTraceIgnoreActorsArray;
-		// 체크하기전에 한 번 비워주기
-		SphereTraceIgnoreActorsArray.Empty();
-		// 자기 자신 캐릭터 무시
-		SphereTraceIgnoreActorsArray.Add( Player );
-
-		bool bTraceResult=UKismetSystemLibrary::SphereTraceMulti( GetWorld(), Start, End, RadiusDetectionEnemy, TraceTypeQuery,
-			false, SphereTraceIgnoreActorsArray, EDrawDebugTrace::None, HitInfoArray, true );
-
-
-		/**************************************************************************************************/
-		/**************************************************************************************************/
 		ThrowingLoc = Player->GetFollowCamera()->GetForwardVector() * MaxDistanceToGrab;
 
-		if ( bTraceResult )
+		if ( OtherEnemies.Num() > 0 )
 		{
-			for ( FHitResult& HitInfo : HitInfoArray )
+			TargetEnemySorting();
+
+
+			for ( int i=0; i < GrabObjectCount; i++ )
 			{
-				auto Enemy =Cast<AEnemyBase>( HitInfo.GetActor() );
-
-				//UE_LOG( LogTemp, Warning, TEXT( "%s" ), *Enemies->GetActorNameOrLabel() )
-
-					if ( Enemy )
-					{
-						UE_LOG( SYLog, Warning, TEXT( "EnemyLoc throw!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" ) )
-						FVector EnemyLoc = Enemy->GetActorLocation();
-						ThrowingLoc = EnemyLoc;
-						break;
-					}
+				FVector EnemyLoc=OtherEnemies[i]->GetActorLocation();
+				ThrowingLoc=EnemyLoc;
+				UE_LOG( SYLog, Warning, TEXT( "EnemyLoc!!!!!!!%s" ) , *OtherEnemies[i]->GetActorNameOrLabel())
+				//OtherEnemies[i]->EnemyHPComponent->SetVisibility( true );
 			}
-		}else
-		{
-			UE_LOG( SYLog, Warning, TEXT( "CenterLoc throw!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" ) )
+		}
+		else {
+			UE_LOG( SYLog, Warning, TEXT( "CenterLoc!!!!!!!" ) )
 		}
 
 		//FVector ThrowingDirection = HandleObject->GetGrabbedComponent()->GetComponentLocation() - ThrowingLoc;
@@ -450,21 +344,38 @@ void UGrabComponent::ReleaseObject()
 			AnimInstance->Montage_Play(ThrowingMontage);
 		}
 	}
+	ESkillUpdateTimerDisplay();
 	GetWorld()->GetTimerManager().SetTimer( ESkillCountDownHandle, this, &UGrabComponent::ESkillAdvanceTimer, 1.0f, true );
 
 }
 
-void UGrabComponent::ActionQSkill()
+void UGrabComponent::ActionQSkill(const FInputActionInstance& Instance)
 {
-
+	
 	if ( GetWorld()->GetTimerManager().IsTimerActive( QSkillCountDownHandle )) {
 		return;
 	}
-
+	
+	QSkillUpdateTimerDisplay();
 	GetWorld()->GetTimerManager().SetTimer( QSkillCountDownHandle, this, &UGrabComponent::QSkillAdvanceTimer, 1.0f, true );
 
 	//UGameplayStatics::SpawnEmitterAtLocation( GetWorld(),QExplosionEffect, Player->GetActorLocation(), FRotator(), FVector( 100 ), true, EPSCPoolMethod::None, true );
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), QExplosionEffect, Player->GetActorLocation(), FRotator(), FVector( 5 ), true);
+	//UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), QExplosionEffect, Player->GetActorLocation(), FRotator(), FVector( 5 ), true);
+	
+	Player->AddGameplayTag(PEGameplayTags::Status_CantBeDamaged);
+	if (Player->QShieldEffect)
+	{
+		Player->QShieldEffect->Activate();
+	}
+
+	GetWorld()->GetTimerManager().SetTimer(QSkillHandle,
+		FTimerDelegate::CreateWeakLambda(this, [&]
+		{
+			Player->QShieldEffect->Deactivate();
+			Player->RemoveGameplayTag(PEGameplayTags::Status_CantBeDamaged);
+		}),
+		QSkillDurationSeconds,
+		false);
 }
 
 void UGrabComponent::SphereGrabObject()
@@ -530,10 +441,9 @@ void UGrabComponent::SphereGrabObject()
 void UGrabComponent::QSkillAdvanceTimer()
 {
 	--QSkillCurrentCoolTime;
-
 	QSkillUpdateTimerDisplay();
 
-	if ( QSkillCurrentCoolTime < 1 ) {
+	if ( QSkillCurrentCoolTime <= 0 ) {
 		// 카운트 다운이 완료 되었으니 타이머를 중지 시킨다.
 		GetWorld()->GetTimerManager().ClearTimer( QSkillCountDownHandle );
 
@@ -544,11 +454,10 @@ void UGrabComponent::QSkillAdvanceTimer()
 
 void UGrabComponent::ESkillAdvanceTimer()
 {
-	ESkillUpdateTimerDisplay();
 	--ESkillCurrentCoolTime;
+	ESkillUpdateTimerDisplay();
 
-
-	if(ESkillCurrentCoolTime<1){
+	if(ESkillCurrentCoolTime <= 0){
 		// 카운트 다운이 완료 되었으니 타이머를 중지 시킨다.
 		GetWorld()->GetTimerManager().ClearTimer( ESkillCountDownHandle );
 
@@ -580,4 +489,24 @@ void UGrabComponent::Deactivate()
 	Super::Deactivate();
 
 	EnhancedInputComponent->ClearBindingsForObject(this);
+}
+
+void UGrabComponent::TargetEnemySorting( )
+{
+	int EnemiesCount =OtherEnemies.Num();
+	//float TempCrosshairDistance;
+	AEnemyBase* TempTargetEnemy;
+	for(int i = 0 ; i < EnemiesCount - 1 ; i++ )
+	{
+		for(int j = 0 ; j < EnemiesCount - i - 1 ; j++ )
+		{
+			if(FVector2D::Distance( OtherEnemies[j]->CurrentLocationScreen , CrosshairLocationScreen) > FVector2D::Distance( OtherEnemies[j+1]->CurrentLocationScreen, CrosshairLocationScreen ))
+			{				
+				TempTargetEnemy=OtherEnemies[j];
+				OtherEnemies[j] =OtherEnemies[j+1];
+				OtherEnemies[j + 1] =TempTargetEnemy;
+			}
+		}
+		
+	}
 }

@@ -33,6 +33,6 @@ ABombEnemy::ABombEnemy(const FObjectInitializer& ObjectInitializer)
 void ABombEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	GetCharacterMovement()->MaxWalkSpeed=600.0f;
+	GetCharacterMovement()->MaxWalkSpeed = 500.0f;
 
 }

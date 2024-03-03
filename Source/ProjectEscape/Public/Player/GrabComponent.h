@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "InputAction.h"
 #include "Components/ActorComponent.h"
 #include "GrabComponent.generated.h"
 
@@ -16,6 +17,7 @@ class APickableActor;
 class UParticleSystem;
 class AEnemyBase;
 class AProjectEscapePlayerController;
+class USoundBase;
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -33,6 +35,19 @@ public:
 
 	UPROPERTY( EditDefaultsOnly, Category="Input" )
 	UInputAction* InputActionQSkill;
+
+	UPROPERTY( EditDefaultsOnly, Category="Input" )
+	UInputAction* ActionThrow;
+
+
+
+	//UPROPERTY( EditDefaultsOnly, Category="Grab" )
+	//TArray<FVector2D> EnemiesScreenPosition;
+	//UPROPERTY( EditDefaultsOnly, Category="Grab" )
+	//TArray<AEnemyBase*> EnemiesCurrentInfo;
+
+	UPROPERTY( EditDefaultsOnly )
+	FVector2D CrosshairLocationScreen;
 
 	UPROPERTY()
 	AProjectEscapePlayer* Player;
@@ -83,7 +98,7 @@ public:
 	APickableActor* ObjectInHand;
 
 	UPROPERTY( EditDefaultsOnly, Category="Throw" )
-	float ThrowingPower = 20000.0f;
+	float ThrowingPower = 13000.0f;
 
 	UPROPERTY( EditAnywhere, Category="QSkill" )
 	class UNiagaraSystem* QExplosionEffect;
@@ -97,18 +112,23 @@ public:
 
 
 	UPROPERTY( EditDefaultsOnly )
-	int32 QSkillMaxCoolTime = 6;
+	int32 QSkillMaxCoolTime = 15;
 
 	UPROPERTY( EditDefaultsOnly )
 	int32 ESkillMaxCoolTime = 5;
-
-
+	
 	UPROPERTY( EditDefaultsOnly )
-	int32 QSkillCurrentCoolTime=6;
-
+	int32 QSkillCurrentCoolTime= 12;
+	
 	UPROPERTY( EditDefaultsOnly )
 	int32 ESkillCurrentCoolTime=5;
 
+	UPROPERTY(EditDefaultsOnly)
+	float QSkillDurationSeconds {5.0f};
+	
+	UPROPERTY()
+	FTimerHandle QSkillHandle;
+	
 	//UPROPERTY( EditDefaultsOnly, Category="QSkill" )
 	//UParticleSystem* QExplosionEffect;
 
@@ -119,11 +139,19 @@ public:
 	UPROPERTY( EditAnywhere )
 	//TArray<AActor*> OtherEnemies;
 	TArray<AEnemyBase*> OtherEnemies;
+	UPROPERTY( EditAnywhere )
 
 	FTimerHandle ESkillCountDownHandle;
+
+	UPROPERTY( EditAnywhere )
+
 	FTimerHandle QSkillCountDownHandle;
 
+	UPROPERTY( EditAnywhere )
+	float minDist=50.f;
+
 	UPROPERTY()
+
 	UAnimInstance* AnimInstance;
 
 	UPROPERTY(EditDefaultsOnly)
@@ -131,7 +159,11 @@ public:
 
 	UPROPERTY(EditDefaultsOnly)
 	UAnimMontage* ThrowingMontage;
-	
+
+	int32 ScreenSizeX = 1;
+	int32 ScreenSizeY = 1;
+	int GrabObjectCount = 1;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -142,13 +174,15 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 
+	void SkillKeyUIUpdate(const FInputActionInstance& InputActionInstance);
+
 	void SetupPlayerInputComponent(UEnhancedInputComponent* PlayerInputComponent);
 
-	void GrabObject();
+	void GrabObject(const FInputActionInstance& Instance);
 
 	void ReleaseObject();
 
-	void ActionQSkill();
+	void ActionQSkill(const FInputActionInstance& Instance);
 
 	void SphereGrabObject();
 
@@ -158,5 +192,7 @@ public:
 	void ESkillUpdateTimerDisplay();
 
 	void QSkillUpdateTimerDisplay();
+
+	void TargetEnemySorting(  );
 	virtual void Deactivate() override;
 };
