@@ -52,11 +52,17 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	UMaterialInstance* UIMaterial;
 
+	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite )
+	UMaterialInstance* TargetEnemyUIMaterial;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UEnemyStatsComponent* EnemyStatsComponent;
 	
 	UPROPERTY( EditAnywhere, BlueprintReadOnly )
 	class UWidgetComponent* EnemyHPComponent;
+
+	UPROPERTY( EditAnywhere, BlueprintReadOnly )
+	UWidgetComponent* TargetUIComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UEnemyHealthBar* EnemyHealthBarWidget;

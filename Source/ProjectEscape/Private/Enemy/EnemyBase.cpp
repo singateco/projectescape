@@ -44,6 +44,8 @@ AEnemyBase::AEnemyBase(const FObjectInitializer& ObjectInitializer)
 
 	EnemyHPComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("EnemyHPComponent"));
 	EnemyHPComponent->SetupAttachment(RootComponent);
+	TargetUIComponent =CreateDefaultSubobject<UWidgetComponent>( TEXT( "TargetUIComponent" ) );
+	TargetUIComponent->SetupAttachment( RootComponent );
 
 	ConstructorHelpers::FObjectFinder<UMaterialInstance> UIMaterialFinder
 	{
@@ -53,6 +55,13 @@ AEnemyBase::AEnemyBase(const FObjectInitializer& ObjectInitializer)
 	{
 		UIMaterial = UIMaterialFinder.Object;
 	}
+
+	ConstructorHelpers::FObjectFinder<UMaterialInstance> TargetEnemyUIMaterialFinder{TEXT( "/Script/Engine.Texture2D'/Game/UI/crosshair186.crosshair186''" )};
+	if ( TargetEnemyUIMaterialFinder.Succeeded() )
+	{
+		TargetEnemyUIMaterial=TargetEnemyUIMaterialFinder.Object;
+	}
+
 
 	ConstructorHelpers::FObjectFinder<USoundWave> DyingSoundFinder
 	{
@@ -79,12 +88,13 @@ AEnemyBase::AEnemyBase(const FObjectInitializer& ObjectInitializer)
 			EnemyHPComponent->SetMaterial(0, UIMaterial);
 		}
 	}
-
-	ConstructorHelpers::FClassFinder<UUserWidget> DamageNumberWidgetFinder {TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/UI/WBP_DamageNumber.WBP_DamageNumber_C'")};
-
-	if (DamageNumberWidgetFinder.Succeeded())
+	ConstructorHelpers::FClassFinder<UUserWidget> TargetUI( TEXT( "/Script/UMGEditor.WidgetBlueprint'/Game/UI/WBP_TargetUI.WBP_TargetUI_C'" ) );
+	if( TargetUI.Succeeded() )
 	{
-		DamageNumberWidgetClass = DamageNumberWidgetFinder.Class;
+		TargetUIComponent->SetWidgetClass( TargetUI.Class );
+		TargetUIComponent->SetWidgetSpace( EWidgetSpace::Screen );
+		TargetUIComponent->SetCollisionEnabled( ECollisionEnabled::NoCollision );
+		TargetUIComponent->SetVisibility(false);
 	}
 
 	ConstructorHelpers::FClassFinder<AHealthPickup> HealthPickupBPFinder {TEXT("/Script/Engine.Blueprint'/Game/Blueprints/BP_HealthPickup.BP_HealthPickup_C'")};
@@ -111,6 +121,14 @@ AEnemyBase::AEnemyBase(const FObjectInitializer& ObjectInitializer)
 	{
 		SpawnEffectCircle->SetAsset(SpawnCircleEffectFinder.Object);
 	}
+
+	ConstructorHelpers::FClassFinder<UUserWidget> DamageNumberWidgetFinder{ TEXT( "/Script/UMGEditor.WidgetBlueprint'/Game/UI/WBP_DamageNumber.WBP_DamageNumber_C'" ) };
+
+	if ( DamageNumberWidgetFinder.Succeeded() )
+	{
+		DamageNumberWidgetClass=DamageNumberWidgetFinder.Class;
+	}
+
 
 	SpawnEffectEmitter->SetAutoActivate(false);
 	SpawnEffectCircle->SetAutoActivate(false);
