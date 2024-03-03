@@ -17,7 +17,8 @@
 #include "Player/GrabComponent.h"
 #include "Player/PhysicsHandleComp.h"
 #include "Player/PlayerStatsComponent.h"
-#include "ProjectEscape/PEGameplayTags.h"
+#include "System/ProjectEscapePlayerController.h"
+#include "UI/MainUI.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -116,9 +117,18 @@ void AProjectEscapePlayer::BeginPlay()
 	{
 		PlayerStatsComponent->OnHPReachedZero.AddUniqueDynamic(this, &AProjectEscapePlayer::Die);
 		PlayerStatsComponent->OnTakenDamageFromLoc.AddUniqueDynamic(this, &AProjectEscapePlayer::PlayHitReactAnim);
+		PlayerStatsComponent->OnTakenDamage.AddUniqueDynamic(this, &AProjectEscapePlayer::PlayDamageAnim);
 	}
 
 	QShieldEffect->Deactivate();
+}
+
+void AProjectEscapePlayer::PlayDamageAnim(float Damage)
+{
+	if (auto PC = GetController<AProjectEscapePlayerController>())
+	{
+		PC->InGameWIdget->PlayDamageAnimation();
+	}
 }
 
 void AProjectEscapePlayer::Tick(float DeltaSeconds)

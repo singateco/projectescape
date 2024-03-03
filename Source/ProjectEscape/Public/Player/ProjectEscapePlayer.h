@@ -61,6 +61,12 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	UNiagaraComponent* QShieldEffect;
 	
+	UPROPERTY(VisibleAnywhere)
+	bool bIsDead {false};
+	
+	UPROPERTY( VisibleAnywhere )
+	bool IsReloading=false;
+	
 	// #################################
 	// ########### FUNCTIONS ###########
 	// #################################
@@ -76,12 +82,6 @@ public:
 	UFUNCTION()
 	void Die();
 
-	UPROPERTY(VisibleAnywhere)
-	bool bIsDead {false};
-
-
-	UPROPERTY( VisibleAnywhere )
-	bool IsReloading=false;
 
 protected:
 	// #################################
@@ -103,6 +103,9 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	UAnimMontage* SelectHitMontage(FVector HitNormal, AActor* HitActor);
 
+	UFUNCTION()
+	void PlayDamageAnim(float Damage);
+	
 	virtual void Tick(float DeltaSeconds) override;
 
 private:
