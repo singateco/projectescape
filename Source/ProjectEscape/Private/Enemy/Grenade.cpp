@@ -4,6 +4,7 @@
 #include "Enemy/Grenade.h"
 
 #include "NiagaraFunctionLibrary.h"
+#include "Components/DecalComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Player/ProjectEscapePlayer.h"
@@ -32,6 +33,13 @@ AGrenade::AGrenade()
 	if ( CameraShakeFinder.Succeeded() )
 	{
 		CameraShake = CameraShakeFinder.Class;
+	}
+
+	static const ConstructorHelpers::FObjectFinder<UMaterialInterface> GrenadeDecalFinder{ TEXT( "/Script/Engine.MaterialInstanceConstant'/Game/Resources/KDE/UWC_Bullet_Holes/Instances/Decals/Burnt/MI_Burnt_1.MI_Burnt_1'" ) };
+
+	if ( GrenadeDecalFinder.Succeeded() )
+	{
+		GrenadeDecal=GrenadeDecalFinder.Object;
 	}
 
 	SetLifeSpan( 10.0f );
@@ -95,7 +103,9 @@ void AGrenade::Explosion()
 		}
 	}
 	//UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), ExplosionEffect, GrenadeLoc, FRotator(), FVector( 10 ), true, EPSCPoolMethod::None, true );
-	//UGameplayStatics::SpawnDecalAtLocation( GetWorld(), GrenadeDecal, FVector( 500 ), GrenadeLoc, FRotator(), 10 );
+	/*FRotator DecalRotation= FRotator( -180, 0, 0 );
+	UDecalComponent* UdecalEffect=UGameplayStatics::SpawnDecalAtLocation( GetWorld(), GrenadeDecal, FVector( 500 ), GrenadeLoc, DecalRotation, 10 );
+	UdecalEffect->SetFadeScreenSize( 0.f );*/
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, GrenadeLoc, FRotator(), FVector(ExplosionEffectSize), true);
 	UGameplayStatics::PlaySoundAtLocation( GetWorld(), ExplosionSound, GrenadeLoc );
 	UGameplayStatics::PlayWorldCameraShake( GetWorld(), CameraShake, GrenadeLoc, 0, ShakeRadius );

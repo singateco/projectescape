@@ -153,7 +153,9 @@ void APickableActor::OnCompHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), ExplosionScale, true );
 
-		UDecalComponent* UdecalEffect=UGameplayStatics::SpawnDecalAtLocation( GetWorld(), ExploDecalEffect, FVector(200), Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), 10);
+		FRotator DecalRotation = Hit.ImpactNormal.Rotation() + FRotator( -180, 0, 0 );
+
+		UDecalComponent* UdecalEffect = UGameplayStatics::SpawnDecalAtLocation( GetWorld(), ExploDecalEffect, FVector(300), Hit.ImpactPoint, DecalRotation, 10);
 		UdecalEffect->SetFadeScreenSize( 0.f );
 		
 
