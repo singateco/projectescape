@@ -32,15 +32,15 @@ void AStageManager::HandleEnemyDestroyed(AEnemyBase* DestroyedActor)
 	
 	if (ThisWaveEnemy.IsEmpty())
 	{
+		if (GetWorld()->GetTimerManager().IsTimerActive(BonusObjectiveHandle))
+        {
+        	GetWorld()->GetTimerManager().ClearTimer(BonusObjectiveHandle);
+        }
+        			
 		if (bIsFinalWave)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Stage Won!"))
 			OnStageFinished.Broadcast();
-
-			if (GetWorld()->GetTimerManager().IsTimerActive(BonusObjectiveHandle))
-			{
-				GetWorld()->GetTimerManager().ClearTimer(BonusObjectiveHandle);
-			}
 			return;
 		}
 
