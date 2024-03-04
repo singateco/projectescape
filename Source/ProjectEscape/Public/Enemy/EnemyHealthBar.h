@@ -23,16 +23,22 @@ public:
 	UFUNCTION()
 	void HPtoZero();
 
+	/*UFUNCTION(BlueprintCallable)
+	void SetName();*/
+
 protected:
 	
 	virtual void NativeConstruct() override;
 
 public:
 	UPROPERTY(EditInstanceOnly, meta = (BindWidget))
-		class UProgressBar* HPBar;
+	class UProgressBar* HPBar;
 
 	UPROPERTY(EditInstanceOnly, meta = (BindWidget))
-		class UProgressBar* HPBarGuide;
+	class UProgressBar* HPBarGuide;
+
+	/*UPROPERTY( EditInstanceOnly, meta = (BindWidget) )
+	class UTextBlock* EnemyName;*/
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class AEnemyBase* OwnedEnemy;

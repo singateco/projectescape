@@ -28,6 +28,9 @@ ABombEnemy::ABombEnemy(const FObjectInitializer& ObjectInitializer)
 	}
 
 	MaxHP = 4;
+
+	//EnemyName=TEXT( "자폭병" );
+
 }
 
 void ABombEnemy::BeginPlay()

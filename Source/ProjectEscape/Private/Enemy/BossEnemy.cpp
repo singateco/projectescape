@@ -10,6 +10,7 @@
 #include "Enemy/EnemyBaseFSM.h"
 #include "NiagaraSystem.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Objects/HealthPickup.h"
 
 ABossEnemy::ABossEnemy( const FObjectInitializer& ObjectInitializer )
 	:
@@ -49,6 +50,9 @@ ABossEnemy::ABossEnemy( const FObjectInitializer& ObjectInitializer )
 
 	AIControllerClass = ABossAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
+	//EnemyName=TEXT( "Lyla" );
+
 }
 
 void ABossEnemy::BeginPlay()
@@ -62,10 +66,6 @@ void ABossEnemy::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	if(GetStatsComponent()->GetHP() <= 0 )
-	{
-		OnDie();
-	}
 }
 
 UBehaviorTree* ABossEnemy::GetBehaviorTree()
@@ -80,22 +80,18 @@ void ABossEnemy::AttachPistol()
 	GunMesh->AttachToComponent( BodyComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT( "GunPosition" ) );
 }
 
-void ABossEnemy::OnDie()
+void ABossEnemy::ProcessDying()
 {
+	Super::ProcessDying();
 	GetCapsuleComponent()->SetCollisionProfileName( FName( "NoCollision" ) );
 	GetMesh()->SetCollisionProfileName( TEXT( "Ragdoll" ) );
 	GetMesh()->SetSimulatePhysics( true );
 	BossAura->SetVisibility( false );
 	IsDead = true;
-	
 }
 
 bool ABossEnemy::GetIsDead()
 {
 	return IsDead;
 }
-
-
-
-
 

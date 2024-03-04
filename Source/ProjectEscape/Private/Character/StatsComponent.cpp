@@ -73,8 +73,6 @@ void UStatsComponent::ProcessDamage(const float DamageValue)
 	OnHPChanged.Broadcast(MaxHP, HP);
 	OnTakenDamage.Broadcast(DamageValue);
 
-	
-
 	if (HP <= 0)
 	{
 		ProcessDying();

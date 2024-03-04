@@ -46,4 +46,7 @@ ASniperEnemy::ASniperEnemy(const FObjectInitializer& ObjectInitializer)
 	}
 
 	MaxHP = 8;
+
+	//EnemyName=TEXT( "저격병" );
+
 }

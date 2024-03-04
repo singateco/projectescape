@@ -16,4 +16,5 @@ class PROJECTESCAPE_API ARifleEnemy : public AEnemyBase
 
 public:
 	ARifleEnemy(const FObjectInitializer& ObjectInitializer);
+
 };

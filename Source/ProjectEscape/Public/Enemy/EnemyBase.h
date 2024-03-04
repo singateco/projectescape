@@ -41,7 +41,7 @@ public:
 	float CrosshairDist;
 	
 	UFUNCTION()
-	void ProcessDying();
+	virtual void ProcessDying();
 
 	UPROPERTY()
 	USoundBase* DyingSound;
@@ -91,13 +91,18 @@ public:
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly)
 	class UEnemyBaseFSM* EnemyBaseFSM;
 
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
+	UPROPERTY( EditAnywhere, BlueprintReadOnly )
 	class UNavigationInvokerComponent* NavComponent;
 
 	UPROPERTY( EditAnywhere )
 	float EnemyMaxSpeed = 250.0f;
 
+	UPROPERTY(EditAnywhere)
+	FString EnemyName = TEXT("");
+
 	// --------------------- Function ---------------------------
+	UFUNCTION( BlueprintCallable )
+	FString GetEnemyName();
 
 	UFUNCTION()
 	void DisplayDamageNumber(const float DamageToDisplay);

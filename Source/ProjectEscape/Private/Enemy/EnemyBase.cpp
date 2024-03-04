@@ -73,8 +73,8 @@ AEnemyBase::AEnemyBase(const FObjectInitializer& ObjectInitializer)
 	{
 		EnemyHPComponent->SetWidgetClass(tempHP.Class);
 		EnemyHPComponent->SetWidgetSpace(EWidgetSpace::Screen);
-		EnemyHPComponent->SetDrawSize(FVector2D(70, 8));
-		EnemyHPComponent->SetRelativeLocation(FVector(0, 0, 90));
+		EnemyHPComponent->SetDrawSize(FVector2D(60, 8));
+		EnemyHPComponent->SetRelativeLocation(FVector(0, 0, 100));
 		EnemyHPComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		if (UIMaterial)
 		{
@@ -244,6 +244,11 @@ void AEnemyBase::ProcessDying()
 		SpawnEffectEmitter->DestroyInstance();
 		SpawnEffectCircle->DestroyInstance();
 	}
+}
+
+FString AEnemyBase::GetEnemyName()
+{
+	return EnemyName;
 }
 
 void AEnemyBase::DisplayDamageNumber(const float DamageToDisplay)
