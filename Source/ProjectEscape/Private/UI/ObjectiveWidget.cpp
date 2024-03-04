@@ -46,11 +46,23 @@ void UObjectiveWidget::BonusFailed()
 	BonusCheckBox->SetCheckedState(ECheckBoxState::Undetermined);
 }
 
+void UObjectiveWidget::StageFinished()
+{
+	bIsStageFinished = true;
+	
+	BonusCheckBox->RemoveFromParent();
+	BonusTextBlock->RemoveFromParent();
+
+	MainTextBlock->SetText(FText::FromString(TEXT("목표: 다음 층으로 이동한다.")));
+	MainCheckBox->SetCheckedState(ECheckBoxState::Unchecked);
+}
+
 void UObjectiveWidget::Init(AStageManager* _StageManager)
 {
 	StageManager = _StageManager;
 	StageManager->OnWaveStarted.AddUniqueDynamic(this, &UObjectiveWidget::SetupWave);
 	StageManager->OnBonusObjectiveTimeoutFailed.AddUniqueDynamic(this, &UObjectiveWidget::BonusFailed);
+	StageManager->OnStageFinished.AddUniqueDynamic(this, &UObjectiveWidget::StageFinished);
 }
 
 void UObjectiveWidget::HandleEnemyDying(AEnemyBase* Enemy)
@@ -71,6 +83,11 @@ void UObjectiveWidget::UpdateBonusText()
 
 void UObjectiveWidget::UpdateMainText()
 {
+	if (bIsStageFinished)
+	{
+		return;		
+	}
+	
 	FString MainText = FString::Printf(TEXT("목표: 적을 섬멸한다. (%d/%d)"), EnemiesKilled, WaveEnemies);
 
 	if (EnemiesKilled >= WaveEnemies)

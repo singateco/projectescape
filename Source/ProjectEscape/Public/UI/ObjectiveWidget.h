@@ -22,6 +22,12 @@ public:
 	void BonusFailed();
 
 	UFUNCTION()
+	void StageFinished();
+
+	UPROPERTY()
+	bool bIsStageFinished {false};
+	
+	UFUNCTION()
 	void Init(AStageManager* _StageManager);
 
 	UPROPERTY()
