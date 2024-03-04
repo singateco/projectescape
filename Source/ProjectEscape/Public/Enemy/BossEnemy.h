@@ -27,10 +27,16 @@ public:
 	UPROPERTY( EditAnywhere ,BlueprintReadWrite)
 	USceneComponent* ThrowRef;
 
+	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite )
+	UNiagaraComponent* BossAura;
+
+	bool IsDead = false;
+
+
 	UBehaviorTree* GetBehaviorTree();
 	void AttachPistol();
 
 	void OnDie();
 
-
+	bool GetIsDead();
 };

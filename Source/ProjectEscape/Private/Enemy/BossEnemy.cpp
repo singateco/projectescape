@@ -3,10 +3,12 @@
 
 #include "Enemy/BossEnemy.h"
 
+#include "NiagaraComponent.h"
 #include "Components/WidgetComponent.h"
 #include "AI/BossAIController.h"
 #include "Components/CapsuleComponent.h"
 #include "Enemy/EnemyBaseFSM.h"
+#include "NiagaraSystem.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 ABossEnemy::ABossEnemy( const FObjectInitializer& ObjectInitializer )
@@ -14,6 +16,17 @@ ABossEnemy::ABossEnemy( const FObjectInitializer& ObjectInitializer )
 	Super( ObjectInitializer )
 {
 	PrimaryActorTick.bCanEverTick=true;
+
+	BossAura = CreateDefaultSubobject<UNiagaraComponent>( TEXT( "BossAura" ) );
+	BossAura->SetupAttachment( GetCapsuleComponent() );
+	BossAura->SetRelativeLocation( FVector( 0, 0, 50 ) );
+
+	static const ConstructorHelpers::FObjectFinder<UNiagaraSystem> BossAuraFinder{ TEXT( "/Script/Niagara.NiagaraSystem'/Game/Resources/VFX_Pickup_Pack_1/VFX/Presets/NE_VFX_Loot_Idle_03.NE_VFX_Loot_Idle_03'" ) };
+
+	if ( BossAuraFinder.Succeeded() )
+	{
+		BossAura->SetAsset( BossAuraFinder.Object );
+	}
 
 	if (EnemyBaseFSM)
 	{
@@ -72,7 +85,17 @@ void ABossEnemy::OnDie()
 	GetCapsuleComponent()->SetCollisionProfileName( FName( "NoCollision" ) );
 	GetMesh()->SetCollisionProfileName( TEXT( "Ragdoll" ) );
 	GetMesh()->SetSimulatePhysics( true );
-
+	BossAura->SetVisibility( false );
+	IsDead = true;
+	
 }
+
+bool ABossEnemy::GetIsDead()
+{
+	return IsDead;
+}
+
+
+
 
 
