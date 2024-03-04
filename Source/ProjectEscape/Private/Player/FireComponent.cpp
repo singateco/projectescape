@@ -305,14 +305,13 @@ void UFireComponent::NormalGunFire()
 	
 	if( HitInfo2.bBlockingHit )
 	{
-		if(HitInfo2.GetActor()->IsA<AEnemyBase>() )
+		if(AActor* Actor = HitInfo2.GetActor(); Actor && Actor->IsA<AEnemyBase>() )
 		{
 			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), BloodEffect, HitInfo2.Location, HitInfo2.ImpactNormal.Rotation(), FireEffectScale * 3.f, true );
 			
 
 			Enemy=Cast<AEnemyBase>( HitInfo2.GetActor() );
-
-			AActor* Actor=HitInfo2.GetActor();
+			
 
 			if ( Actor && Actor->GetRootComponent()->IsSimulatingPhysics() )
 			{
