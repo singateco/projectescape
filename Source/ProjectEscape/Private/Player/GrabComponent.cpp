@@ -22,6 +22,7 @@
 #include "UI/MainUI.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Enemy/EnemyBase.h"
+#include "Enemy/TargetUIComp.h"
 #include "ProjectEscape/PEGameplayTags.h"
 
 // Sets default values for this component's properties
@@ -164,6 +165,7 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 			}
 		}
 		it->EnemyHPComponent->SetVisibility(false);
+		it->TargetUIComponent->SetVisibility( false );
 	}
 
 	//UE_LOG( SYLog, Warning, TEXT( "총 %d명 감지" ), OtherEnemies.Num() );
@@ -195,7 +197,7 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	SphereTraceIgnoreActorsArray.Add( Player );
 
 
-	if(bIsGrabbing == true)
+	if(bIsGrabbing == true)// || HandleObject != nullptr)
 	{
 		HandleObject->SetTargetLocation( Player->GetFollowCamera()->GetComponentLocation() + Player->GetFollowCamera()->GetForwardVector()*500 );
 
@@ -203,6 +205,14 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		{
 			AnimInstance->Montage_Play( GrabbingMontage );
 		}
+
+		if ( OtherEnemies.Num() > 0 )
+		for ( int i=0; i < GrabObjectCount; i++ )
+		{
+			OtherEnemies[i]->TargetUIComponent->SetVisibility(true);
+			//OtherEnemies[i]->TargetComp->PlayDamageAnimation();
+		}
+
 		
 	}else if( bIsGrabbing == false )//|| OtherEnemies.Num() > 0) // 물체 안잡고 있거나 적들이 있을 때
 	{

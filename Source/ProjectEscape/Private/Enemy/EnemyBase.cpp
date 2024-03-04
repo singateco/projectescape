@@ -15,6 +15,7 @@
 #include "Enemy/EnemyBaseFSM.h"
 #include "Enemy/EnemyHealthBar.h"
 #include "Enemy/EnemyStatsComponent.h"
+#include "Enemy/TargetUIComp.h"
 #include "Objects/HealthPickup.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -44,6 +45,7 @@ AEnemyBase::AEnemyBase(const FObjectInitializer& ObjectInitializer)
 
 	EnemyHPComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("EnemyHPComponent"));
 	EnemyHPComponent->SetupAttachment(RootComponent);
+
 	TargetUIComponent =CreateDefaultSubobject<UWidgetComponent>( TEXT( "TargetUIComponent" ) );
 	TargetUIComponent->SetupAttachment( RootComponent );
 
@@ -81,15 +83,17 @@ AEnemyBase::AEnemyBase(const FObjectInitializer& ObjectInitializer)
 			EnemyHPComponent->SetMaterial(0, UIMaterial);
 		}
 	}
-	ConstructorHelpers::FClassFinder<UUserWidget> TargetUI( TEXT( "/Script/UMGEditor.WidgetBlueprint'/Game/UI/WBP_TargetUI.WBP_TargetUI_C'" ) );
-	if( TargetUI.Succeeded() )
+
+	ConstructorHelpers::FClassFinder<UUserWidget> TargetUIFinder {TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/UI/WBP_TargetUI.WBP_TargetUI_C'")};
+	if( TargetUIFinder.Succeeded() )
 	{
-		TargetUIComponent->SetWidgetClass( TargetUI.Class );
-		TargetUIComponent->SetWidgetSpace( EWidgetSpace::Screen );
-		EnemyHPComponent->SetDrawSize( FVector2D( 10, 10 ) );
-		TargetUIComponent->SetCollisionEnabled( ECollisionEnabled::NoCollision );
-		TargetUIComponent->SetVisibility(false);
+		TargetUIClass=TargetUIFinder.Class;
 	}
+
+	TargetUIComponent->SetWidgetSpace( EWidgetSpace::Screen );
+	TargetUIComponent->SetDrawSize( FVector2D( 60, 60 ) );
+	TargetUIComponent->SetCollisionEnabled( ECollisionEnabled::NoCollision );
+	TargetUIComponent->SetVisibility(false);
 
 	ConstructorHelpers::FClassFinder<AHealthPickup> HealthPickupBPFinder {TEXT("/Script/Engine.Blueprint'/Game/Blueprints/BP_HealthPickup.BP_HealthPickup_C'")};
 
@@ -148,6 +152,10 @@ void AEnemyBase::BeginPlay()
 	check(DamageNumberWidgetClass);
 	StatsComponent->OnHPReachedZero.AddUniqueDynamic(this, &AEnemyBase::ProcessDying);
 	StatsComponent->OnTakenDamage.AddUniqueDynamic(this, &AEnemyBase::DisplayDamageNumber);
+
+	auto tempComp =CreateWidget<UUserWidget>( GetWorld(), TargetUIClass, TEXT("Target UI"));
+	TargetComp = Cast<UTargetUIComp>(tempComp);
+	TargetUIComponent->SetWidget(TargetComp);
 
 	if (PlaySpawnEffect)
 	{

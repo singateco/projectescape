@@ -163,6 +163,8 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	UAnimMontage* ThrowingMontage;
 
+
+
 	int32 ScreenSizeX = 1;
 	int32 ScreenSizeY = 1;
 	int GrabObjectCount = 1;

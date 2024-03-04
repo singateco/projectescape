@@ -100,6 +100,16 @@ public:
 	UPROPERTY( EditAnywhere )
 	float EnemyMaxSpeed = 250.0f;
 
+
+	UFUNCTION( BlueprintImplementableEvent )
+	void PlayAnimUITargetEnemy();
+
+	UPROPERTY( EditDefaultsOnly )
+	class UTargetUIComp* TargetComp;
+
+	UPROPERTY()
+	TSubclassOf<UUserWidget> TargetUIClass;
+
 	// --------------------- Function ---------------------------
 
 	UFUNCTION()
