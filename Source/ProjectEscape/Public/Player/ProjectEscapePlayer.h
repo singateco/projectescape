@@ -70,6 +70,8 @@ public:
 	
 	UPROPERTY( VisibleAnywhere )
 	bool IsReloading=false;
+	UPROPERTY( EditDefaultsOnly )
+	TSubclassOf<class UCameraShakeBase> DamagedCameraShakeEffect;
 	
 	// #################################
 	// ########### FUNCTIONS ###########

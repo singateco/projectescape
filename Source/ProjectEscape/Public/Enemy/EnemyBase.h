@@ -58,6 +58,9 @@ public:
 	UPROPERTY( EditAnywhere, BlueprintReadOnly )
 	class UWidgetComponent* EnemyHPComponent;
 
+	UPROPERTY( EditAnywhere, BlueprintReadOnly )
+	UWidgetComponent* TargetUIComponent;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UEnemyHealthBar* EnemyHealthBarWidget;
 

@@ -124,6 +124,8 @@ UFireComponent::UFireComponent()
 	{
 		ReloadMontage=ReloadMontageFinder.Object;
 	}
+
+	
 }
 
 
@@ -249,11 +251,7 @@ void UFireComponent::SetGunVisibility(const bool ShowGun)
 void UFireComponent::NormalGunFire()
 {
 	if (bHasPistol == false 
-	|| Player->IsReloading == true 
-	|| Player->GrabComponent->bIsGrabbing == true
-	|| Player->GrabComponent->bIsPulling == true
-	|| Player->GrabComponent->bIsPushing == true
-	|| Player->GrabComponent->bIsGrabbing == true
+	|| Player->IsReloading == true
 	|| Player->HasMatchingGameplayTag(PEGameplayTags::Status_IsDashing)) {
 		return;
 	}
@@ -277,6 +275,8 @@ void UFireComponent::NormalGunFire()
 	if ( PC == nullptr ) {
 		return;
 	}
+	PC->ClientStartCameraShake( GunShootCameraShakeEffect );
+	
 	PC->InGameWIdget->SetCurrentBullets();
 		
 	const float RecoilValue = FMath::RandRange(RecoilValueMin,RecoilValueMax);

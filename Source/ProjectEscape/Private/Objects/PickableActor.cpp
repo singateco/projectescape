@@ -123,6 +123,10 @@ void APickableActor::OnCompHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 		//UE_LOG( SYLog, Warning, TEXT( "5000이상 bIsGrabbing : %s" ), *txt1 );
 
 		UGameplayStatics::PlaySoundAtLocation( GetWorld(), ExplosionSoundClass, Hit.ImpactPoint, Hit.ImpactNormal.Rotation() );
+		if( ExplosionCameraShakeEffect )
+		{
+			GetWorld()->GetFirstPlayerController()->ClientStartCameraShake( ExplosionCameraShakeEffect );
+		}
 
 		TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
 		//ObjectTypes.Add(EObjectTypeQuery::)

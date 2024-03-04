@@ -6,9 +6,9 @@
 #include "EngineUtils.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "InputMappingContext.h"
 #include "NiagaraComponent.h"
 #include "Camera/CameraComponent.h"
-#include "Enemy/RifleEnemy.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "ProjectEscape/Public/Player/ProjectEscapePlayer.h"
 #include "Player/PhysicsHandleComp.h"
@@ -16,11 +16,8 @@
 #include "Objects/PickableActor.h"
 #include "Components/PrimitiveComponent.h"
 #include "Components/WidgetComponent.h"
-#include "Enemy/EnemyBullet.h"
-#include "Enemy/GrenadeEnemy.h"
 #include "Kismet/GameplayStatics.h"
 #include "ProjectEscape/ProjectEscape.h"
-#include "Particles/ParticleSystem.h"
 #include "System/ProjectEscapePlayerController.h"
 #include "UI/MainUI.h"
 #include "NiagaraFunctionLibrary.h"
@@ -58,7 +55,7 @@ UGrabComponent::UGrabComponent()
 	}
 
 
-	static const ConstructorHelpers::FObjectFinder<UInputAction> ThrowActionFinder{ TEXT( "/Script/EnhancedInput.InputAction'/Game/ThirdPerson/Input/Actions/IA_Fire.IA_Fire'" ) };
+	static const ConstructorHelpers::FObjectFinder<UInputAction> ThrowActionFinder{ TEXT( "/Script/EnhancedInput.InputAction'/Game/ThirdPerson/Input/Actions/IA_Release.IA_Release'" ) };
 	if ( ThrowActionFinder.Succeeded() )
 	{
 		ActionThrow=ThrowActionFinder.Object;
@@ -83,8 +80,11 @@ UGrabComponent::UGrabComponent()
 		ThrowingMontage = ThrowMontageFinder.Object;
 	}
 
-
-
+	static const ConstructorHelpers::FObjectFinder<UInputMappingContext> GrabImcFinder {TEXT("/Script/EnhancedInput.InputMappingContext'/Game/ThirdPerson/Input/IMC_Grab.IMC_Grab'")};
+	if (GrabImcFinder.Succeeded())
+	{
+		GrabImc = GrabImcFinder.Object;
+	}
 }
 
 
@@ -104,9 +104,9 @@ void UGrabComponent::BeginPlay()
 	//}
 	AnimInstance = Player->GetMesh()->GetAnimInstance();
 
-	PC->GetViewportSize( ScreenSizeX, ScreenSizeY );
-	UE_LOG( SYLog, Warning, TEXT( "Crosshair %d ,%d" ), ScreenSizeX, ScreenSizeY );
-	CrosshairLocationScreen=FVector2D( (float)ScreenSizeX / 2, (float)ScreenSizeY / 2 );
+	//PC->GetViewportSize( ScreenSizeX, ScreenSizeY );
+	////UE_LOG( SYLog, Warning, TEXT( "Crosshair %d ,%d" ), ScreenSizeX, ScreenSizeY );
+	//CrosshairLocationScreen=FVector2D( (float)ScreenSizeX / 2, (float)ScreenSizeY / 2 );
 
 }
 
@@ -134,6 +134,8 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 	HandleObject->SetInterpolationSpeed( NewInterpolSpeed );
 
+	PC->GetViewportSize( ScreenSizeX, ScreenSizeY );
+	CrosshairLocationScreen=FVector2D( (float)ScreenSizeX / 2, (float)ScreenSizeY / 2 );
 
 	//TArray<AActor*> AllPickUpActors;
 	//UGameplayStatics::GetAllActorsOfClass( GetWorld(), APickableActor::StaticClass(), AllPickUpActors );
@@ -153,8 +155,8 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		bool WorldToScreenResult=UGameplayStatics::ProjectWorldToScreen( GetWorld()->GetFirstPlayerController(), it->GetActorLocation(), TempLocScreen );
 		if ( WorldToScreenResult )
 		{
-			if( TempLocScreen.X > 0 && TempLocScreen.Y >0 && TempLocScreen.X <= ScreenSizeX && TempLocScreen.Y <= ScreenSizeY )
-			{//적이 화면안에 있을 경우
+			if( TempLocScreen.X > 0 && TempLocScreen.Y >0 && TempLocScreen.X <= ScreenSizeX && TempLocScreen.Y <= ScreenSizeY && !it->HasMatchingGameplayTag( PEGameplayTags::Status_IsDead ) )
+			{//적이 화면안에 있을 경우 , 살아있는 적일 경우(죽어있는 적에게 물건 던져지지 않게)
 				float TempDist=FVector2D::Distance( TempLocScreen, it->CurrentLocationScreen );
 				it->CurrentLocationScreen = TempLocScreen;
 				it->CrosshairDist = TempDist;
@@ -288,6 +290,10 @@ void UGrabComponent::GrabObject(const FInputActionInstance& Instance)
 			if ( HandleObject->GetGrabbedComponent() != nullptr )
 			{
 				bIsGrabbing=true;
+				if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
+				{
+					Subsystem->AddMappingContext(GrabImc, 1);
+				}
 			}
 		}
 	}
@@ -334,6 +340,11 @@ void UGrabComponent::ReleaseObject()
 		HandleObject->ReleaseComponent();
 
 		bIsGrabbing=false;
+
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
+		{
+			Subsystem->RemoveMappingContext(GrabImc);
+		}
 
 		if (AnimInstance && ThrowingMontage)
 		{
