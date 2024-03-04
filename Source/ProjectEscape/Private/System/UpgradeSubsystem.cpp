@@ -3,6 +3,8 @@
 
 #include "System/UpgradeSubsystem.h"
 
+#include "Player/PlayerStatsComponent.h"
+
 
 UUpgradeSubsystem::UUpgradeSubsystem()
 {
@@ -46,4 +48,17 @@ UUpgrade* UUpgradeSubsystem::MakeUpgradeFromStaticData(const FUpgradeData& Data)
 UUpgrade* UUpgradeSubsystem::GetRandomUpgrade()
 {
 	return MakeUpgradeFromStaticData(GetRandomUpgradeData());
+}
+
+void UUpgradeSubsystem::SaveUpgrade(UPlayerStatsComponent* PlayerStatsComponent)
+{
+	SavedUpgrades = PlayerStatsComponent->OwningUpgrades;
+}
+
+void UUpgradeSubsystem::LoadUpgrade(UPlayerStatsComponent* PlayerStatsComponent)
+{
+	for (auto Upgrade: SavedUpgrades)
+	{
+		PlayerStatsComponent->AddUpgrade(Upgrade);
+	}
 }
