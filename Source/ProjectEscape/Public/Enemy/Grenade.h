@@ -35,6 +35,12 @@ public:
 	/*UPROPERTY( EditAnywhere, Category = Effect )
 	UMaterialInterface* GrenadeDecal;*/
 
+	UPROPERTY( EditAnywhere, Category=Effect )
+	TSubclassOf<class UCameraShakeBase> CameraShake;
+
+	UPROPERTY( EditAnywhere )
+	float ShakeRadius = 2000.0f;
+
 	UPROPERTY( EditAnywhere )
 	float ExplosionTime = 4.0f;
 

@@ -28,6 +28,12 @@ AGrenade::AGrenade()
 		GrenadeMesh->SetStaticMesh( TempGrenadeMesh.Object );
 	}
 
+	static ConstructorHelpers::FClassFinder<UCameraShakeBase> CameraShakeFinder{ TEXT( "/Script/Engine.Blueprint'/Game/Blueprints/Camera/BP_CSEnemyExplosion.BP_CSEnemyExplosion_C'" ) };
+	if ( CameraShakeFinder.Succeeded() )
+	{
+		CameraShake = CameraShakeFinder.Class;
+	}
+
 	SetLifeSpan( 10.0f );
 }
 
@@ -92,6 +98,7 @@ void AGrenade::Explosion()
 	//UGameplayStatics::SpawnDecalAtLocation( GetWorld(), GrenadeDecal, FVector( 500 ), GrenadeLoc, FRotator(), 10 );
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, GrenadeLoc, FRotator(), FVector(ExplosionEffectSize), true);
 	UGameplayStatics::PlaySoundAtLocation( GetWorld(), ExplosionSound, GrenadeLoc );
+	UGameplayStatics::PlayWorldCameraShake( GetWorld(), CameraShake, GrenadeLoc, 0, ShakeRadius );
 
 	Destroy();
 

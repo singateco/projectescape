@@ -134,6 +134,13 @@ void AProjectEscapePlayer::PlayDamageAnim(float Damage)
 	{
 		MainUI->PlayDamageAnimation();
 	}
+
+	if ( AProjectEscapePlayerController* PC=Cast<AProjectEscapePlayerController>( Controller ) )
+	{
+		PC->ClientStartCameraShake( DamagedCameraShakeEffect );
+
+	}
+
 }
 
 void AProjectEscapePlayer::Tick(float DeltaSeconds)

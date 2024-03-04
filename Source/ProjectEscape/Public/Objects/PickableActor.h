@@ -55,6 +55,9 @@ public:
 	UPROPERTY( EditAnywhere )
 	USoundBase* ExplosionSoundClass;
 
+	UPROPERTY( EditDefaultsOnly )
+	TSubclassOf<class UCameraShakeBase> ExplosionCameraShakeEffect;
+
 
 	FString txt1;
 	FString txt2;
