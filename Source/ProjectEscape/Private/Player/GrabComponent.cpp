@@ -155,8 +155,8 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		bool WorldToScreenResult=UGameplayStatics::ProjectWorldToScreen( GetWorld()->GetFirstPlayerController(), it->GetActorLocation(), TempLocScreen );
 		if ( WorldToScreenResult )
 		{
-			if( TempLocScreen.X > 0 && TempLocScreen.Y >0 && TempLocScreen.X <= ScreenSizeX && TempLocScreen.Y <= ScreenSizeY )
-			{//적이 화면안에 있을 경우
+			if( TempLocScreen.X > 0 && TempLocScreen.Y >0 && TempLocScreen.X <= ScreenSizeX && TempLocScreen.Y <= ScreenSizeY && !it->HasMatchingGameplayTag( PEGameplayTags::Status_IsDead ) )
+			{//적이 화면안에 있을 경우 , 살아있는 적일 경우(죽어있는 적에게 물건 던져지지 않게)
 				float TempDist=FVector2D::Distance( TempLocScreen, it->CurrentLocationScreen );
 				it->CurrentLocationScreen = TempLocScreen;
 				it->CrosshairDist = TempDist;

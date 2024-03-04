@@ -162,6 +162,9 @@ public:
 	UPROPERTY( EditAnywhere )
 	AProjectEscapePlayerController* PC;
 
+	UPROPERTY( EditDefaultsOnly )
+	TSubclassOf<class UCameraShakeBase> GunShootCameraShakeEffect;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

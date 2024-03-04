@@ -124,6 +124,8 @@ UFireComponent::UFireComponent()
 	{
 		ReloadMontage=ReloadMontageFinder.Object;
 	}
+
+	
 }
 
 
@@ -277,6 +279,8 @@ void UFireComponent::NormalGunFire()
 	if ( PC == nullptr ) {
 		return;
 	}
+	PC->ClientStartCameraShake( GunShootCameraShakeEffect );
+	
 	PC->InGameWIdget->SetCurrentBullets();
 		
 	const float RecoilValue = FMath::RandRange(RecoilValueMin,RecoilValueMax);

@@ -52,9 +52,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	UMaterialInstance* UIMaterial;
 
-	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite )
-	UMaterialInstance* TargetEnemyUIMaterial;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UEnemyStatsComponent* EnemyStatsComponent;
 	
