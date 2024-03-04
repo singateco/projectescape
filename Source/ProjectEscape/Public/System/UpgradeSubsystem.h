@@ -7,6 +7,7 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "UpgradeSubsystem.generated.h"
 
+class UPlayerStatsComponent;
 /**
  * 
  */
@@ -35,6 +36,15 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	UUpgrade* GetRandomUpgrade();
+
+	UPROPERTY(VisibleAnywhere)
+	TArray<UUpgrade*> SavedUpgrades;
+
+	UFUNCTION(BlueprintCallable)
+	void SaveUpgrade(UPlayerStatsComponent* PlayerStatsComponent);
+
+	UFUNCTION(BlueprintCallable)
+	void LoadUpgrade(UPlayerStatsComponent* PlayerStatsComponent);
 	
 	int32 UpgradeCounter {0};
 };

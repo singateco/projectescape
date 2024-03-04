@@ -126,5 +126,6 @@ void UBombEnemyFSM::Explosion()
 	UGameplayStatics::PlaySoundAtLocation( GetWorld(), ExplosionSound, EnemyLoc );
 
 	Enemy->OnEnemyDied.Broadcast(Enemy);
+	Enemy->OnEnemyDied.Clear();
 	Enemy->Destroy();
 }

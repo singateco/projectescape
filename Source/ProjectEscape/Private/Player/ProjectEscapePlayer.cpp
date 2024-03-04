@@ -38,13 +38,19 @@ AProjectEscapePlayer::AProjectEscapePlayer(const FObjectInitializer& ObjectIniti
 	}
 
 	const static ConstructorHelpers::FClassFinder<UUserWidget> GameOverUIWidgetClassFinder
-	{TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/UI/WBP_GameOver.WBP_GameOver_C'")};
+	{TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/UI/WBP_GameOver1.WBP_GameOver1_C'")};
 	if (GameOverUIWidgetClassFinder.Class)
 	{
 		GameOverUIClass = GameOverUIWidgetClassFinder.Class;
 	}
 	
-	
+
+	static ConstructorHelpers::FClassFinder<UCameraShakeBase> DamagedCameraShakeEffectFinder( TEXT( "/Script/Engine.Blueprint'/Game/Blueprints/Camera/BP_CSPlayerDamaged.BP_CSPlayerDamaged_C'" ) );
+
+	if ( DamagedCameraShakeEffectFinder.Succeeded() )
+	{
+		DamagedCameraShakeEffect=DamagedCameraShakeEffectFinder.Class;
+	}
 	PrimaryActorTick.bCanEverTick = true;
 	
 	// Set size for collision capsule

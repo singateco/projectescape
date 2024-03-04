@@ -86,6 +86,7 @@ AEnemyBase::AEnemyBase(const FObjectInitializer& ObjectInitializer)
 	{
 		TargetUIComponent->SetWidgetClass( TargetUI.Class );
 		TargetUIComponent->SetWidgetSpace( EWidgetSpace::Screen );
+		EnemyHPComponent->SetDrawSize( FVector2D( 10, 10 ) );
 		TargetUIComponent->SetCollisionEnabled( ECollisionEnabled::NoCollision );
 		TargetUIComponent->SetVisibility(false);
 	}
@@ -223,8 +224,9 @@ void AEnemyBase::PreInitializeComponents()
 void AEnemyBase::ProcessDying()
 {
 	OnEnemyDied.Broadcast(this);
+	OnEnemyDied.Clear();
 
-	if (HealthPickupActorClass)
+	if (HealthPickupActorClass && FMath::FRand() <= HealthDropChance)
 	{
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;

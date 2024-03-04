@@ -34,7 +34,9 @@ struct FStageData: public FTableRowBase
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FStageFinished);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FBonusObjectiveTimeoutFailed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FWaveFinished, FWaveData, FinishedWaveData, FWaveData, NextWaveData);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FWaveStarted, const FWaveData&, WaveData, TArray<AEnemyBase*>&, WaveEnemies);
 
 UCLASS()
 class PROJECTESCAPE_API AStageManager : public AActor
@@ -43,6 +45,9 @@ class PROJECTESCAPE_API AStageManager : public AActor
 
 public:
 
+	UFUNCTION()
+	void FirstWaveSpawn();
+	
 	UPROPERTY()
 	USceneComponent* RootSceneComp;
 
@@ -53,13 +58,22 @@ public:
 	FStageData StageData;
 
 	UPROPERTY(BlueprintAssignable)
+	FBonusObjectiveTimeoutFailed OnBonusObjectiveTimeoutFailed;
+	
+	UPROPERTY(BlueprintAssignable)
 	FStageFinished OnStageFinished;
 
 	UPROPERTY(BlueprintAssignable)
 	FWaveFinished OnWaveFinished;
 
+	UPROPERTY(BlueprintAssignable)
+	FWaveStarted OnWaveStarted;
+
 	UPROPERTY(EditAnywhere)
 	TArray<AEnemyBase*> ThisWaveEnemy;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	bool bBonusReward {false};
 
 	UPROPERTY(VisibleAnywhere)
 	bool bIsFinalWave {false};
@@ -70,9 +84,18 @@ public:
 	UPROPERTY(EditAnywhere)
 	float BetweenWavesDelaySeconds {7.0f};
 
+	UPROPERTY(EditAnywhere)
+	float BonusObjectiveSeconds {30.f};
+
+	UPROPERTY(EditAnywhere)
+	FTimerHandle BonusObjectiveHandle;
+
 	UFUNCTION()
 	void HandleEnemyDestroyed(AEnemyBase* DestroyedActor);
 
+	UFUNCTION()
+	void BonusObjectiveTimeoutFailed();
+	
 	UFUNCTION()
 	void SpawnWave(const FWaveData& WaveData);
 	

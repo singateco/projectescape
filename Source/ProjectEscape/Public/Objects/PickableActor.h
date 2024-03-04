@@ -12,6 +12,7 @@ class UStaticMeshComponent;
 class USphereComponent;
 class UNiagaraSystem;
 //class USoundBase;
+class UMaterialInstance;
 class AProjectEscapePlayer;
 
 UCLASS()
@@ -25,6 +26,9 @@ public:
 
 	//UPROPERTY( EditAnywhere )
 	//USphereComponent* CollisionComp;
+
+	//UPROPERTY( EditDefaultsOnly )
+	//UMaterialInstance* WallExplosionDecalEffect;
 
 	UPROPERTY( EditAnywhere )
 	UStaticMeshComponent* MeshComp;
@@ -41,6 +45,9 @@ public:
 	UNiagaraSystem* ExplosionEffect;
 
 	UPROPERTY( EditDefaultsOnly )
+	UMaterialInterface* ExploDecalEffect;
+
+	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite )
 	AProjectEscapePlayer* Player;
 
 	UPROPERTY( EditDefaultsOnly )
