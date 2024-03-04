@@ -104,9 +104,9 @@ void UGrabComponent::BeginPlay()
 	//}
 	AnimInstance = Player->GetMesh()->GetAnimInstance();
 
-	PC->GetViewportSize( ScreenSizeX, ScreenSizeY );
-	UE_LOG( SYLog, Warning, TEXT( "Crosshair %d ,%d" ), ScreenSizeX, ScreenSizeY );
-	CrosshairLocationScreen=FVector2D( (float)ScreenSizeX / 2, (float)ScreenSizeY / 2 );
+	//PC->GetViewportSize( ScreenSizeX, ScreenSizeY );
+	////UE_LOG( SYLog, Warning, TEXT( "Crosshair %d ,%d" ), ScreenSizeX, ScreenSizeY );
+	//CrosshairLocationScreen=FVector2D( (float)ScreenSizeX / 2, (float)ScreenSizeY / 2 );
 
 }
 
@@ -134,6 +134,8 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 	HandleObject->SetInterpolationSpeed( NewInterpolSpeed );
 
+	PC->GetViewportSize( ScreenSizeX, ScreenSizeY );
+	CrosshairLocationScreen=FVector2D( (float)ScreenSizeX / 2, (float)ScreenSizeY / 2 );
 
 	//TArray<AActor*> AllPickUpActors;
 	//UGameplayStatics::GetAllActorsOfClass( GetWorld(), APickableActor::StaticClass(), AllPickUpActors );
