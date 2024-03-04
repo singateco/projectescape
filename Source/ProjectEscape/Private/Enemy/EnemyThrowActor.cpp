@@ -55,6 +55,7 @@ void AEnemyThrowActor::Explosion(const FHitResult& Hit)
 	}
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, GrenadeLoc, Hit.ImpactNormal.Rotation(), FVector( ExplosionEffectSize ), true );
 	UGameplayStatics::PlaySoundAtLocation( GetWorld(), ExplosionSound, GrenadeLoc );
+	UGameplayStatics::PlayWorldCameraShake( GetWorld(), CameraShake, GrenadeLoc, 0, ShakeRadius );
 
 	Destroy();
 

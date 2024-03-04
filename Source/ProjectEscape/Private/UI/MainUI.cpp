@@ -17,14 +17,6 @@ void UMainUI::SetCurrentBullets()
 		));
 	const float SliderValue = 1.f - (1.0f * Player->PlayerStatsComponent->CurrentBullets / Player->PlayerStatsComponent->MaxBullets);
 	BulletSlider->SetValue(SliderValue);
-
-
-}
-
-void UMainUI::NativeTick( const FGeometry& MyGeometry, float InDeltaTime )
-{
-	Super::NativeTick( MyGeometry, InDeltaTime );
-	
 }
 
 void UMainUI::NativeOnInitialized()
@@ -56,19 +48,20 @@ void UMainUI::StartESkillUI()
 {
 	PRB_ESkill->SetVisibility( ESlateVisibility::Visible );
 	TXT_ESkill->SetVisibility( ESlateVisibility::Visible );
-
+	ChangeSkillColor(false, false);
 }
 void UMainUI::StartQSkillUI()
 {
-
 	PRB_QSkill->SetVisibility( ESlateVisibility::Visible );
 	TXT_QSkill->SetVisibility( ESlateVisibility::Visible );
+	ChangeSkillColor(true, false);
 }
 void UMainUI::EndESkillUI()
 {
 	PRB_ESkill->SetVisibility( ESlateVisibility::Hidden );
 	TXT_ESkill->SetVisibility( ESlateVisibility::Hidden );
 	PlayESkillCooldownAnim();
+	ChangeSkillColor(false, true);
 }
 void UMainUI::EndQSkillUI()
 {
@@ -76,6 +69,7 @@ void UMainUI::EndQSkillUI()
 	PRB_QSkill->SetVisibility( ESlateVisibility::Hidden );
 	TXT_QSkill->SetVisibility( ESlateVisibility::Hidden );
 	PlayQSkillCooldownAnim();
+	ChangeSkillColor(true, true);
 }
 
 void UMainUI::SetCrossHairColor(const bool EnemySeen)

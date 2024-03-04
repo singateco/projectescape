@@ -53,6 +53,9 @@ public:
 	UMaterialInstance* UIMaterial;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float HealthDropChance {0.5f};
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UEnemyStatsComponent* EnemyStatsComponent;
 	
 	UPROPERTY( EditAnywhere, BlueprintReadOnly )

@@ -224,8 +224,9 @@ void AEnemyBase::PreInitializeComponents()
 void AEnemyBase::ProcessDying()
 {
 	OnEnemyDied.Broadcast(this);
+	OnEnemyDied.Clear();
 
-	if (HealthPickupActorClass)
+	if (HealthPickupActorClass && FMath::FRand() <= HealthDropChance)
 	{
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;

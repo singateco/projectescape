@@ -38,7 +38,7 @@ AProjectEscapePlayer::AProjectEscapePlayer(const FObjectInitializer& ObjectIniti
 	}
 
 	const static ConstructorHelpers::FClassFinder<UUserWidget> GameOverUIWidgetClassFinder
-	{TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/UI/WBP_GameOver.WBP_GameOver_C'")};
+	{TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/UI/WBP_GameOver1.WBP_GameOver1_C'")};
 	if (GameOverUIWidgetClassFinder.Class)
 	{
 		GameOverUIClass = GameOverUIWidgetClassFinder.Class;
