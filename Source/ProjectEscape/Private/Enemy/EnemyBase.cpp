@@ -251,8 +251,8 @@ void AEnemyBase::ProcessDying()
 			SpawnEffectTweenUObject->Tween = nullptr;
 			SpawnEffectTweenUObject = nullptr;
 		}
-		SpawnEffectEmitter->DestroyInstance();
-		SpawnEffectCircle->DestroyInstance();
+		SpawnEffectEmitter->DeactivateImmediate();
+		SpawnEffectCircle->DeactivateImmediate();
 	}
 }
 

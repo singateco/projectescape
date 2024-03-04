@@ -24,7 +24,7 @@ UGrenadeEnemyFSM::UGrenadeEnemyFSM()
 		EnemyBulletFactory = BulletClassFinder.Class;
 	}
 
-	static ConstructorHelpers::FClassFinder<AEnemyBullet> GrenadeClassFinder{ TEXT( "/Script/Engine.Blueprint'/Game/Blueprints/BP_Grenade.BP_Grenade_C'" ) };
+	static ConstructorHelpers::FClassFinder<AGrenade> GrenadeClassFinder{ TEXT( "/Script/Engine.Blueprint'/Game/Blueprints/BP_Grenade.BP_Grenade_C'" ) };
 	if ( GrenadeClassFinder.Succeeded() )
 	{
 		EnemyGrenadeFactory = GrenadeClassFinder.Class;
