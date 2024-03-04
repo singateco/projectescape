@@ -67,13 +67,13 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category="Grab" )
 	float NewInterpolSpeed= 6.0f;
 
-	UPROPERTY( EditDefaultsOnly, Category="Grab" )
+	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite, Category="Grab" )
 	bool bIsGrabbing = false;
 
-	UPROPERTY( EditDefaultsOnly, Category="Grab" )
+	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite, Category="Grab" )
 	bool bIsPushing = false;
 
-	UPROPERTY( EditDefaultsOnly, Category="Grab" )
+	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite, Category="Grab" )
 	bool bIsPulling = false;
 
 	UPROPERTY( EditDefaultsOnly, Category="Grab" )
