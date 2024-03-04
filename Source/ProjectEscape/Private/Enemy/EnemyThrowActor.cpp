@@ -4,6 +4,7 @@
 #include "Enemy/EnemyThrowActor.h"
 
 #include "NiagaraFunctionLibrary.h"
+#include "Components/DecalComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Player/ProjectEscapePlayer.h"
@@ -17,6 +18,13 @@ AEnemyThrowActor::AEnemyThrowActor()
 	ExplosionEffectSize = 0.5f;
 	SphereRadius = 300.0f;
 	ExplosionTime = 10.0f;
+
+	static const ConstructorHelpers::FObjectFinder<UMaterialInterface> DecalFinder{ TEXT( "/Script/Engine.MaterialInstanceConstant'/Game/Resources/KDE/UWC_Bullet_Holes/Instances/Decals/Cracks/MI_Crack_7.MI_Crack_7'" ) };
+
+	if ( DecalFinder.Succeeded() )
+	{
+		GrenadeDecal=DecalFinder.Object;
+	}
 }
 
 void AEnemyThrowActor::Explosion(const FHitResult& Hit)
@@ -65,5 +73,7 @@ void AEnemyThrowActor::OnMeshBeginHit(UPrimitiveComponent* HitComponent, AActor*
 {
 	Super::OnMeshBeginHit(HitComponent, OtherActor, OtherComp, NormalImpulse, Hit);
 	Explosion(Hit);
-
+	FRotator DecalRotation = Hit.ImpactNormal.Rotation() + FRotator( -180, 0, 0 );
+	UDecalComponent* UdecalEffect=UGameplayStatics::SpawnDecalAtLocation( GetWorld(), GrenadeDecal, FVector( 300 ), Hit.ImpactPoint, DecalRotation, 10 );
+	UdecalEffect->SetFadeScreenSize( 0.f );
 }

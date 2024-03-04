@@ -42,8 +42,8 @@ public:
 	UPROPERTY( EditAnywhere, Category=Effect )
 	TSubclassOf<class UCameraShakeBase> CameraShake;
 
-	/*UPROPERTY( EditAnywhere, Category=Effect )
-	UMaterialInterface* RocketDecal;*/
+	UPROPERTY( EditAnywhere, Category=Effect )
+	UMaterialInterface* RocketDecal;
 
 	UPROPERTY( EditAnywhere )
 	float ShakeRadius = 2000.0f;
