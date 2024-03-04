@@ -6,9 +6,9 @@
 #include "EngineUtils.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "InputMappingContext.h"
 #include "NiagaraComponent.h"
 #include "Camera/CameraComponent.h"
-#include "Enemy/RifleEnemy.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "ProjectEscape/Public/Player/ProjectEscapePlayer.h"
 #include "Player/PhysicsHandleComp.h"
@@ -16,11 +16,8 @@
 #include "Objects/PickableActor.h"
 #include "Components/PrimitiveComponent.h"
 #include "Components/WidgetComponent.h"
-#include "Enemy/EnemyBullet.h"
-#include "Enemy/GrenadeEnemy.h"
 #include "Kismet/GameplayStatics.h"
 #include "ProjectEscape/ProjectEscape.h"
-#include "Particles/ParticleSystem.h"
 #include "System/ProjectEscapePlayerController.h"
 #include "UI/MainUI.h"
 #include "NiagaraFunctionLibrary.h"
@@ -58,7 +55,7 @@ UGrabComponent::UGrabComponent()
 	}
 
 
-	static const ConstructorHelpers::FObjectFinder<UInputAction> ThrowActionFinder{ TEXT( "/Script/EnhancedInput.InputAction'/Game/ThirdPerson/Input/Actions/IA_Fire.IA_Fire'" ) };
+	static const ConstructorHelpers::FObjectFinder<UInputAction> ThrowActionFinder{ TEXT( "/Script/EnhancedInput.InputAction'/Game/ThirdPerson/Input/Actions/IA_Release.IA_Release'" ) };
 	if ( ThrowActionFinder.Succeeded() )
 	{
 		ActionThrow=ThrowActionFinder.Object;
@@ -83,8 +80,11 @@ UGrabComponent::UGrabComponent()
 		ThrowingMontage = ThrowMontageFinder.Object;
 	}
 
-
-
+	static const ConstructorHelpers::FObjectFinder<UInputMappingContext> GrabImcFinder {TEXT("/Script/EnhancedInput.InputMappingContext'/Game/ThirdPerson/Input/IMC_Grab.IMC_Grab'")};
+	if (GrabImcFinder.Succeeded())
+	{
+		GrabImc = GrabImcFinder.Object;
+	}
 }
 
 
@@ -290,6 +290,10 @@ void UGrabComponent::GrabObject(const FInputActionInstance& Instance)
 			if ( HandleObject->GetGrabbedComponent() != nullptr )
 			{
 				bIsGrabbing=true;
+				if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
+				{
+					Subsystem->AddMappingContext(GrabImc, 1);
+				}
 			}
 		}
 	}
@@ -336,6 +340,11 @@ void UGrabComponent::ReleaseObject()
 		HandleObject->ReleaseComponent();
 
 		bIsGrabbing=false;
+
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
+		{
+			Subsystem->RemoveMappingContext(GrabImc);
+		}
 
 		if (AnimInstance && ThrowingMontage)
 		{

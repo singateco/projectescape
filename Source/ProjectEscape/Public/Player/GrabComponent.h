@@ -55,6 +55,9 @@ public:
 	UPROPERTY()
 	UEnhancedInputComponent* EnhancedInputComponent;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UInputMappingContext* GrabImc;
+
 	UPROPERTY( EditDefaultsOnly, Category="Weapon" )
 	float MaxDistanceToGrab=10000000.0f;
 
