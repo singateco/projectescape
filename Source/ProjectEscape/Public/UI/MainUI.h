@@ -10,6 +10,7 @@
  * 
  */
 
+class UObjectiveWidget;
 struct FInputActionInstance;
 class UInputAction;
 class URadialSlider;
@@ -62,6 +63,9 @@ public:
 	UPROPERTY( BlueprintReadWrite, meta=(BindWidget) )
 	UTextBlock* TXT_ESkill;
 
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UObjectiveWidget* Objective;
+	
 	UFUNCTION(BlueprintCallable)
 	void SetCrossHairColor(const bool EnemySeen);
 

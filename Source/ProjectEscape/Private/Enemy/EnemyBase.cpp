@@ -230,6 +230,7 @@ void AEnemyBase::PreInitializeComponents()
 void AEnemyBase::ProcessDying()
 {
 	OnEnemyDied.Broadcast(this);
+	OnEnemyDied.Clear();
 
 	if (HealthPickupActorClass)
 	{
