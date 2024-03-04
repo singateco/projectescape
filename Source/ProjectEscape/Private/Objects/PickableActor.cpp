@@ -10,11 +10,14 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Particles/ParticleSystem.h"
+#include "Materials/MaterialInstance.h"
 #include "Player/GrabComponent.h"
 #include "Player/PlayerStatsComponent.h"
 #include "Player/ProjectEscapePlayer.h"
 #include "ProjectEscape/ProjectEscape.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Components/DecalComponent.h"
+
 #include "UI/MainUI.h"
 
 
@@ -76,6 +79,27 @@ APickableActor::APickableActor()
 		ExplosionSoundClass=ExplosionSoundFinder.Object;
 	}
 
+
+
+	static ConstructorHelpers::FClassFinder<UCameraShakeBase> ExplosionCameraShakeEffectFinder( TEXT( "/Script/Engine.Blueprint'/Game/Blueprints/Camera/BP_CSPlayerExplosion.BP_CSPlayerExplosion_C'" ) );
+
+	if ( ExplosionCameraShakeEffectFinder.Succeeded() )
+	{
+		ExplosionCameraShakeEffect=ExplosionCameraShakeEffectFinder.Class;
+	}
+
+
+
+
+
+	static const ConstructorHelpers::FObjectFinder<UMaterialInterface> ExploDecalEffectFinder{ TEXT( "/Script/Engine.MaterialInstanceConstant'/Game/Resources/KDE/UWC_Bullet_Holes/Instances/Decals/Cracks/MI_Crack_7.MI_Crack_7'" ) };
+
+	if ( ExploDecalEffectFinder.Succeeded() )
+	{
+		ExploDecalEffect=ExploDecalEffectFinder.Object;
+	}
+
+
 }
 
 // Called when the game starts or when spawned
@@ -98,7 +122,7 @@ void APickableActor::GetExplosionRadius()
 	if (Player)
 	{
 		SphereRadius = Player->PlayerStatsComponent->GrabExplosionRadius;
-		EmitterScaleValue = SphereRadius / 100.f;
+		EmitterScaleValue = SphereRadius / 10.f;
 	}
 }
 
@@ -122,7 +146,17 @@ void APickableActor::OnCompHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 		//txt1=(Player->GrabComponent->bIsGrabbing) ? "true" : "false";
 		//UE_LOG( SYLog, Warning, TEXT( "5000이상 bIsGrabbing : %s" ), *txt1 );
 
+		UE_LOG( SYLog, Warning, TEXT( "hitResult : %s" ), *Hit.GetActor()->GetActorNameOrLabel() );
+
+		UE_LOG( SYLog, Warning, TEXT( "hitComp : %s, ProfileCollision: %s" ), *OtherComp->GetFullName(), *OtherComp->GetCollisionProfileName().ToString());
 		UGameplayStatics::PlaySoundAtLocation( GetWorld(), ExplosionSoundClass, Hit.ImpactPoint, Hit.ImpactNormal.Rotation() );
+
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), ExplosionScale, true );
+
+		UDecalComponent* UdecalEffect=UGameplayStatics::SpawnDecalAtLocation( GetWorld(), ExploDecalEffect, FVector(200), Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), 10);
+		UdecalEffect->SetFadeScreenSize( 0.f );
+		
+
 		if( ExplosionCameraShakeEffect )
 		{
 			GetWorld()->GetFirstPlayerController()->ClientStartCameraShake( ExplosionCameraShakeEffect );
@@ -136,10 +170,10 @@ void APickableActor::OnCompHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 
 		GetExplosionRadius();
 
-		txt1=(Player->GrabComponent->bIsGrabbing) ? "true" : "false";
-		txt2=(Player->GrabComponent->bIsPulling) ? "true" : "false";
-		txt3=(Player->GrabComponent->bIsPushing) ? "true" : "false";
-		UE_LOG( SYLog, Warning, TEXT( "bIsGrabbing:%s, bIsPulling : %s, bIsPushing : %s" ), *txt1, *txt2, *txt3 );
+		//txt1=(Player->GrabComponent->bIsGrabbing) ? "true" : "false";
+		//txt2=(Player->GrabComponent->bIsPulling) ? "true" : "false";
+		//txt3=(Player->GrabComponent->bIsPushing) ? "true" : "false";
+		//UE_LOG( SYLog, Warning, TEXT( "bIsGrabbing:%s, bIsPulling : %s, bIsPushing : %s" ), *txt1, *txt2, *txt3 );
 		if(Hit.GetActor()->IsA<AEnemyBase>() ){
 			auto OtherCharacter=Cast<AEnemyBase>( Hit.GetActor() );
 			OtherCharacter->ProcessDamage( Player->PlayerStatsComponent->GrabDamageValue );
@@ -154,7 +188,8 @@ void APickableActor::OnCompHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), ExplosionScale, true );
 			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), BloodEffect, OtherCharacter->GetActorLocation(), FRotator(), ExplosionScale, true );
 				this->Destroy();
-
+			//GetActorLocation() 하면 안됨
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionObjEffect, this->MeshComp->GetComponentLocation(), FRotator(), ExplosionScale, true );
 			//UGameplayStatics::PlaySoundAtLocation( GetWorld(), ExplosionSound, EnemyLoc );
 		}else
 		{
@@ -164,10 +199,10 @@ void APickableActor::OnCompHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 
 			if ( bSphereOverlapResult )
 			{
-				UE_LOG( SYLog, Warning, TEXT( "hit" ) );
+				UE_LOG( SYLog, Warning, TEXT( "hit!" ) );
 				for ( AActor* HitActor : OutActorsArray )
 				{
-					UE_LOG( SYLog, Warning, TEXT( "HitActor:%s" ), *HitActor->GetActorNameOrLabel() );
+					UE_LOG( SYLog, Warning, TEXT( "SphereOverlapResult:%s" ), *HitActor->GetActorNameOrLabel() );
 					auto OtherCharacter=Cast<AEnemyBase>( HitActor );
 					if ( OtherCharacter )
 					{
@@ -195,11 +230,7 @@ void APickableActor::OnCompHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 
 		}
 		//UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), ExplosionEffect, this->MeshComp->GetComponentLocation(), FRotator(), FVector( 10 ), true, EPSCPoolMethod::None, true );
-
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), ExplosionScale, true );
-
-		//GetActorLocation() 하면 안됨
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionObjEffect, this->MeshComp->GetComponentLocation(), FRotator(), ExplosionScale, true );
+		
 		
 		this->Destroy();
 		Player->GrabComponent->bIsPushing=false;

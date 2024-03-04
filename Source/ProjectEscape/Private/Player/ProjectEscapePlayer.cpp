@@ -44,7 +44,13 @@ AProjectEscapePlayer::AProjectEscapePlayer(const FObjectInitializer& ObjectIniti
 		GameOverUIClass = GameOverUIWidgetClassFinder.Class;
 	}
 	
-	
+
+	static ConstructorHelpers::FClassFinder<UCameraShakeBase> DamagedCameraShakeEffectFinder( TEXT( "/Script/Engine.Blueprint'/Game/Blueprints/Camera/BP_CSPlayerDamaged.BP_CSPlayerDamaged_C'" ) );
+
+	if ( DamagedCameraShakeEffectFinder.Succeeded() )
+	{
+		DamagedCameraShakeEffect=DamagedCameraShakeEffectFinder.Class;
+	}
 	PrimaryActorTick.bCanEverTick = true;
 	
 	// Set size for collision capsule
