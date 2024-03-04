@@ -43,6 +43,12 @@ ARocket::ARocket()
 	MovementComponent->ProjectileGravityScale = 0;
 	MovementComponent->bRotationFollowsVelocity = true;
 
+	static ConstructorHelpers::FClassFinder<UCameraShakeBase> CameraShakeFinder{ TEXT( "/Script/Engine.Blueprint'/Game/Blueprints/Camera/BP_CSEnemyExplosion.BP_CSEnemyExplosion_C'" ) };
+	if ( CameraShakeFinder.Succeeded() )
+	{
+		CameraShake=CameraShakeFinder.Class;
+	}
+
 	SetLifeSpan( 10.0f );
 
 }
@@ -104,6 +110,7 @@ void ARocket::Explosion()
 	//UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), ExplosionEffect, RocketLoc, FRotator(), FVector( 10 ), true, EPSCPoolMethod::None, true );
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, RocketLoc, FRotator(), FVector( ExplosionEffectSize ), true );
 	UGameplayStatics::PlaySoundAtLocation( GetWorld(), ExplosionSound, RocketLoc );
+	UGameplayStatics::PlayWorldCameraShake( GetWorld(), CameraShake, RocketLoc, 0, ShakeRadius );
 
 	this->Destroy();
 }

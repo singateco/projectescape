@@ -56,13 +56,6 @@ AEnemyBase::AEnemyBase(const FObjectInitializer& ObjectInitializer)
 		UIMaterial = UIMaterialFinder.Object;
 	}
 
-	ConstructorHelpers::FObjectFinder<UMaterialInstance> TargetEnemyUIMaterialFinder{TEXT( "/Script/Engine.Texture2D'/Game/UI/crosshair186.crosshair186''" )};
-	if ( TargetEnemyUIMaterialFinder.Succeeded() )
-	{
-		TargetEnemyUIMaterial=TargetEnemyUIMaterialFinder.Object;
-	}
-
-
 	ConstructorHelpers::FObjectFinder<USoundWave> DyingSoundFinder
 	{
 		TEXT("/Script/Engine.SoundWave'/Game/Sounds/HitSound.HitSound'")
