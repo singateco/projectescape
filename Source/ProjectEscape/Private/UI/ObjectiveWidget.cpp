@@ -35,7 +35,12 @@ void UObjectiveWidget::BonusFailed()
 {
 	GetWorld()->GetTimerManager().ClearTimer(BonusUpdateTimer);
 
-	FString CurrentBonusText = TEXT("보너스 목표: 30초 안에 클리어한다.");
+	float BonusSeconds = 30.f;
+	if (StageManager)
+	{
+		BonusSeconds = StageManager->BonusObjectiveSeconds;
+	}
+	FString CurrentBonusText = FString::Printf(TEXT("보너스 목표: %.f초 안에 클리어한다."), BonusSeconds);
 	CurrentBonusText = TEXT("<Fail>") + CurrentBonusText + TEXT("</>");
 	BonusTextBlock->SetText(FText::FromString(CurrentBonusText));
 	BonusCheckBox->SetCheckedState(ECheckBoxState::Undetermined);

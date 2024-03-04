@@ -24,9 +24,6 @@ class UMainUI : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-
-	virtual void NativeTick( const FGeometry& MyGeometry, float InDeltaTime ) override;
-public:
 	UPROPERTY(EditDefaultsOnly)
 	AProjectEscapePlayer* Player;
 
@@ -50,6 +47,9 @@ public:
 
 	UPROPERTY( BlueprintReadWrite, meta=(BindWidget) )
 	UImage* IMG_ESkill;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void ChangeSkillColor(const bool QSkill, const bool On);
 
 	UPROPERTY( BlueprintReadWrite, meta=(BindWidget) )
 	UProgressBar* PRB_QSkill;
