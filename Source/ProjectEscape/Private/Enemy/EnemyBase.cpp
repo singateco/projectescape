@@ -86,7 +86,7 @@ AEnemyBase::AEnemyBase(const FObjectInitializer& ObjectInitializer)
 	{
 		TargetUIComponent->SetWidgetClass( TargetUI.Class );
 		TargetUIComponent->SetWidgetSpace( EWidgetSpace::Screen );
-		EnemyHPComponent->SetDrawSize( FVector2D( 10, 10 ) );
+		TargetUIComponent->SetDrawSize( FVector2D( 10, 10 ) );
 		TargetUIComponent->SetCollisionEnabled( ECollisionEnabled::NoCollision );
 		TargetUIComponent->SetVisibility(false);
 	}
