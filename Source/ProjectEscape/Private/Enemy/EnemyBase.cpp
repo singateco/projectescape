@@ -137,7 +137,8 @@ AEnemyBase::AEnemyBase(const FObjectInitializer& ObjectInitializer)
 	auto mesh = GetMesh();
 
 	cap->SetCollisionProfileName( FName( "Enemy") );
-	mesh->SetCollisionProfileName( FName( "NoCollision" ) );
+	//mesh->SetCollisionProfileName( FName( "NoCollision" ) );
+	mesh->SetCollisionProfileName( FName( "Enemy" ) );
 
 	AIControllerClass = AEnemyAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;

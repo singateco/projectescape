@@ -65,7 +65,11 @@ public:
 	UPROPERTY( EditDefaultsOnly )
 	TSubclassOf<class UCameraShakeBase> ExplosionCameraShakeEffect;
 
-
+	
+	
+	UPROPERTY( EditDefaultsOnly )
+	bool bIsGrabbedObject= false;
+	
 	FString txt1;
 	FString txt2;
 	FString txt3;

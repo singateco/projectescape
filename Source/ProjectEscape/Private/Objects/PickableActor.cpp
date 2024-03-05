@@ -141,8 +141,10 @@ void APickableActor::OnCompHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 	//if( this->MeshComp->GetComponentVelocity().Length() > 10000) // 던질때만 체크
 	//if( this->MeshComp->GetComponentVelocity().Length() > 9000) // 던질때만 체크
 	if (!Player || !Player->GrabComponent) return;
+	if ( !bIsGrabbedObject ) return;
 	if(Player->GrabComponent->bIsPushing == true )
 	{
+		
 		//UE_LOG( SYLog, Warning, TEXT( "%.1f" ), this->MeshComp->GetComponentVelocity().Length() );
 		//txt1=(Player->GrabComponent->bIsGrabbing) ? "true" : "false";
 		//UE_LOG( SYLog, Warning, TEXT( "5000이상 bIsGrabbing : %s" ), *txt1 );
