@@ -16,7 +16,7 @@ ARocket::ARocket()
 {
 	CollisionComp=CreateDefaultSubobject<USphereComponent>( TEXT( "CollisionComp" ) );
 	SetRootComponent( CollisionComp );
-	CollisionComp->SetSphereRadius( 10 );
+	CollisionComp->SetSphereRadius( 5 );
 	CollisionComp->SetCollisionProfileName( TEXT( "Projectile" ) );
 	CollisionComp->SetNotifyRigidBodyCollision( true );
 

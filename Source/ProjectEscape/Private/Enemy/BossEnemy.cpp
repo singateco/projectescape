@@ -46,7 +46,7 @@ ABossEnemy::ABossEnemy( const FObjectInitializer& ObjectInitializer )
 	ThrowRef = CreateDefaultSubobject<USceneComponent>( TEXT( "ThrowRef" ) );
 	ThrowRef->SetupAttachment( RootComponent );
 
-	MaxHP = 100;
+	MaxHP = 200;
 
 	AIControllerClass = ABossAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
