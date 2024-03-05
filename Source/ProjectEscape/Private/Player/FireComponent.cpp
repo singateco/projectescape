@@ -316,7 +316,7 @@ void UFireComponent::NormalGunFire()
 	{
 		if(AActor* Actor = HitInfo2.GetActor(); Actor && Actor->IsA<AEnemyBase>() )
 		{
-			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), BloodEffect, HitInfo2.Location, HitInfo2.ImpactNormal.Rotation(), FireEffectScale * 3.f, true );
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), BloodEffect, HitInfo2.Location, HitInfo2.ImpactNormal.Rotation(), FireEffectScale * 3.f, true, true, ENCPoolMethod::AutoRelease );
 			
 
 			Enemy=Cast<AEnemyBase>( HitInfo2.GetActor() );
@@ -337,7 +337,7 @@ void UFireComponent::NormalGunFire()
 			UDecalComponent* UdecalEffect = UGameplayStatics::SpawnDecalAtLocation( GetWorld(), WallDecalEffect, WallDecalScale, /*HitInfo2.GetComponent()->GetComponentLocation()*/ HitInfo2.ImpactPoint, HitInfo2.ImpactNormal.Rotation(), 10 );
 			UdecalEffect->SetFadeScreenSize(0.f);
 			//UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), GunEffectNoActor, HitInfo2.TraceEnd, FRotator(), FireEffectScale, true );
-			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), GunEffectNoActor, HitInfo2.ImpactPoint, FRotator(), FireEffectScale, true );
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), GunEffectNoActor, HitInfo2.ImpactPoint, FRotator(), FireEffectScale, true, true, ENCPoolMethod::AutoRelease );
 		}
 	}
 	else

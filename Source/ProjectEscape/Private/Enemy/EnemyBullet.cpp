@@ -79,7 +79,7 @@ void AEnemyBullet::OnSphereComponentBeginHit( UPrimitiveComponent* HitComponent,
 					GetWorld(), BulletDecalBlood, FVector(10), Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), 10);
 				Decal->SetFadeScreenSize(0.f);
 				
-				UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), BulletImpactBlood, Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), FVector( 1 ), true );
+				UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), BulletImpactBlood, Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), FVector( 1 ), true, true, ENCPoolMethod::AutoRelease );
 				UGameplayStatics::PlaySoundAtLocation( GetWorld(), BulletHitSoundBlood, Hit.ImpactPoint );
 			}
 			return;
@@ -88,7 +88,7 @@ void AEnemyBullet::OnSphereComponentBeginHit( UPrimitiveComponent* HitComponent,
 
 	UDecalComponent* Decal = UGameplayStatics::SpawnDecalAtLocation(GetWorld(), BulletDecalWall, FVector(10),Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), 10);
 	Decal->SetFadeScreenSize(0.f);
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), BulletImpactWall, Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), FVector( 1 ), true );
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), BulletImpactWall, Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), FVector( 1 ), true, true, ENCPoolMethod::AutoRelease );
 	UGameplayStatics::PlaySoundAtLocation( GetWorld(), BulletHitSoundWall, Hit.ImpactPoint );
 	this->Destroy();
 }
