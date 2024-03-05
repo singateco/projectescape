@@ -29,6 +29,13 @@ AGrenade::AGrenade()
 		GrenadeMesh->SetStaticMesh( TempGrenadeMesh.Object );
 	}
 
+	GrenadeRange = CreateDefaultSubobject<UStaticMeshComponent>( TEXT( "GrenadeRange" ) );
+	GrenadeRange->SetupAttachment( RootComponent );
+	GrenadeRange->SetVisibility( false );
+	GrenadeRange->SetRelativeScale3D( FVector(5.0f) );
+	GrenadeRange->SetCollisionEnabled( ECollisionEnabled::NoCollision );
+
+
 	static ConstructorHelpers::FClassFinder<UCameraShakeBase> CameraShakeFinder{ TEXT( "/Script/Engine.Blueprint'/Game/Blueprints/Camera/BP_CSEnemyExplosion.BP_CSEnemyExplosion_C'" ) };
 	if ( CameraShakeFinder.Succeeded() )
 	{
@@ -122,6 +129,6 @@ void AGrenade::Explosion(const FHitResult& Hit)
 void AGrenade::OnMeshBeginHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
                               FVector NormalImpulse, const FHitResult& Hit)
 {
-	/*GrenadeRange->SetVisibility( true );*/
+	GrenadeRange->SetVisibility( true );
 }
 
