@@ -28,16 +28,16 @@ public:
 	UPROPERTY( EditDefaultsOnly)
 	TSubclassOf<UMainUI> InGameWIdgetClass;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite)
 	UPlayerHP* PlayerHPWidget;
 
-	UPROPERTY( EditDefaultsOnly)
+	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite)
 	UMainUI* InGameWIdget;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UPlayerStaminaUI> PlayerStaminaUIWidgetClass;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite)
 	UPlayerStaminaUI* PlayerStaminaUIWidget;
 		
 

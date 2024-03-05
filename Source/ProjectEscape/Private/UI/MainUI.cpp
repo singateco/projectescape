@@ -8,6 +8,7 @@
 #include "Components/Image.h"
 #include "Components/ProgressBar.h"
 #include "Components/RadialSlider.h"
+#include "UI/ObjectiveWidget.h"
 
 
 void UMainUI::SetCurrentBullets()
@@ -81,6 +82,18 @@ void UMainUI::SetCrossHairColor(const bool EnemySeen)
 	else
 	{
 		CrossHair->SetBrushTintColor(FColor::White);
+	}
+}
+
+void UMainUI::SetObjectiveVisibility(const bool Visible)
+{
+	if (Visible)
+	{
+		Objective->SetVisibility(ESlateVisibility::Visible);
+	}
+	else
+	{
+		Objective->SetVisibility(ESlateVisibility::Hidden);
 	}
 }
 
