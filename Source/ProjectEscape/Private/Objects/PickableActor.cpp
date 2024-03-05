@@ -152,7 +152,7 @@ void APickableActor::OnCompHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 		UE_LOG( SYLog, Warning, TEXT( "hitComp : %s, ProfileCollision: %s" ), *OtherComp->GetFullName(), *OtherComp->GetCollisionProfileName().ToString());
 		UGameplayStatics::PlaySoundAtLocation( GetWorld(), ExplosionSoundClass, Hit.ImpactPoint, Hit.ImpactNormal.Rotation() );
 
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), ExplosionScale, true );
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), ExplosionScale, true, true, ENCPoolMethod::AutoRelease );
 
 		FRotator DecalRotation = Hit.ImpactNormal.Rotation() + FRotator( -180, 0, 0 );
 
@@ -188,11 +188,11 @@ void APickableActor::OnCompHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 				Player->MainUI->ShowEnemyHit(IsDyingHit);
 			}
 			
-			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), ExplosionScale, true );
-			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), BloodEffect, OtherCharacter->GetActorLocation(), FRotator(), ExplosionScale, true );
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), ExplosionScale, true, true, ENCPoolMethod::AutoRelease  );
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), BloodEffect, OtherCharacter->GetActorLocation(), FRotator(), ExplosionScale, true, true, ENCPoolMethod::AutoRelease );
 				this->Destroy();
 			//GetActorLocation() 하면 안됨
-			UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionObjEffect, this->MeshComp->GetComponentLocation(), FRotator(), ExplosionScale, true );
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionObjEffect, this->MeshComp->GetComponentLocation(), FRotator(), ExplosionScale, true, true, ENCPoolMethod::AutoRelease );
 			//UGameplayStatics::PlaySoundAtLocation( GetWorld(), ExplosionSound, EnemyLoc );
 		}else
 		{
@@ -211,7 +211,7 @@ void APickableActor::OnCompHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 					{
 						OtherCharacter->ProcessDamage( Player->PlayerStatsComponent->GrabDamageValue );
 
-						UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), BloodEffect, OtherCharacter->GetActorLocation(), FRotator(), ExplosionScale, true );
+						UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), BloodEffect, OtherCharacter->GetActorLocation(), FRotator(), ExplosionScale, true, true, ENCPoolMethod::AutoRelease );
 
 					}
 					else
@@ -219,14 +219,14 @@ void APickableActor::OnCompHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 
 						//UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), GunEffect, this->MeshComp->GetComponentLocation(), FRotator(), FVector( EmitterScaleValue ), true, EPSCPoolMethod::None, true );
 
-						UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), ExplosionScale, true );
+						UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), ExplosionScale, true, true, ENCPoolMethod::AutoRelease );
 					}
 
 					//UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, HitActor->GetActorLocation(), FRotator(), ExplosionScale, true );
-					UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), ExplosionScale, true );
+					UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), ExplosionScale, true, true, ENCPoolMethod::AutoRelease );
 				}
 
-				UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), ExplosionScale, true );
+				UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), ExplosionScale, true, true, ENCPoolMethod::AutoRelease );
 				//UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionObjEffect, this->MeshComp->GetComponentLocation(), FRotator(), ExplosionScale, true );
 				this->Destroy();
 			}
