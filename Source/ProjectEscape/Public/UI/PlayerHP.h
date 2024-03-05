@@ -26,6 +26,9 @@ public:
 	
 	UFUNCTION()
 	void UpdateHP(float MaxHP, float HP);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void PlayHPGuideAnim();
 	
 	UPROPERTY(BlueprintReadWrite)
 	float HPPercent;

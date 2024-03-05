@@ -22,4 +22,5 @@ void UPlayerHP::UpdateHP(float MaxHP, float HP)
 {
 	HPProgress->SetPercent(HP / MaxHP);
 	HPText->SetText(FText::FromString(FString::Printf(TEXT("%.f | %.f"), HP, MaxHP)));
+	PlayHPGuideAnim();
 }
