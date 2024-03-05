@@ -26,6 +26,9 @@ public:
 	UPROPERTY( EditAnywhere, BlueprintReadWrite )
 	UStaticMeshComponent* GrenadeMesh;
 
+	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite )
+	UStaticMeshComponent* GrenadeRange;
+
 	UPROPERTY( EditAnywhere, Category = Effect )
 	class UNiagaraSystem* ExplosionEffect;
 

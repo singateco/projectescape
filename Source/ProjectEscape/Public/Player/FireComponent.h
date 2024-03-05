@@ -68,6 +68,7 @@ public:
 	UPROPERTY( EditAnywhere )
 	UMaterialInterface* WallDecalEffect;
 
+
 	UPROPERTY( EditAnywhere, Category="Pistol" )
 	FVector WallDecalScale = FVector(10);;
 
@@ -77,6 +78,8 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category="Pistol" )
 	UNiagaraSystem* GunEffectNoActor;
 
+	UPROPERTY( EditAnywhere, Category="Pistol" )
+	TSubclassOf<AActor> TracerRound;
 
 	UPROPERTY( EditDefaultsOnly, Category="Pistol" )
 	UParticleSystem* MuzzleEffect;
