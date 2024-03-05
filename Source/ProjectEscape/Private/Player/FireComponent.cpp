@@ -127,7 +127,7 @@ UFireComponent::UFireComponent()
 		ReloadMontage=ReloadMontageFinder.Object;
 	}
 
-	static ConstructorHelpers::FClassFinder<UCameraShakeBase> TracerRoundFinder( TEXT( "/Script/Engine.BlueprintGeneratedClass'/Game/Blueprints/BP_TracerRound.BP_TracerRound_C'" ) );
+	static ConstructorHelpers::FClassFinder<AActor> TracerRoundFinder( TEXT( "/Script/Engine.BlueprintGeneratedClass'/Game/Blueprints/BP_TracerRound.BP_TracerRound_C'" ) );
 
 	if ( TracerRoundFinder.Succeeded() )
 	{
