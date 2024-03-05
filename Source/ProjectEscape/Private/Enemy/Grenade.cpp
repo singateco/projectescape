@@ -29,6 +29,13 @@ AGrenade::AGrenade()
 		GrenadeMesh->SetStaticMesh( TempGrenadeMesh.Object );
 	}
 
+	GrenadeRange = CreateDefaultSubobject<UStaticMeshComponent>( TEXT( "GrenadeRange" ) );
+	GrenadeRange->SetupAttachment( RootComponent );
+	GrenadeRange->SetVisibility( false );
+	GrenadeRange->SetRelativeScale3D( FVector(5.0f) );
+	GrenadeRange->SetCollisionEnabled( ECollisionEnabled::NoCollision );
+
+
 	static ConstructorHelpers::FClassFinder<UCameraShakeBase> CameraShakeFinder{ TEXT( "/Script/Engine.Blueprint'/Game/Blueprints/Camera/BP_CSEnemyExplosion.BP_CSEnemyExplosion_C'" ) };
 	if ( CameraShakeFinder.Succeeded() )
 	{
@@ -106,7 +113,7 @@ void AGrenade::Explosion()
 	/*FRotator DecalRotation= FRotator( -180, 0, 0 );
 	UDecalComponent* UdecalEffect=UGameplayStatics::SpawnDecalAtLocation( GetWorld(), GrenadeDecal, FVector( 500 ), GrenadeLoc, DecalRotation, 10 );
 	UdecalEffect->SetFadeScreenSize( 0.f );*/
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, GrenadeLoc, FRotator(), FVector(ExplosionEffectSize), true);
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, GrenadeLoc, FRotator(), FVector(ExplosionEffectSize), true, true, ENCPoolMethod::AutoRelease);
 	UGameplayStatics::PlaySoundAtLocation( GetWorld(), ExplosionSound, GrenadeLoc );
 	UGameplayStatics::PlayWorldCameraShake( GetWorld(), CameraShake, GrenadeLoc, 0, ShakeRadius );
 
@@ -122,6 +129,6 @@ void AGrenade::Explosion(const FHitResult& Hit)
 void AGrenade::OnMeshBeginHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
                               FVector NormalImpulse, const FHitResult& Hit)
 {
-	/*GrenadeRange->SetVisibility( true );*/
+	GrenadeRange->SetVisibility( true );
 }
 

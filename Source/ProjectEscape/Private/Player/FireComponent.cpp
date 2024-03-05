@@ -24,6 +24,7 @@
 #include "Components/DecalComponent.h"
 #include "System/ProjectEscapePlayerController.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "ProfilingDebugging/CookStats.h"
 #include "ProjectEscape/ProjectEscape.h"
 
@@ -126,8 +127,12 @@ UFireComponent::UFireComponent()
 		ReloadMontage=ReloadMontageFinder.Object;
 	}
 
+	static ConstructorHelpers::FClassFinder<AActor> TracerRoundFinder( TEXT( "/Script/Engine.BlueprintGeneratedClass'/Game/Blueprints/BP_TracerRound.BP_TracerRound_C'" ) );
 
-
+	if ( TracerRoundFinder.Succeeded() )
+	{
+		TracerRound=TracerRoundFinder.Class;
+	}
 
 	static ConstructorHelpers::FClassFinder<UCameraShakeBase> GunShootCameraShakeEffectFinder( TEXT( "/Script/Engine.Blueprint'/Game/Blueprints/Camera/BP_CSPlayerGunShootCameraShake.BP_CSPlayerGunShootCameraShake_C'" ) );
 
@@ -276,6 +281,15 @@ void UFireComponent::NormalGunFire()
 		return;
 	}
 
+	// TracerRound
+	FVector StartLoc = NormalGun->NormalGunMesh->GetSocketLocation( TEXT( "Muzzle" ) );
+	FVector EndLoc = HitInfo1.Location + Player->GetFollowCamera()->GetForwardVector() * 1;
+	FRotator DesRotation = UKismetMathLibrary::FindLookAtRotation( StartLoc, EndLoc );
+	if(TracerRound )
+	{
+		GetWorld()->SpawnActor<AActor>( TracerRound, StartLoc, DesRotation );
+	}
+
 	Player->RemoveGameplayTag(PEGameplayTags::Status_CanShoot);
 
 	HandleFireAnimation();
@@ -316,7 +330,7 @@ void UFireComponent::NormalGunFire()
 	{
 		if(AActor* Actor = HitInfo2.GetActor(); Actor && Actor->IsA<AEnemyBase>() )
 		{
-			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), BloodEffect, HitInfo2.Location, HitInfo2.ImpactNormal.Rotation(), FireEffectScale * 3.f, true );
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), BloodEffect, HitInfo2.Location, HitInfo2.ImpactNormal.Rotation(), FireEffectScale * 3.f, true, true, ENCPoolMethod::AutoRelease );
 			
 
 			Enemy=Cast<AEnemyBase>( HitInfo2.GetActor() );
@@ -337,7 +351,7 @@ void UFireComponent::NormalGunFire()
 			UDecalComponent* UdecalEffect = UGameplayStatics::SpawnDecalAtLocation( GetWorld(), WallDecalEffect, WallDecalScale, /*HitInfo2.GetComponent()->GetComponentLocation()*/ HitInfo2.ImpactPoint, HitInfo2.ImpactNormal.Rotation(), 10 );
 			UdecalEffect->SetFadeScreenSize(0.f);
 			//UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), GunEffectNoActor, HitInfo2.TraceEnd, FRotator(), FireEffectScale, true );
-			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), GunEffectNoActor, HitInfo2.ImpactPoint, FRotator(), FireEffectScale, true );
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), GunEffectNoActor, HitInfo2.ImpactPoint, FRotator(), FireEffectScale, true, true, ENCPoolMethod::AutoRelease );
 		}
 	}
 	else
