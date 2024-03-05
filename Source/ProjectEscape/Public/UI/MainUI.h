@@ -33,6 +33,9 @@ public:
 	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidgetAnim), Transient )
 	class UWidgetAnimation* DamageUIAnim;
 
+	UFUNCTION(BlueprintCallable)
+	void SetObjectiveVisibility(const bool Visible);
+
 	UFUNCTION()
 	void PlayDamageAnimation();
 

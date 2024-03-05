@@ -91,7 +91,7 @@ AEnemyBase::AEnemyBase(const FObjectInitializer& ObjectInitializer)
 	}
 
 	TargetUIComponent->SetWidgetSpace( EWidgetSpace::Screen );
-	TargetUIComponent->SetDrawSize( FVector2D( 60, 60 ) );
+	TargetUIComponent->SetDrawSize( FVector2D( 65, 65 ) );
 	TargetUIComponent->SetCollisionEnabled( ECollisionEnabled::NoCollision );
 	TargetUIComponent->SetVisibility(false);
 
@@ -251,8 +251,8 @@ void AEnemyBase::ProcessDying()
 			SpawnEffectTweenUObject->Tween = nullptr;
 			SpawnEffectTweenUObject = nullptr;
 		}
-		SpawnEffectEmitter->DestroyInstance();
-		SpawnEffectCircle->DestroyInstance();
+		SpawnEffectEmitter->DeactivateImmediate();
+		SpawnEffectCircle->DeactivateImmediate();
 	}
 }
 

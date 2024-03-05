@@ -36,11 +36,11 @@ public:
 	UPROPERTY( EditAnywhere, BlueprintReadWrite )
 	float SphereRadius = 2000.f;
 
-	UPROPERTY( EditDefaultsOnly)
+	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite)
 	//UParticleSystem* GunEffect;
 	UNiagaraSystem* ExplosionObjEffect;
 
-	UPROPERTY( EditDefaultsOnly )
+	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite )
 	//UParticleSystem* GunEffect;
 	UNiagaraSystem* ExplosionEffect;
 

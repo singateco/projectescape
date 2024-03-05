@@ -81,6 +81,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bCanSeePlayer = false;
 
+	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite )
+	bool IsDead = false;
+
 	UPROPERTY( EditAnywhere )
 	UParticleSystem* MuzzleFlash;
 
