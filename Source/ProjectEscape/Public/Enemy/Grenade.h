@@ -32,8 +32,8 @@ public:
 	UPROPERTY( EditAnywhere, Category = Effect )
 	USoundBase* ExplosionSound;
 
-	/*UPROPERTY( EditAnywhere, Category = Effect )
-	UMaterialInterface* GrenadeDecal;*/
+	UPROPERTY( EditAnywhere, Category = Effect )
+	UMaterialInterface* GrenadeDecal;
 
 	UPROPERTY( EditAnywhere, Category=Effect )
 	TSubclassOf<class UCameraShakeBase> CameraShake;

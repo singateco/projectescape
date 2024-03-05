@@ -25,6 +25,7 @@
 #include "System/ProjectEscapePlayerController.h"
 #include "Kismet/GameplayStatics.h"
 #include "ProfilingDebugging/CookStats.h"
+#include "ProjectEscape/ProjectEscape.h"
 
 // Sets default values for this component's properties
 UFireComponent::UFireComponent()
@@ -125,7 +126,15 @@ UFireComponent::UFireComponent()
 		ReloadMontage=ReloadMontageFinder.Object;
 	}
 
-	
+
+
+
+	static ConstructorHelpers::FClassFinder<UCameraShakeBase> GunShootCameraShakeEffectFinder( TEXT( "/Script/Engine.Blueprint'/Game/Blueprints/Camera/BP_CSPlayerGunShootCameraShake.BP_CSPlayerGunShootCameraShake_C'" ) );
+
+	if ( GunShootCameraShakeEffectFinder.Succeeded() )
+	{
+		GunShootCameraShakeEffect=GunShootCameraShakeEffectFinder.Class;
+	}
 }
 
 
@@ -289,7 +298,6 @@ void UFireComponent::NormalGunFire()
 	
 	//FRotator GazeRotation = UKismetMathLibrary::FindLookAtRotation(Player->GetActorLocation(), Player->GetCameraBoom()->GetForwardVector() * MaxDistanceToGun);
 	//Player->SetActorRotation(GazeRotation);
-
 	if (MainUI)
 	{
 		MainUI->GunShot();
@@ -306,14 +314,13 @@ void UFireComponent::NormalGunFire()
 	
 	if( HitInfo2.bBlockingHit )
 	{
-		if(HitInfo2.GetActor()->IsA<AEnemyBase>() )
+		if(AActor* Actor = HitInfo2.GetActor(); Actor && Actor->IsA<AEnemyBase>() )
 		{
 			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), BloodEffect, HitInfo2.Location, HitInfo2.ImpactNormal.Rotation(), FireEffectScale * 3.f, true );
 			
 
 			Enemy=Cast<AEnemyBase>( HitInfo2.GetActor() );
-
-			AActor* Actor=HitInfo2.GetActor();
+			
 
 			if ( Actor && Actor->GetRootComponent()->IsSimulatingPhysics() )
 			{
@@ -326,7 +333,7 @@ void UFireComponent::NormalGunFire()
 			}
 		}else
 		{
-			UE_LOG( LogTemp, Warning, TEXT( "hit actor: %s" ), *HitInfo2.GetActor()->GetActorNameOrLabel() )
+			UE_LOG( SYLog, Warning, TEXT( "hit actor: %s, hit comp name: %s" ), *HitInfo2.GetActor()->GetActorNameOrLabel(), *HitInfo2.GetComponent()->GetFullName() )
 			UDecalComponent* UdecalEffect = UGameplayStatics::SpawnDecalAtLocation( GetWorld(), WallDecalEffect, WallDecalScale, /*HitInfo2.GetComponent()->GetComponentLocation()*/ HitInfo2.ImpactPoint, HitInfo2.ImpactNormal.Rotation(), 10 );
 			UdecalEffect->SetFadeScreenSize(0.f);
 			//UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), GunEffectNoActor, HitInfo2.TraceEnd, FRotator(), FireEffectScale, true );

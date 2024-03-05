@@ -32,11 +32,12 @@ public:
 
 	bool IsDead = false;
 
-
 	UBehaviorTree* GetBehaviorTree();
 	void AttachPistol();
 
-	void OnDie();
+	void ProcessDying() override;
 
 	bool GetIsDead();
+
+	
 };

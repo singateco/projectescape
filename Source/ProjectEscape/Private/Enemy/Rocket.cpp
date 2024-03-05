@@ -4,6 +4,7 @@
 #include "Enemy/Rocket.h"
 
 #include "NiagaraFunctionLibrary.h"
+#include "Components/DecalComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -47,6 +48,13 @@ ARocket::ARocket()
 	if ( CameraShakeFinder.Succeeded() )
 	{
 		CameraShake=CameraShakeFinder.Class;
+	}
+
+	static const ConstructorHelpers::FObjectFinder<UMaterialInterface> RocketDecalFinder{ TEXT( "/Script/Engine.MaterialInstanceConstant'/Game/Resources/KDE/UWC_Bullet_Holes/Instances/Decals/Burnt/MI_Burnt_1.MI_Burnt_1'" ) };
+
+	if ( RocketDecalFinder.Succeeded() )
+	{
+		RocketDecal=RocketDecalFinder.Object;
 	}
 
 	SetLifeSpan( 10.0f );
@@ -112,10 +120,15 @@ void ARocket::Explosion()
 	UGameplayStatics::PlaySoundAtLocation( GetWorld(), ExplosionSound, RocketLoc );
 	UGameplayStatics::PlayWorldCameraShake( GetWorld(), CameraShake, RocketLoc, 0, ShakeRadius );
 
+	
+
 	this->Destroy();
 }
 
 void ARocket::OnComponentBeginHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	Explosion();
+	FRotator DecalRotation=Hit.ImpactNormal.Rotation() + FRotator( -180, 0, 0 );
+	UDecalComponent* UdecalEffect=UGameplayStatics::SpawnDecalAtLocation( GetWorld(), RocketDecal, FVector( 500 ), Hit.ImpactPoint, DecalRotation, 10 );
+	UdecalEffect->SetFadeScreenSize( 0.f );
 }

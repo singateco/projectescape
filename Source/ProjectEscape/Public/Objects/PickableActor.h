@@ -12,6 +12,7 @@ class UStaticMeshComponent;
 class USphereComponent;
 class UNiagaraSystem;
 //class USoundBase;
+class UMaterialInstance;
 class AProjectEscapePlayer;
 
 UCLASS()
@@ -26,21 +27,27 @@ public:
 	//UPROPERTY( EditAnywhere )
 	//USphereComponent* CollisionComp;
 
+	//UPROPERTY( EditDefaultsOnly )
+	//UMaterialInstance* WallExplosionDecalEffect;
+
 	UPROPERTY( EditAnywhere )
 	UStaticMeshComponent* MeshComp;
 
 	UPROPERTY( EditAnywhere, BlueprintReadWrite )
 	float SphereRadius = 2000.f;
 
-	UPROPERTY( EditDefaultsOnly)
+	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite)
 	//UParticleSystem* GunEffect;
 	UNiagaraSystem* ExplosionObjEffect;
 
-	UPROPERTY( EditDefaultsOnly )
+	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite )
 	//UParticleSystem* GunEffect;
 	UNiagaraSystem* ExplosionEffect;
 
 	UPROPERTY( EditDefaultsOnly )
+	UMaterialInterface* ExploDecalEffect;
+
+	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite )
 	AProjectEscapePlayer* Player;
 
 	UPROPERTY( EditDefaultsOnly )

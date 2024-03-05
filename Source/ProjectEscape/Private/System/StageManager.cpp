@@ -8,6 +8,22 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "System/EnemySpawnableArea.h"
+#include "System/ProjectEscapePlayerController.h"
+#include "UI/MainUI.h"
+#include "UI/ObjectiveWidget.h"
+
+void AStageManager::FirstWaveSpawn()
+{
+	if (const auto PC = Cast<AProjectEscapePlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0)))
+	{
+		if (PC->InGameWIdget)
+		{
+			PC->InGameWIdget->Objective->Init(this);
+		}
+	}
+	
+	SpawnWave(StageData.Waves[0]);
+}
 
 void AStageManager::HandleEnemyDestroyed(AEnemyBase* DestroyedActor)
 {
@@ -16,6 +32,11 @@ void AStageManager::HandleEnemyDestroyed(AEnemyBase* DestroyedActor)
 	
 	if (ThisWaveEnemy.IsEmpty())
 	{
+		if (GetWorld()->GetTimerManager().IsTimerActive(BonusObjectiveHandle))
+        {
+        	GetWorld()->GetTimerManager().ClearTimer(BonusObjectiveHandle);
+        }
+        			
 		if (bIsFinalWave)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Stage Won!"))
@@ -40,6 +61,13 @@ void AStageManager::HandleEnemyDestroyed(AEnemyBase* DestroyedActor)
 			);
 		}
 	}
+}
+
+void AStageManager::BonusObjectiveTimeoutFailed()
+{
+	OnBonusObjectiveTimeoutFailed.Broadcast();
+	GetWorld()->GetTimerManager().ClearTimer(BonusObjectiveHandle);
+	bBonusReward = false;
 }
 
 void AStageManager::SpawnWave(const FWaveData& WaveData)
@@ -82,6 +110,18 @@ void AStageManager::SpawnWave(const FWaveData& WaveData)
 		}
 	}
 
+
+	bBonusReward = true;
+	
+	GetWorld()->GetTimerManager().ClearTimer(BonusObjectiveHandle);
+
+	GetWorld()->GetTimerManager().SetTimer(BonusObjectiveHandle,
+		FTimerDelegate::CreateUObject(this, &AStageManager::BonusObjectiveTimeoutFailed),
+		BonusObjectiveSeconds,
+		false
+	);
+
+	OnWaveStarted.Broadcast(WaveData, ThisWaveEnemy);
 }
 
 // Sets default values
@@ -103,5 +143,10 @@ void AStageManager::BeginPlay()
 
 	StageData = *StageDataTableRow.GetRow<FStageData>(TEXT("Context"));
 
-	SpawnWave(StageData.Waves[0]);
+	FTimerHandle FirstSpawn;
+	GetWorld()->GetTimerManager().SetTimer(FirstSpawn,
+		FTimerDelegate::CreateUObject(this, &AStageManager::FirstWaveSpawn),
+		1.0f,
+		false
+	);
 }

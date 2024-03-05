@@ -65,7 +65,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Pistol")
 	UNiagaraSystem* GunUpgradeEffect;
 
-	UPROPERTY( EditAnywhere, Category="Pistol" )
+	UPROPERTY( EditAnywhere )
 	UMaterialInterface* WallDecalEffect;
 
 	UPROPERTY( EditAnywhere, Category="Pistol" )

@@ -28,4 +28,6 @@ AGrenadeEnemy::AGrenadeEnemy(const FObjectInitializer& ObjectInitializer)
 
 	MaxHP = 6;
 
+	//EnemyName=TEXT( "척탄병" );
+
 }

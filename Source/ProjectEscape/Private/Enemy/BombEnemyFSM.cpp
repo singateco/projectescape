@@ -115,7 +115,7 @@ void UBombEnemyFSM::Explosion()
 				// 라인 트레이스에서 플레이어가 충돌한 경우 데미지를 입힘
 				if ( !bHit )
 				{
-					OtherCharacter->ProcessDamageFromLoc( 10, HitResult );
+					OtherCharacter->ProcessDamageFromLoc( 5, HitResult );
 				}
 			}
 		}
@@ -126,5 +126,6 @@ void UBombEnemyFSM::Explosion()
 	UGameplayStatics::PlaySoundAtLocation( GetWorld(), ExplosionSound, EnemyLoc );
 
 	Enemy->OnEnemyDied.Broadcast(Enemy);
+	Enemy->OnEnemyDied.Clear();
 	Enemy->Destroy();
 }

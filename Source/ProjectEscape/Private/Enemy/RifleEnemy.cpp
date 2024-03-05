@@ -27,6 +27,9 @@ ARifleEnemy::ARifleEnemy(const FObjectInitializer& ObjectInitializer)
 	}
 
 	MaxHP = 6;
+
+	//EnemyName = TEXT( "소총병" );
 }
+
 
 

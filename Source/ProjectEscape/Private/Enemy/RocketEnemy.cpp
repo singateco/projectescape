@@ -26,5 +26,8 @@ ARocketEnemy::ARocketEnemy( const FObjectInitializer& ObjectInitializer )
 	}
 
 	MaxHP = 8;
+
+	//EnemyName=TEXT( "유탄발사병" );
+
 }
 
