@@ -143,6 +143,8 @@ AEnemyBase::AEnemyBase(const FObjectInitializer& ObjectInitializer)
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 	GetCharacterMovement()->MaxWalkSpeed=EnemyMaxSpeed;
+
+	GetCapsuleComponent()->SetNotifyRigidBodyCollision(true);
 }
 
 void AEnemyBase::BeginPlay()

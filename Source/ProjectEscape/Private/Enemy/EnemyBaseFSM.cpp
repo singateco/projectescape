@@ -183,7 +183,7 @@ void UEnemyBaseFSM::OnDying()
 	Enemy->GetCapsuleComponent()->SetCollisionProfileName(FName("NoCollision"));
 	Enemy->GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
 	Enemy->GetMesh()->SetSimulatePhysics(true);
-
+	IsDead = true;
 }
 
 void UEnemyBaseFSM::SetState( EEnemyState Next )

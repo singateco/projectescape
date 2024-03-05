@@ -41,6 +41,7 @@ APickableActor::APickableActor()
 	//MeshComp->SetCollisionEnabled( ECollisionEnabled::NoCollision ); 
 	MeshComp->SetNotifyRigidBodyCollision( true ); // Simulation Generates Hit Events
 	MeshComp->SetSimulatePhysics( true );
+	MeshComp->SetRelativeScale3D(FVector(1.6));
 
 
 	//CollisionComp->SetRelativeScale3D( MeshComp->GetRelativeScale3D() );

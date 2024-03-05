@@ -85,10 +85,10 @@ public:
 	UPROPERTY()
 	UFCTweenUObject* SpawnEffectTweenUObject;
 	
-	UPROPERTY( EditDefaultsOnly )
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
 	USkeletalMeshComponent* GunMesh;
 
-	UPROPERTY( EditDefaultsOnly )
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
 	class UBoxComponent* WeakPoint;
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly)
