@@ -184,7 +184,8 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 	TArray<FHitResult> HitInfoArrayPickUpActors;
 	FHitResult HitInfoPickUpActor;
-	FVector Start=Player->GetFollowCamera()->GetComponentLocation();
+	//FVector Start=Player->GetFollowCamera()->GetComponentLocation();
+	FVector Start=Player->GetFollowCamera()->GetComponentLocation() + Player->GetFollowCamera()->GetForwardVector() * 500;
 	FVector End=Player->GetFollowCamera()->GetComponentLocation() + Player->GetFollowCamera()->GetForwardVector() * EnemyHPMaxDistance;
 
 
@@ -199,7 +200,7 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 	if(bIsGrabbing == true)// || HandleObject != nullptr)
 	{
-		HandleObject->SetTargetLocation( Player->GetFollowCamera()->GetComponentLocation() + Player->GetFollowCamera()->GetForwardVector()*500 );
+		HandleObject->SetTargetLocation( Player->GetFollowCamera()->GetComponentLocation() + Player->GetFollowCamera()->GetForwardVector()*500 + Player->GetFollowCamera()->GetUpVector() * 50 );
 
 		if ( AnimInstance && GrabbingMontage && !AnimInstance->Montage_IsPlaying( nullptr ) )
 		{
@@ -300,6 +301,9 @@ void UGrabComponent::GrabObject(const FInputActionInstance& Instance)
 			if ( HandleObject->GetGrabbedComponent() != nullptr )
 			{
 				bIsGrabbing=true;
+				HandleObject->GetGrabbedComponent()->SetSimulatePhysics( true );
+				//Cast<APickableActor>(HandleObject->GetGrabbedComponent())->bIsGrabbedObject = true;
+				Cast<APickableActor>(PickUpActorResult.GetActor())->bIsGrabbedObject = true;
 				if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
 				{
 					Subsystem->AddMappingContext(GrabImc, 1);
@@ -324,7 +328,7 @@ void UGrabComponent::ReleaseObject()
 
 	if(bIsGrabbing == true )
 	{
-		ThrowingLoc = Player->GetFollowCamera()->GetForwardVector() * MaxDistanceToGrab;
+		ThrowingLoc =Player->GetFollowCamera()->GetForwardVector() * MaxDistanceToGrab;
 
 		if ( OtherEnemies.Num() > 0 )
 		{
@@ -333,19 +337,22 @@ void UGrabComponent::ReleaseObject()
 
 			for ( int i=0; i < GrabObjectCount; i++ )
 			{
+				//FVector EnemyLoc=OtherEnemies[i]->GetMesh()->GetComponentLocation();
 				FVector EnemyLoc=OtherEnemies[i]->GetActorLocation();
-				ThrowingLoc=EnemyLoc;
+				ThrowingLoc = EnemyLoc - HandleObject->GetGrabbedComponent()->GetComponentLocation();
 				UE_LOG( SYLog, Warning, TEXT( "EnemyLoc!!!!!!!%s" ) , *OtherEnemies[i]->GetActorNameOrLabel())
 				//OtherEnemies[i]->EnemyHPComponent->SetVisibility( true );
 			}
 		}
 		else {
 			UE_LOG( SYLog, Warning, TEXT( "CenterLoc!!!!!!!" ) )
+				ThrowingLoc=Player->GetFollowCamera()->GetForwardVector() * MaxDistanceToGrab;
 		}
 
 		//FVector ThrowingDirection = HandleObject->GetGrabbedComponent()->GetComponentLocation() - ThrowingLoc;
-		FVector ThrowingDirection = ThrowingLoc - HandleObject->GetGrabbedComponent()->GetComponentLocation();
+		FVector ThrowingDirection = ThrowingLoc;// - HandleObject->GetGrabbedComponent()->GetComponentLocation();
 		ThrowingDirection.Normalize();
+		HandleObject->GetGrabbedComponent()->SetSimulatePhysics(true);
 		HandleObject->GetGrabbedComponent()->AddImpulse( ThrowingDirection * ThrowingPower, NAME_None, true);
 		HandleObject->ReleaseComponent();
 

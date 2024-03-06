@@ -101,7 +101,7 @@ public:
 	APickableActor* ObjectInHand;
 
 	UPROPERTY( EditDefaultsOnly, Category="Throw" )
-	float ThrowingPower = 13000.0f;
+	float ThrowingPower = 15000.0f;
 
 	UPROPERTY( EditAnywhere, Category="QSkill" )
 	class UNiagaraSystem* QExplosionEffect;
