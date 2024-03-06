@@ -288,7 +288,7 @@ void UGrabComponent::GrabObject(const FInputActionInstance& Instance)
 	if ( ObjectInHand )
 	{
 
-		UE_LOG( SYLog, Warning, TEXT( "pick!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! : %s" ), *ObjectInHand->GetActorNameOrLabel() );
+		//UE_LOG( SYLog, Warning, TEXT( "pick!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! : %s" ), *ObjectInHand->GetActorNameOrLabel() );
 		if(PickUpActorResult.GetActor() == nullptr || PickUpActorResult.GetComponent() == nullptr || !PickUpActorResult.HasValidHitObjectHandle() )
 		{
 			return;
@@ -313,7 +313,7 @@ void UGrabComponent::GrabObject(const FInputActionInstance& Instance)
 	}
 	else // if(OutlineObject == nullptr)
 	{
-		UE_LOG( SYLog, Warning, TEXT( "There is no pickable actor!"));
+		//UE_LOG( SYLog, Warning, TEXT( "There is no pickable actor!"));
 		//잡을 물건 없음
 		//Spawn Actor Fracture
 	}
@@ -340,12 +340,12 @@ void UGrabComponent::ReleaseObject()
 				//FVector EnemyLoc=OtherEnemies[i]->GetMesh()->GetComponentLocation();
 				FVector EnemyLoc=OtherEnemies[i]->GetActorLocation();
 				ThrowingLoc = EnemyLoc - HandleObject->GetGrabbedComponent()->GetComponentLocation();
-				UE_LOG( SYLog, Warning, TEXT( "EnemyLoc!!!!!!!%s" ) , *OtherEnemies[i]->GetActorNameOrLabel())
+				//UE_LOG( SYLog, Warning, TEXT( "EnemyLoc!!!!!!!%s" ) , *OtherEnemies[i]->GetActorNameOrLabel())
 				//OtherEnemies[i]->EnemyHPComponent->SetVisibility( true );
 			}
 		}
 		else {
-			UE_LOG( SYLog, Warning, TEXT( "CenterLoc!!!!!!!" ) )
+			//UE_LOG( SYLog, Warning, TEXT( "CenterLoc!!!!!!!" ) )
 				ThrowingLoc=Player->GetFollowCamera()->GetForwardVector() * MaxDistanceToGrab;
 		}
 
@@ -419,7 +419,7 @@ void UGrabComponent::SphereGrabObject()
 	/********************************** Sphere Trace SingleByChannel **********************************/
 	/**************************************************************************************************/
 
-	UE_LOG( SYLog, Warning, TEXT( "pick!!!!!!!!!!!!!!! " ) );
+	//UE_LOG( SYLog, Warning, TEXT( "pick!!!!!!!!!!!!!!! " ) );
 	TArray<FHitResult> HitInfoArray;
 	FVector Start=Player->GetFollowCamera()->GetComponentLocation();
 	FVector End=Player->GetFollowCamera()->GetComponentLocation() + Player->GetFollowCamera()->GetForwardVector() * MaxDistanceToGrab;
@@ -452,7 +452,7 @@ void UGrabComponent::SphereGrabObject()
 
 			if ( PickUpActor )
 			{
-				UE_LOG( SYLog, Warning, TEXT( "pick!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! : %s" ), *PickUpActor->GetActorNameOrLabel() );
+				//UE_LOG( SYLog, Warning, TEXT( "pick!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! : %s" ), *PickUpActor->GetActorNameOrLabel() );
 				PickUpActor->MeshComp->SetRenderCustomDepth( true );
 				HandleObject->GrabComponentAtLocation( HitInfo.GetComponent(), TEXT( "GrabObject" ), HitInfo.GetComponent()->GetComponentLocation() );
 				

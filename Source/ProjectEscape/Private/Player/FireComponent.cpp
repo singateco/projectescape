@@ -336,7 +336,8 @@ void UFireComponent::NormalGunFire()
 		}
 		else
 		{
-			//UE_LOG( SYLog, Warning, TEXT( "hit actor: %s, hit comp name: %s" ), *HitInfo2.GetActor()->GetActorNameOrLabel(), *HitInfo2.GetComponent()->GetFullName() )
+			//
+			( SYLog, Warning, TEXT( "hit actor: %s, hit comp name: %s" ), *HitInfo2.GetActor()->GetActorNameOrLabel(), *HitInfo2.GetComponent()->GetFullName() )
 			UDecalComponent* UdecalEffect = UGameplayStatics::SpawnDecalAtLocation( GetWorld(), WallDecalEffect, WallDecalScale, /*HitInfo2.GetComponent()->GetComponentLocation()*/ HitInfo2.ImpactPoint, HitInfo2.ImpactNormal.Rotation(), 10 );
 			UdecalEffect->SetFadeScreenSize(0.f);
 			//UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), GunEffectNoActor, HitInfo2.TraceEnd, FRotator(), FireEffectScale, true );

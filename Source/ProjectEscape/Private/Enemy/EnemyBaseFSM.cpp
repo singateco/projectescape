@@ -84,7 +84,7 @@ void UEnemyBaseFSM::TickMove()
 	auto ns= UNavigationSystemV1::GetNavigationSystem(GetWorld());
 	FPathFindingQuery query;
 	FAIMoveRequest req;
-	req.SetAcceptanceRadius(50);
+	//req.SetAcceptanceRadius(50);
 	req.SetGoalLocation(destination);
 	Ai->BuildPathfindingQuery(req, query);
 	auto result = ns->FindPathSync(query);

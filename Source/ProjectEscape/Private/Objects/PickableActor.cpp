@@ -149,9 +149,9 @@ void APickableActor::OnCompHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 		//txt1=(Player->GrabComponent->bIsGrabbing) ? "true" : "false";
 		//UE_LOG( SYLog, Warning, TEXT( "5000이상 bIsGrabbing : %s" ), *txt1 );
 
-		UE_LOG( SYLog, Warning, TEXT( "hitResult : %s" ), *Hit.GetActor()->GetActorNameOrLabel() );
+		//UE_LOG( SYLog, Warning, TEXT( "hitResult : %s" ), *Hit.GetActor()->GetActorNameOrLabel() );
 
-		UE_LOG( SYLog, Warning, TEXT( "hitComp : %s, ProfileCollision: %s" ), *OtherComp->GetFullName(), *OtherComp->GetCollisionProfileName().ToString());
+		//UE_LOG( SYLog, Warning, TEXT( "hitComp : %s, ProfileCollision: %s" ), *OtherComp->GetFullName(), *OtherComp->GetCollisionProfileName().ToString());
 		UGameplayStatics::PlaySoundAtLocation( GetWorld(), ExplosionSoundClass, Hit.ImpactPoint, Hit.ImpactNormal.Rotation() );
 
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), ExplosionScale, true, true, ENCPoolMethod::AutoRelease );
@@ -201,10 +201,10 @@ void APickableActor::OnCompHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 
 		if ( bSphereOverlapResult )
 		{
-			UE_LOG( SYLog, Warning, TEXT( "hit!" ) );
+			//UE_LOG( SYLog, Warning, TEXT( "hit!" ) );
 			for ( AActor* HitActor : OutActorsArray )
 			{
-				UE_LOG( SYLog, Warning, TEXT( "SphereOverlapResult:%s" ), *HitActor->GetActorNameOrLabel() );
+				//UE_LOG( SYLog, Warning, TEXT( "SphereOverlapResult:%s" ), *HitActor->GetActorNameOrLabel() );
 				auto OtherCharacter=Cast<AEnemyBase>( HitActor );
 				if ( OtherCharacter )
 				{

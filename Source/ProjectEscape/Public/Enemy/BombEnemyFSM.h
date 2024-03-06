@@ -27,6 +27,12 @@ public:
 	UPROPERTY( EditAnywhere )
 		float SphereRadius = 300.0f;
 
+	UPROPERTY( EditAnywhere )
+		float ShakeRadius=2000.0f;
+
+	UPROPERTY( EditAnywhere, Category=Effect )
+	TSubclassOf<class UCameraShakeBase> CameraShake;
+
 	void TickMove() override;
 
 	void TickAttack() override;

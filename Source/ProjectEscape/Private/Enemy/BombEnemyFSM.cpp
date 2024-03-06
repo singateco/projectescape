@@ -18,6 +18,12 @@ UBombEnemyFSM::UBombEnemyFSM()
 
 	AttackDistance = 600.0f;
 	AttackTime = 0.5f;
+
+	static ConstructorHelpers::FClassFinder<UCameraShakeBase> CameraShakeFinder{ TEXT( "/Script/Engine.Blueprint'/Game/Blueprints/Camera/BP_CSEnemyExplosion.BP_CSEnemyExplosion_C'" ) };
+	if ( CameraShakeFinder.Succeeded() )
+	{
+		CameraShake=CameraShakeFinder.Class;
+	}
 }
 
 void UBombEnemyFSM::TickMove()
@@ -124,6 +130,8 @@ void UBombEnemyFSM::Explosion()
 	//UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), ExplosionEffect, RocketLoc, FRotator(), FVector( 10 ), true, EPSCPoolMethod::None, true );
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), ExplosionEffect, EnemyLoc, FRotator(), FVector( 1 ), true );
 	UGameplayStatics::PlaySoundAtLocation( GetWorld(), ExplosionSound, EnemyLoc );
+	UGameplayStatics::PlayWorldCameraShake( GetWorld(), CameraShake, EnemyLoc, 0, ShakeRadius );
+
 
 	Enemy->OnEnemyDied.Broadcast(Enemy);
 	Enemy->OnEnemyDied.Clear();
