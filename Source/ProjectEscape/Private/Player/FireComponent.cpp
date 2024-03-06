@@ -328,30 +328,24 @@ void UFireComponent::NormalGunFire()
 	
 	if( HitInfo2.bBlockingHit )
 	{
+		TWeakObjectPtr<UPrimitiveComponent> HitComp = HitInfo2.GetComponent();
 		if(AActor* Actor = HitInfo2.GetActor(); Actor && Actor->IsA<AEnemyBase>() )
 		{
 			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), BloodEffect, HitInfo2.Location, HitInfo2.ImpactNormal.Rotation(), FireEffectScale * 3.f, true, true, ENCPoolMethod::AutoRelease );
-			
-
 			Enemy=Cast<AEnemyBase>( HitInfo2.GetActor() );
-			
-
-			if ( Actor && Actor->GetRootComponent()->IsSimulatingPhysics() )
-			{
-				HitInfo2.Component->AddImpulse( HitInfo2.ImpactNormal * -1 * GunImpulseForce );
-
-				if ( Cast<UStaticMeshComponent>( Actor->GetComponentByClass( UStaticMeshComponent::StaticClass() ) )->IsSimulatingPhysics() )
-				{
-					HitInfo2.Component->AddImpulse( HitInfo2.ImpactNormal * -1 * GunImpulseForce );
-				}
-			}
-		}else
+		}
+		else
 		{
-			UE_LOG( SYLog, Warning, TEXT( "hit actor: %s, hit comp name: %s" ), *HitInfo2.GetActor()->GetActorNameOrLabel(), *HitInfo2.GetComponent()->GetFullName() )
+			//UE_LOG( SYLog, Warning, TEXT( "hit actor: %s, hit comp name: %s" ), *HitInfo2.GetActor()->GetActorNameOrLabel(), *HitInfo2.GetComponent()->GetFullName() )
 			UDecalComponent* UdecalEffect = UGameplayStatics::SpawnDecalAtLocation( GetWorld(), WallDecalEffect, WallDecalScale, /*HitInfo2.GetComponent()->GetComponentLocation()*/ HitInfo2.ImpactPoint, HitInfo2.ImpactNormal.Rotation(), 10 );
 			UdecalEffect->SetFadeScreenSize(0.f);
 			//UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), GunEffectNoActor, HitInfo2.TraceEnd, FRotator(), FireEffectScale, true );
 			UNiagaraFunctionLibrary::SpawnSystemAtLocation( GetWorld(), GunEffectNoActor, HitInfo2.ImpactPoint, FRotator(), FireEffectScale, true, true, ENCPoolMethod::AutoRelease );
+		}
+
+		if (USceneComponent* SceneComp = Cast<USceneComponent>(HitComp); SceneComp && SceneComp->IsAnySimulatingPhysics())
+		{
+			HitComp->AddImpulse(HitInfo2.ImpactNormal * -1 * GunImpulseForce);
 		}
 	}
 	else
