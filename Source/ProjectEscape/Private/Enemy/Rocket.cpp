@@ -129,6 +129,6 @@ void ARocket::OnComponentBeginHit(UPrimitiveComponent* HitComponent, AActor* Oth
 {
 	Explosion();
 	FRotator DecalRotation=Hit.ImpactNormal.Rotation() + FRotator( -180, 0, 0 );
-	UDecalComponent* UdecalEffect=UGameplayStatics::SpawnDecalAtLocation( GetWorld(), RocketDecal, FVector( 500 ), Hit.ImpactPoint, DecalRotation, 10 );
+	UDecalComponent* UdecalEffect=UGameplayStatics::SpawnDecalAtLocation( GetWorld(), RocketDecal, FVector(500), Hit.ImpactPoint, DecalRotation, 10 );
 	UdecalEffect->SetFadeScreenSize( 0.f );
 }
