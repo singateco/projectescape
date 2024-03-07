@@ -25,7 +25,7 @@ void UBTService_IsBossHalfHP::OnBecomeRelevant(UBehaviorTreeComponent& OwnerComp
 		float BossMaxHP = Boss->GetStatsComponent()->GetMaxHP();
 		float BossHP = Boss->GetStatsComponent()->GetHP();
 		
-		OwnerComp.GetBlackboardComponent()->SetValueAsBool( GetSelectedBlackboardKey(), BossHP <= BossMaxHP * 0.7 );
+		OwnerComp.GetBlackboardComponent()->SetValueAsBool( GetSelectedBlackboardKey(), BossHP <= BossMaxHP * 0.6 );
 	}
 
 }
